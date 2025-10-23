@@ -1,0 +1,231 @@
+"use client";
+
+import type React from "react";
+
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Lock, ChevronRight, Search, ArrowUpDown } from "lucide-react";
+import Link from "next/link";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface ChaptersSidebarProps {
+  mangaId: string;
+  currentChapter?: number;
+  chapters: number;
+}
+
+export function ChaptersSidebar({
+  mangaId,
+  currentChapter = 1,
+  chapters: totalChapters,
+}: ChaptersSidebarProps) {
+  const [displayedChapters, setDisplayedChapters] = useState(50);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const allChapters = Array.from({ length: totalChapters }, (_, i) => {
+    const chapterNumber = sortOrder === "desc" ? totalChapters - i : i + 1;
+    return {
+      number: chapterNumber,
+      title: `Chapter ${chapterNumber}`,
+      date: new Date(Date.now() - i * 86400000).toLocaleDateString(),
+      isLocked: chapterNumber > totalChapters - 1, // lock chapters beyond totalChapters - 1
+    };
+  });
+
+  // Filter chapters based on search query
+  const filteredChapters = searchQuery
+    ? allChapters.filter(
+        (chapter) =>
+          chapter.number.toString().includes(searchQuery) ||
+          chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allChapters;
+
+  // Get visible chapters for display
+  const chaptersList = filteredChapters.slice(0, displayedChapters);
+  const hasMore = displayedChapters < filteredChapters.length;
+
+  // Infinite scroll handler
+  const handleScroll = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const scrollThreshold = 500;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+    if (distanceFromBottom < scrollThreshold && !isLoadingMore && hasMore) {
+      setIsLoadingMore(true);
+
+      // Use requestAnimationFrame for smoother updates
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          setDisplayedChapters((prev) => {
+            const newCount = Math.min(prev + 25, filteredChapters.length);
+            return newCount;
+          });
+          setIsLoadingMore(false);
+        }, 200);
+      });
+    }
+  }, [isLoadingMore, hasMore, filteredChapters.length]);
+
+  // Attach scroll listener
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const scrollHandler = () => {
+      handleScroll();
+    };
+
+    container.addEventListener("scroll", scrollHandler, { passive: true });
+
+    // Initial check in case content doesn't fill screen
+    setTimeout(() => handleScroll(), 100);
+
+    return () => {
+      container.removeEventListener("scroll", scrollHandler);
+    };
+  }, [handleScroll]);
+
+  // Reset displayed chapters when search or sort changes
+  useEffect(() => {
+    setDisplayedChapters(50);
+    setIsLoadingMore(false);
+  }, [searchQuery, sortOrder]);
+
+  // Toggle sort order
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+  };
+
+  return (
+    <div className="w-full h-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl">
+      <div className="p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/60 to-slate-900/30 backdrop-blur-md">
+        <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+          Chapters
+        </h2>
+        <p className="text-xs text-slate-400 mt-1">
+          {totalChapters - 1} available chapters
+        </p>
+
+        {/* Search Input */}
+        <div className="mt-3 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search chapter..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-800/70 transition-all"
+          />
+        </div>
+
+        {/* Sort Button */}
+        <button
+          onClick={toggleSortOrder}
+          className="mt-2 w-full flex items-center justify-between px-3 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 transition-all"
+        >
+          <span>
+            Sort: {sortOrder === "desc" ? "Newest First" : "Oldest First"}
+          </span>
+          <ArrowUpDown className="w-3.5 h-3.5 text-cyan-400/60" />
+        </button>
+
+        {/* Search Results Info */}
+        {searchQuery && (
+          <p className="text-xs text-slate-400 mt-2">
+            Found {filteredChapters.length} chapter
+            {filteredChapters.length !== 1 ? "s" : ""}
+          </p>
+        )}
+      </div>
+
+      <ScrollArea className="flex-1">
+        <div ref={scrollContainerRef} className="p-3 space-y-2">
+          {chaptersList.length > 0 ? (
+            chaptersList.map((chapter) => (
+              <Link
+                key={chapter.number}
+                href={
+                  chapter.isLocked
+                    ? "#"
+                    : `/manga/${mangaId}/chapter/${chapter.number}`
+                }
+                className={chapter.isLocked ? "pointer-events-none" : ""}
+              >
+                <div
+                  className={`p-3 my-2 rounded-lg transition-all duration-200 group border flex items-center justify-between ${
+                    currentChapter === chapter.number
+                      ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 shadow-lg shadow-cyan-500/20"
+                      : "bg-slate-800/30 border-slate-700/50 hover:bg-slate-800/50 hover:border-cyan-400/40"
+                  } ${
+                    chapter.isLocked
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                >
+                  <div className="flex flex-col gap-0.5 flex-1">
+                    <p className="text-sm font-semibold text-slate-100">
+                      {chapter.title}
+                    </p>
+                    <p className="text-xs text-slate-400">{chapter.date}</p>
+                    {chapter.isLocked && (
+                      <p className="text-xs text-amber-400/70 mt-1">
+                        Not released yet
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {chapter.isLocked && (
+                      <Lock className="w-4 h-4 text-amber-500/70" />
+                    )}
+                    {!chapter.isLocked && (
+                      <ChevronRight className="w-4 h-4 text-cyan-400/60 group-hover:text-cyan-400 transition-colors" />
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-sm text-slate-400">No chapters found</p>
+            </div>
+          )}
+
+          {/* Loading indicator */}
+          {isLoadingMore && (
+            <div className="p-4 text-center">
+              <div className="inline-block w-4 h-4 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
+              <p className="text-xs text-slate-400 mt-2">
+                Loading more chapters...
+              </p>
+            </div>
+          )}
+
+          {/* Scroll for more indicator */}
+          {hasMore && !isLoadingMore && chaptersList.length > 0 && (
+            <div className="p-4 text-center">
+              <p className="text-xs text-slate-400">Scroll for more...</p>
+              <p className="text-xs text-slate-500 mt-1">
+                Showing {chaptersList.length} of {filteredChapters.length}
+              </p>
+            </div>
+          )}
+
+          {/* End of list */}
+          {!hasMore && chaptersList.length > 0 && (
+            <div className="p-4 text-center">
+              <p className="text-xs text-slate-500">
+                All chapters loaded ({chaptersList.length})
+              </p>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+    </div>
+  );
+}

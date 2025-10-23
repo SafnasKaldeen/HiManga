@@ -1,0 +1,203 @@
+manga_name,manga_slug,chapter_number,panel_count,expected_count,status,timestamp,error
+One Piece,one-piece,1,54,54,success,2025-10-22T20:13:51.749703,
+One Piece,one-piece,2,23,23,success,2025-10-22T20:14:55.596813,
+Solo Leveling Manhwa,solo-leveling-manhwa,1,15,15,success,2025-10-22T20:40:07.461640,
+Solo Leveling Manhwa,solo-leveling-manhwa,2,13,13,success,2025-10-22T20:41:10.344324,
+Solo Leveling Manhwa,solo-leveling-manhwa,3,15,15,success,2025-10-22T20:42:25.857649,
+Solo Leveling Manhwa,solo-leveling-manhwa,4,16,16,success,2025-10-22T20:43:15.135909,
+Solo Leveling Manhwa,solo-leveling-manhwa,5,16,16,success,2025-10-22T20:44:14.684009,
+Solo Leveling Manhwa,solo-leveling-manhwa,6,18,18,success,2025-10-22T20:44:41.576271,
+Solo Leveling Manhwa,solo-leveling-manhwa,7,22,22,success,2025-10-22T20:45:40.431137,
+Solo Leveling Manhwa,solo-leveling-manhwa,8,22,22,success,2025-10-22T20:46:39.316727,
+Solo Leveling Manhwa,solo-leveling-manhwa,9,18,18,success,2025-10-22T20:47:12.880604,
+Solo Leveling Manhwa,solo-leveling-manhwa,10,21,21,success,2025-10-23T09:41:41.984381,
+Solo Leveling Manhwa,solo-leveling-manhwa,11,19,19,success,2025-10-23T09:42:09.213924,
+solo-leveling-manhwa,solo-leveling-manhwa,12,15,15,success,2025-10-23T09:22:39.844971,
+solo-leveling-manhwa,solo-leveling-manhwa,13,20,20,success,2025-10-23T09:23:08.735690,
+solo-leveling-manhwa,solo-leveling-manhwa,14,17,17,success,2025-10-23T09:23:31.999987,
+solo-leveling-manhwa,solo-leveling-manhwa,15,21,21,success,2025-10-23T09:24:00.558046,
+solo-leveling-manhwa,solo-leveling-manhwa,16,21,21,success,2025-10-23T09:24:31.073716,
+solo-leveling-manhwa,solo-leveling-manhwa,17,21,21,success,2025-10-23T09:25:04.028302,
+solo-leveling-manhwa,solo-leveling-manhwa,18,19,19,success,2025-10-23T09:25:30.692844,
+solo-leveling-manhwa,solo-leveling-manhwa,19,19,19,success,2025-10-23T09:25:58.602279,
+solo-leveling-manhwa,solo-leveling-manhwa,20,19,19,success,2025-10-23T09:26:25.623691,
+solo-leveling-manhwa,solo-leveling-manhwa,21,19,19,success,2025-10-23T09:26:53.398370,
+solo-leveling-manhwa,solo-leveling-manhwa,22,21,21,success,2025-10-23T09:27:23.803816,
+solo-leveling-manhwa,solo-leveling-manhwa,23,19,19,success,2025-10-23T09:27:49.862010,
+solo-leveling-manhwa,solo-leveling-manhwa,24,22,22,success,2025-10-23T09:28:20.045691,
+solo-leveling-manhwa,solo-leveling-manhwa,25,18,18,success,2025-10-23T09:28:44.314133,
+solo-leveling-manhwa,solo-leveling-manhwa,26,16,16,success,2025-10-23T09:29:07.574375,
+Solo Leveling Manhwa,solo-leveling-manhwa,27,21,21,success,2025-10-22T20:50:59.949456,
+Solo Leveling Manhwa,solo-leveling-manhwa,28,19,19,success,2025-10-22T20:52:09.035127,
+Solo Leveling Manhwa,solo-leveling-manhwa,29,19,19,success,2025-10-22T20:53:10.218835,
+Solo Leveling Manhwa,solo-leveling-manhwa,30,21,21,success,2025-10-22T20:54:18.741152,
+Solo Leveling Manhwa,solo-leveling-manhwa,31,18,18,success,2025-10-22T20:55:17.340194,
+Solo Leveling Manhwa,solo-leveling-manhwa,32,18,18,success,2025-10-22T20:56:03.594740,
+Solo Leveling Manhwa,solo-leveling-manhwa,33,21,21,success,2025-10-22T20:56:57.575230,
+Solo Leveling Manhwa,solo-leveling-manhwa,34,20,20,success,2025-10-22T20:58:07.903056,
+Solo Leveling Manhwa,solo-leveling-manhwa,35,19,19,success,2025-10-22T20:58:59.675353,
+Solo Leveling Manhwa,solo-leveling-manhwa,36,16,16,success,2025-10-22T20:59:42.358356,
+Solo Leveling Manhwa,solo-leveling-manhwa,37,17,17,success,2025-10-22T21:00:18.208572,
+Solo Leveling Manhwa,solo-leveling-manhwa,38,20,20,success,2025-10-22T21:00:55.716477,
+Solo Leveling Manhwa,solo-leveling-manhwa,39,20,20,success,2025-10-22T21:01:59.137018,
+Solo Leveling Manhwa,solo-leveling-manhwa,40,14,14,success,2025-10-22T21:02:57.489504,
+Solo Leveling Manhwa,solo-leveling-manhwa,41,18,18,success,2025-10-22T21:03:38.732797,
+Solo Leveling Manhwa,solo-leveling-manhwa,42,16,16,success,2025-10-22T21:04:19.547921,
+Solo Leveling Manhwa,solo-leveling-manhwa,43,15,15,success,2025-10-22T21:05:01.475261,
+Solo Leveling Manhwa,solo-leveling-manhwa,44,16,16,success,2025-10-22T21:05:41.080998,
+Solo Leveling Manhwa,solo-leveling-manhwa,45,19,19,success,2025-10-22T21:06:12.704005,
+Solo Leveling Manhwa,solo-leveling-manhwa,46,10,10,success,2025-10-22T21:06:50.140571,
+Solo Leveling Manhwa,solo-leveling-manhwa,47,12,12,success,2025-10-22T21:07:17.946580,
+Solo Leveling Manhwa,solo-leveling-manhwa,48,11,11,success,2025-10-22T21:07:46.532660,
+Solo Leveling Manhwa,solo-leveling-manhwa,49,14,14,success,2025-10-22T21:08:24.765865,
+Solo Leveling Manhwa,solo-leveling-manhwa,50,20,20,success,2025-10-22T21:09:33.799335,
+Solo Leveling Manhwa,solo-leveling-manhwa,51,22,22,success,2025-10-22T21:11:08.025147,
+Solo Leveling Manhwa,solo-leveling-manhwa,52,17,17,success,2025-10-22T21:12:03.193697,
+Solo Leveling Manhwa,solo-leveling-manhwa,53,20,20,success,2025-10-22T21:13:00.359679,
+Solo Leveling Manhwa,solo-leveling-manhwa,54,15,15,success,2025-10-22T21:13:26.266266,
+Solo Leveling Manhwa,solo-leveling-manhwa,55,13,13,success,2025-10-22T21:13:59.109149,
+Solo Leveling Manhwa,solo-leveling-manhwa,56,15,15,success,2025-10-22T21:14:48.575319,
+Solo Leveling Manhwa,solo-leveling-manhwa,57,36,36,success,2025-10-22T21:15:58.336623,
+Solo Leveling Manhwa,solo-leveling-manhwa,58,36,36,success,2025-10-22T21:16:42.662942,
+Solo Leveling Manhwa,solo-leveling-manhwa,59,32,32,success,2025-10-22T21:18:05.012537,
+Solo Leveling Manhwa,solo-leveling-manhwa,60,29,29,success,2025-10-22T21:18:41.453151,
+Solo Leveling Manhwa,solo-leveling-manhwa,61,23,23,success,2025-10-22T21:19:42.113122,
+Solo Leveling Manhwa,solo-leveling-manhwa,62,24,24,success,2025-10-22T21:20:16.014081,
+Solo Leveling Manhwa,solo-leveling-manhwa,63,24,24,success,2025-10-22T21:20:48.411851,
+Solo Leveling Manhwa,solo-leveling-manhwa,64,32,32,success,2025-10-22T21:22:07.595025,
+Solo Leveling Manhwa,solo-leveling-manhwa,65,36,36,success,2025-10-22T21:23:30.532957,
+Solo Leveling Manhwa,solo-leveling-manhwa,66,32,32,success,2025-10-22T21:24:38.639832,
+Solo Leveling Manhwa,solo-leveling-manhwa,67,35,35,success,2025-10-22T21:26:02.909842,
+Solo Leveling Manhwa,solo-leveling-manhwa,68,45,45,success,2025-10-22T21:28:05.350485,
+Solo Leveling Manhwa,solo-leveling-manhwa,69,42,42,success,2025-10-22T21:29:41.227529,
+Solo Leveling Manhwa,solo-leveling-manhwa,70,36,36,success,2025-10-22T21:31:02.240674,
+Solo Leveling Manhwa,solo-leveling-manhwa,71,41,41,success,2025-10-22T21:32:29.738714,
+Solo Leveling Manhwa,solo-leveling-manhwa,72,39,39,success,2025-10-22T21:33:28.977411,
+Solo Leveling Manhwa,solo-leveling-manhwa,73,30,30,success,2025-10-22T21:34:44.619040,
+Solo Leveling Manhwa,solo-leveling-manhwa,74,17,17,success,2025-10-22T21:35:44.139141,
+Solo Leveling Manhwa,solo-leveling-manhwa,75,25,25,success,2025-10-22T21:36:47.267216,
+Solo Leveling Manhwa,solo-leveling-manhwa,76,29,29,success,2025-10-22T21:37:48.741617,
+Solo Leveling Manhwa,solo-leveling-manhwa,77,25,25,success,2025-10-22T21:38:45.680981,
+Solo Leveling Manhwa,solo-leveling-manhwa,78,27,27,success,2025-10-23T09:42:56.702512,
+Solo Leveling Manhwa,solo-leveling-manhwa,79,30,30,success,2025-10-22T21:41:19.592043,
+Solo Leveling Manhwa,solo-leveling-manhwa,80,34,34,success,2025-10-22T21:42:36.294984,
+Solo Leveling Manhwa,solo-leveling-manhwa,81,35,35,success,2025-10-22T21:44:04.838446,
+Solo Leveling Manhwa,solo-leveling-manhwa,82,29,29,success,2025-10-22T21:45:20.485332,
+Solo Leveling Manhwa,solo-leveling-manhwa,83,24,24,success,2025-10-22T21:46:28.451476,
+Solo Leveling Manhwa,solo-leveling-manhwa,84,30,30,success,2025-10-22T21:47:13.596598,
+Solo Leveling Manhwa,solo-leveling-manhwa,85,31,31,success,2025-10-22T21:48:22.735710,
+Solo Leveling Manhwa,solo-leveling-manhwa,86,25,25,success,2025-10-22T21:49:38.760275,
+Solo Leveling Manhwa,solo-leveling-manhwa,87,30,30,success,2025-10-22T21:50:48.730610,
+Solo Leveling Manhwa,solo-leveling-manhwa,88,32,32,success,2025-10-22T21:51:59.168492,
+Solo Leveling Manhwa,solo-leveling-manhwa,89,33,33,success,2025-10-22T21:54:10.058382,
+Solo Leveling Manhwa,solo-leveling-manhwa,90,26,26,success,2025-10-22T21:55:21.392798,
+Solo Leveling Manhwa,solo-leveling-manhwa,91,24,24,success,2025-10-22T21:56:15.800981,
+Solo Leveling Manhwa,solo-leveling-manhwa,92,31,31,success,2025-10-22T21:57:37.655356,
+Solo Leveling Manhwa,solo-leveling-manhwa,93,26,26,success,2025-10-22T21:58:45.250312,
+Solo Leveling Manhwa,solo-leveling-manhwa,94,51,51,success,2025-10-22T22:00:43.483321,
+Solo Leveling Manhwa,solo-leveling-manhwa,95,45,45,success,2025-10-22T22:02:46.255874,
+Solo Leveling Manhwa,solo-leveling-manhwa,96,37,37,success,2025-10-22T22:04:50.376345,
+Solo Leveling Manhwa,solo-leveling-manhwa,97,116,116,success,2025-10-22T22:10:42.999652,
+Solo Leveling Manhwa,solo-leveling-manhwa,98,127,127,success,2025-10-22T22:15:04.462692,
+Solo Leveling Manhwa,solo-leveling-manhwa,99,38,38,success,2025-10-22T22:16:30.167919,
+Solo Leveling Manhwa,solo-leveling-manhwa,100,49,49,success,2025-10-22T22:19:25.296131,
+Solo Leveling Manhwa,solo-leveling-manhwa,101,33,33,success,2025-10-22T22:20:51.051865,
+Solo Leveling Manhwa,solo-leveling-manhwa,102,42,42,success,2025-10-22T22:22:31.084714,
+Solo Leveling Manhwa,solo-leveling-manhwa,103,15,15,success,2025-10-22T22:23:16.909602,
+Solo Leveling Manhwa,solo-leveling-manhwa,104,35,35,success,2025-10-22T22:25:01.993864,
+Solo Leveling Manhwa,solo-leveling-manhwa,105,41,41,success,2025-10-22T22:27:17.150144,
+Solo Leveling Manhwa,solo-leveling-manhwa,106,33,33,success,2025-10-22T22:28:38.993510,
+Solo Leveling Manhwa,solo-leveling-manhwa,107,31,31,success,2025-10-22T22:30:23.498762,
+Solo Leveling Manhwa,solo-leveling-manhwa,108,36,36,success,2025-10-22T22:31:45.533250,
+Solo Leveling Manhwa,solo-leveling-manhwa,109,31,31,success,2025-10-22T22:33:12.509799,
+Solo Leveling Manhwa,solo-leveling-manhwa,110,0,0,failed,2025-10-23T01:33:14.312510,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-110/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5E68D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,111,0,0,failed,2025-10-23T01:33:16.337730,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-111/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5E5FD0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,112,0,0,failed,2025-10-23T01:33:18.346017,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-112/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5906D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,113,0,0,failed,2025-10-23T01:33:20.362520,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-113/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5906D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,114,0,0,failed,2025-10-23T09:08:23.194532,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-114/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5906D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,115,0,0,failed,2025-10-23T09:08:25.206361,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-115/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5906D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,116,0,0,failed,2025-10-23T09:08:27.782046,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-116/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5906D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,117,0,0,failed,2025-10-23T09:08:29.956805,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-117/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D592610>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,118,0,0,failed,2025-10-23T09:08:31.973804,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-118/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D591F90>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,119,0,0,failed,2025-10-23T09:08:34.030822,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-119/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D591F90>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,120,0,0,failed,2025-10-23T09:08:36.049854,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-120/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D591F90>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,121,0,0,failed,2025-10-23T09:08:38.123799,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-121/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D591650>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,122,0,0,failed,2025-10-23T09:08:40.141586,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-122/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D592F90>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,123,0,0,failed,2025-10-23T09:08:42.224844,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-123/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D592250>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,124,0,0,failed,2025-10-23T09:08:44.256016,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-124/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B7C8BD0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,125,0,0,failed,2025-10-23T09:08:46.343056,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-125/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5907D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,126,0,0,failed,2025-10-23T09:08:48.367887,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-126/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5E7E10>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,127,0,0,failed,2025-10-23T09:08:50.380717,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-127/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5933D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,128,0,0,failed,2025-10-23T09:08:52.396334,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-128/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5E6910>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,129,0,0,failed,2025-10-23T09:08:54.438338,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-129/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5935D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,130,0,0,failed,2025-10-23T09:08:56.453868,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-130/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B951D50>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,131,0,0,failed,2025-10-23T09:08:58.516715,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-131/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5912D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,132,0,0,failed,2025-10-23T09:09:00.548523,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-132/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B7C83D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,133,0,0,failed,2025-10-23T09:09:02.572341,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-133/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D592250>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,134,0,0,failed,2025-10-23T09:09:04.685302,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-134/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B951810>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,135,0,0,failed,2025-10-23T09:09:06.748270,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-135/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5907D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,136,0,0,failed,2025-10-23T09:09:08.770169,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-136/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B951350>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,137,0,0,failed,2025-10-23T09:09:10.781188,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-137/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D591A10>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,138,0,0,failed,2025-10-23T09:09:12.793067,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-138/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B953E10>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,139,0,0,failed,2025-10-23T09:09:14.805243,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-139/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D5933D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,140,0,0,failed,2025-10-23T09:09:16.818087,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-140/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B7C85D0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,141,0,0,failed,2025-10-23T09:09:18.830866,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-141/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D590150>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,142,0,0,failed,2025-10-23T09:09:20.843889,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-142/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B951890>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,143,0,0,failed,2025-10-23T09:09:22.857169,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-143/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3B7C8BD0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,144,0,0,failed,2025-10-23T09:09:24.868704,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-144/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D590F50>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,145,0,0,failed,2025-10-23T09:09:26.889399,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-145/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D724490>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,146,0,0,failed,2025-10-23T09:09:28.900966,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-146/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D724490>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,147,0,0,failed,2025-10-23T09:09:30.912971,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-147/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D725110>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,148,0,0,failed,2025-10-23T09:09:32.936585,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-148/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D725110>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,149,0,0,failed,2025-10-23T09:09:34.949619,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Max retries exceeded with url: /manga/solo-leveling-manhwa/chapter-149/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001EB3D724490>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+Solo Leveling Manhwa,solo-leveling-manhwa,150,16,16,success,2025-10-23T09:30:29.841033,
+Solo Leveling Manhwa,solo-leveling-manhwa,151,8,8,success,2025-10-23T09:30:40.494235,
+Solo Leveling Manhwa,solo-leveling-manhwa,152,10,10,success,2025-10-23T09:30:56.969441,
+Solo Leveling Manhwa,solo-leveling-manhwa,153,10,10,success,2025-10-23T09:31:12.934025,
+Solo Leveling Manhwa,solo-leveling-manhwa,154,54,54,success,2025-10-23T09:32:20.537832,
+Solo Leveling Manhwa,solo-leveling-manhwa,155,10,10,success,2025-10-23T09:32:38.055472,
+Solo Leveling Manhwa,solo-leveling-manhwa,156,8,8,success,2025-10-23T09:10:06.273237,
+Solo Leveling Manhwa,solo-leveling-manhwa,157,6,6,success,2025-10-23T09:10:17.796128,
+Solo Leveling Manhwa,solo-leveling-manhwa,158,5,5,success,2025-10-23T09:10:27.705362,
+Solo Leveling Manhwa,solo-leveling-manhwa,159,4,4,success,2025-10-23T09:10:36.759677,
+Solo Leveling Manhwa,solo-leveling-manhwa,160,10,10,success,2025-10-23T09:10:54.535963,
+Solo Leveling Manhwa,solo-leveling-manhwa,161,6,6,success,2025-10-23T09:11:10.634426,
+Solo Leveling Manhwa,solo-leveling-manhwa,162,6,6,success,2025-10-23T09:11:26.804702,
+Solo Leveling Manhwa,solo-leveling-manhwa,163,9,9,success,2025-10-23T09:11:42.630073,
+Solo Leveling Manhwa,solo-leveling-manhwa,164,7,7,success,2025-10-23T09:11:56.148677,
+Solo Leveling Manhwa,solo-leveling-manhwa,165,9,9,success,2025-10-23T09:12:12.195047,
+Solo Leveling Manhwa,solo-leveling-manhwa,166,6,6,success,2025-10-23T09:12:23.693029,
+Solo Leveling Manhwa,solo-leveling-manhwa,167,6,6,success,2025-10-23T09:12:34.801276,
+Solo Leveling Manhwa,solo-leveling-manhwa,168,8,8,success,2025-10-23T09:12:49.518483,
+Solo Leveling Manhwa,solo-leveling-manhwa,169,19,19,success,2025-10-23T09:13:10.299123,
+Solo Leveling Manhwa,solo-leveling-manhwa,170,7,7,success,2025-10-23T09:13:20.168175,
+Solo Leveling Manhwa,solo-leveling-manhwa,171,8,8,success,2025-10-23T09:13:30.929060,
+Solo Leveling Manhwa,solo-leveling-manhwa,172,17,17,success,2025-10-23T09:13:48.693513,
+Solo Leveling Manhwa,solo-leveling-manhwa,173,10,10,success,2025-10-23T09:14:01.238012,
+Solo Leveling Manhwa,solo-leveling-manhwa,174,8,8,success,2025-10-23T09:14:13.534012,
+Solo Leveling Manhwa,solo-leveling-manhwa,175,6,6,success,2025-10-23T09:14:22.643169,
+Solo Leveling Manhwa,solo-leveling-manhwa,176,13,13,success,2025-10-23T09:14:42.181087,
+Solo Leveling Manhwa,solo-leveling-manhwa,177,10,10,success,2025-10-23T09:14:55.001501,
+Solo Leveling Manhwa,solo-leveling-manhwa,178,5,5,success,2025-10-23T09:15:02.884227,
+Solo Leveling Manhwa,solo-leveling-manhwa,179,6,6,success,2025-10-23T09:15:11.825781,
+Solo Leveling Manhwa,solo-leveling-manhwa,180,17,17,success,2025-10-23T09:15:28.603572,
+Solo Leveling Manhwa,solo-leveling-manhwa,181,12,12,success,2025-10-23T09:15:41.201466,
+Solo Leveling Manhwa,solo-leveling-manhwa,182,10,10,success,2025-10-23T09:15:54.288277,
+Solo Leveling Manhwa,solo-leveling-manhwa,183,12,12,success,2025-10-23T09:16:14.027376,
+Solo Leveling Manhwa,solo-leveling-manhwa,184,12,12,success,2025-10-23T09:16:33.698570,
+Solo Leveling Manhwa,solo-leveling-manhwa,185,12,12,success,2025-10-23T09:16:52.633572,
+Solo Leveling Manhwa,solo-leveling-manhwa,186,13,13,success,2025-10-23T09:17:07.427536,
+Solo Leveling Manhwa,solo-leveling-manhwa,187,19,19,success,2025-10-23T09:17:28.324733,
+Solo Leveling Manhwa,solo-leveling-manhwa,188,17,17,success,2025-10-23T09:17:46.536501,
+Solo Leveling Manhwa,solo-leveling-manhwa,189,16,16,success,2025-10-23T09:18:04.594517,
+Solo Leveling Manhwa,solo-leveling-manhwa,190,13,13,success,2025-10-23T09:18:19.190864,
+Solo Leveling Manhwa,solo-leveling-manhwa,191,13,13,success,2025-10-23T09:18:39.403356,
+Solo Leveling Manhwa,solo-leveling-manhwa,192,13,13,success,2025-10-23T09:18:59.667978,
+Solo Leveling Manhwa,solo-leveling-manhwa,193,11,11,success,2025-10-23T09:19:17.292503,
+Solo Leveling Manhwa,solo-leveling-manhwa,194,11,11,success,2025-10-23T09:19:36.532666,
+Solo Leveling Manhwa,solo-leveling-manhwa,195,12,12,success,2025-10-23T09:19:58.035956,
+Solo Leveling Manhwa,solo-leveling-manhwa,196,13,13,success,2025-10-23T09:20:20.743601,
+Solo Leveling Manhwa,solo-leveling-manhwa,197,14,14,success,2025-10-23T09:33:00.160228,
+Solo Leveling Manhwa,solo-leveling-manhwa,198,11,11,success,2025-10-23T09:33:19.950996,
+Solo Leveling Manhwa,solo-leveling-manhwa,199,14,14,success,2025-10-23T09:33:43.632800,
+Solo Leveling Manhwa,solo-leveling-manhwa,200,13,13,success,2025-10-23T09:33:57.802300,
