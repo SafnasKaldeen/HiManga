@@ -57,15 +57,58 @@ export function MangaReader({
 
   const isLockedChapter = chapter > totalChapters;
 
-  // Cloudinary optimization helper
+  // ===== CONFIGURATION: Customize your watermarks here =====
+  const WATERMARK_CONFIG = {
+    // Cover existing watermark (adjust position and size to match original watermark location)
+    coverOriginal: {
+      enabled: true, // Set to true to cover the existing watermark
+      color: "FFFFFF", // Color of the rectangle (FFFFFF = white, 000000 = black)
+      width: 500, // Width of covering rectangle - adjust to cover original watermark
+      height: 150, // Height of covering rectangle - adjust to cover original watermark
+      position: "south_east", // Position where original watermark appears
+      offsetX: 10, // X offset - adjust to match original watermark position
+      offsetY: 10, // Y offset - adjust to match original watermark position
+    },
+    // Logo watermark (upload your logo to Cloudinary first)
+    logo: {
+      enabled: true, // Set to true to enable logo
+      path: "https://res.cloudinary.com/dk9ywbxu1/image/upload/v1761317156/logo_eyzwjk.png", // Cloudinary path: folder/filename WITH extension
+      width: 160, // Logo width in pixels
+      opacity: 70, // 0-100
+      position: "south_east", // Position: south_east, north_east, south_west, north_west, center
+      offsetX: 20, // Pixels from edge
+      offsetY: 20, // Pixels from edge
+    },
+    // Text watermark
+    text: {
+      enabled: true, // Set to true to enable text
+      content: "███HiMangacom███", // Text to display
+      font: "Courier", // Font family: Arial, Times, Courier, etc.
+      size: 55, // Font size
+      weight: "bold", // normal, bold
+      color: "FFFFFF", // Hex color (without #) purple
+      opacity: 100, // 0-100
+      position: "south_east", // Position
+      offsetX: 0, // Pixels from edge
+      offsetY: 0, // Pixels from edge (below logo if both enabled)
+      background: {
+        enabled: true, // Enable background
+        color: "0f172a", // Background color (black - change to any hex)
+        opacity: 80, // Background opacity 0-100
+        padding: 15, // Padding around text in pixels
+      },
+    },
+  };
+
+  // Cloudinary optimization helper with watermark covering + logo + text overlays
   const getOptimizedPanelUrl = (panelNumber: number) => {
     const paddedChapter = String(chapter).padStart(3, "0");
     const paddedPanel = String(panelNumber).padStart(3, "0");
     const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
     const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
 
-    // Cloudinary transformations (all FREE features):
-    const transformations = [
+    // Base transformations (all FREE features):
+    const baseTransformations = [
       "f_auto", // Auto format (WebP for modern browsers, JPEG for older)
       "q_auto:good", // Auto quality optimization (good quality preset)
       "w_1200", // Max width 1200px (adjust based on your needs)
@@ -73,36 +116,74 @@ export function MangaReader({
       "dpr_auto", // Device Pixel Ratio for retina displays
       "fl_progressive", // Progressive loading (blurred preview loads first)
       "fl_lossy", // Lossy compression for smaller file sizes
-      // Watermark overlay (bottom-right position)
-      "l_text:Arial_20_bold:" + encodeURIComponent(mangaTitle),
-      "g_south_east", // Position: bottom-right
-      "x_20", // 20px from right edge
-      "y_20", // 20px from bottom edge
-      "o_40", // 40% opacity
-      "co_rgb:FFFFFF", // White color
-    ].join(",");
+    ];
 
-    return `${baseUrl}/${transformations}/${imagePath}`;
-  };
+    const overlays = [];
 
-  // Alternative: Add custom logo watermark instead of text
-  const getOptimizedPanelUrlWithLogo = (panelNumber: number) => {
-    const paddedChapter = String(chapter).padStart(3, "0");
-    const paddedPanel = String(panelNumber).padStart(3, "0");
-    const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
-    const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
+    // STEP 1: Cover the existing watermark with a solid rectangle (this goes FIRST)
+    // if (WATERMARK_CONFIG.coverOriginal.enabled) {
+    //   overlays.push(
+    //     "l_video:transparent.png", // Use transparent layer as base
+    //     "e_colorize:100", // Make it fully colored
+    //     `co_rgb:${WATERMARK_CONFIG.coverOriginal.color}`, // Color of rectangle
+    //     `w_${WATERMARK_CONFIG.coverOriginal.width}`, // Width
+    //     `h_${WATERMARK_CONFIG.coverOriginal.height}`, // Height
+    //     `g_${WATERMARK_CONFIG.coverOriginal.position}`, // Gravity/position
+    //     `x_${WATERMARK_CONFIG.coverOriginal.offsetX}`, // X offset
+    //     `y_${WATERMARK_CONFIG.coverOriginal.offsetY}`, // Y offset
+    //     "fl_layer_apply" // Apply layer
+    //   );
+    // }
 
-    const transformations = [
-      "f_auto,q_auto:good,w_1200,c_limit,dpr_auto,fl_progressive",
-      // If you upload a logo to Cloudinary, use it as overlay
-      // "l_your-logo-folder:logo", // Path to your logo in Cloudinary
-      // "w_100",                    // Logo width
-      // "g_south_east",             // Position
-      // "x_20,y_20",                // Offset
-      // "o_60"                      // Opacity
-    ].join(",");
+    // STEP 2: Add your logo overlay (goes on top of the cover rectangle)
+    if (WATERMARK_CONFIG.logo.enabled) {
+      overlays.push(
+        `l_${WATERMARK_CONFIG.logo.path.replace(/\//g, ":")}`, // Layer: logo path
+        `w_${WATERMARK_CONFIG.logo.width}`, // Width
+        `g_${WATERMARK_CONFIG.logo.position}`, // Gravity/position
+        `x_${WATERMARK_CONFIG.logo.offsetX}`, // X offset
+        `y_${WATERMARK_CONFIG.logo.offsetY}`, // Y offset
+        `o_${WATERMARK_CONFIG.logo.opacity}`, // Opacity
+        "fl_layer_apply" // Apply layer
+      );
+    }
 
-    return `${baseUrl}/${transformations}/${imagePath}`;
+    // STEP 3: Add your text overlay (goes on top of everything)
+    if (WATERMARK_CONFIG.text.enabled) {
+      const textContent = encodeURIComponent(WATERMARK_CONFIG.text.content);
+      const fontStyle = `${WATERMARK_CONFIG.text.font}_${WATERMARK_CONFIG.text.size}_${WATERMARK_CONFIG.text.weight}`;
+
+      // Add text background if enabled
+      if (WATERMARK_CONFIG.text.background.enabled) {
+        overlays.push(
+          `l_text:${fontStyle}:${textContent}`, // Layer: text
+          `co_rgb:${WATERMARK_CONFIG.text.color}`, // Text color
+          `b_rgb:${WATERMARK_CONFIG.text.background.color}`, // Background color
+          `bo_${WATERMARK_CONFIG.text.background.padding}px_solid_rgb:${WATERMARK_CONFIG.text.background.color}`, // Border/padding
+          `g_${WATERMARK_CONFIG.text.position}`, // Gravity/position
+          `x_${WATERMARK_CONFIG.text.offsetX}`, // X offset
+          `y_${WATERMARK_CONFIG.text.offsetY}`, // Y offset
+          `o_${WATERMARK_CONFIG.text.opacity}`, // Opacity
+          "fl_layer_apply" // Apply layer
+        );
+      } else {
+        // Text without background
+        overlays.push(
+          `l_text:${fontStyle}:${textContent}`, // Layer: text
+          `co_rgb:${WATERMARK_CONFIG.text.color}`, // Color
+          `g_${WATERMARK_CONFIG.text.position}`, // Gravity/position
+          `x_${WATERMARK_CONFIG.text.offsetX}`, // X offset
+          `y_${WATERMARK_CONFIG.text.offsetY}`, // Y offset
+          `o_${WATERMARK_CONFIG.text.opacity}`, // Opacity
+          "fl_layer_apply" // Apply layer
+        );
+      }
+    }
+
+    // Combine all transformations
+    const allTransformations = [...baseTransformations, ...overlays].join(",");
+
+    return `${baseUrl}/${allTransformations}/${imagePath}`;
   };
 
   // Thumbnail for lazy loading (very small, blurred preview)
@@ -112,7 +193,7 @@ export function MangaReader({
     const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
     const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
 
-    // Very small blurred preview
+    // Very small blurred preview (no watermarks on thumbnails)
     const transformations = "f_auto,q_auto:low,w_50,e_blur:1000";
 
     return `${baseUrl}/${transformations}/${imagePath}`;
