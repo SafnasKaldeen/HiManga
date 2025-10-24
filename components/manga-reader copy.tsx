@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import {
   ChevronLeft,
   ChevronRight,
+  Settings,
+  Home,
   Menu,
   X,
   Loader2,
@@ -13,7 +15,9 @@ import {
   Minimize2,
   ZoomIn,
   ZoomOut,
+  Sun,
   Lock,
+  Gauge,
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
@@ -48,6 +52,7 @@ export function MangaReader({
   ]);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [brightness, setBrightness] = useState(100);
   const [panelWidth, setPanelWidth] = useState(80);
@@ -56,67 +61,6 @@ export function MangaReader({
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isLockedChapter = chapter > totalChapters;
-
-  // Cloudinary optimization helper
-  const getOptimizedPanelUrl = (panelNumber: number) => {
-    const paddedChapter = String(chapter).padStart(3, "0");
-    const paddedPanel = String(panelNumber).padStart(3, "0");
-    const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
-    const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
-
-    // Cloudinary transformations (all FREE features):
-    const transformations = [
-      "f_auto", // Auto format (WebP for modern browsers, JPEG for older)
-      "q_auto:good", // Auto quality optimization (good quality preset)
-      "w_1200", // Max width 1200px (adjust based on your needs)
-      "c_limit", // Limit dimensions without cropping
-      "dpr_auto", // Device Pixel Ratio for retina displays
-      "fl_progressive", // Progressive loading (blurred preview loads first)
-      "fl_lossy", // Lossy compression for smaller file sizes
-      // Watermark overlay (bottom-right position)
-      "l_text:Arial_20_bold:" + encodeURIComponent(mangaTitle),
-      "g_south_east", // Position: bottom-right
-      "x_20", // 20px from right edge
-      "y_20", // 20px from bottom edge
-      "o_40", // 40% opacity
-      "co_rgb:FFFFFF", // White color
-    ].join(",");
-
-    return `${baseUrl}/${transformations}/${imagePath}`;
-  };
-
-  // Alternative: Add custom logo watermark instead of text
-  const getOptimizedPanelUrlWithLogo = (panelNumber: number) => {
-    const paddedChapter = String(chapter).padStart(3, "0");
-    const paddedPanel = String(panelNumber).padStart(3, "0");
-    const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
-    const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
-
-    const transformations = [
-      "f_auto,q_auto:good,w_1200,c_limit,dpr_auto,fl_progressive",
-      // If you upload a logo to Cloudinary, use it as overlay
-      // "l_your-logo-folder:logo", // Path to your logo in Cloudinary
-      // "w_100",                    // Logo width
-      // "g_south_east",             // Position
-      // "x_20,y_20",                // Offset
-      // "o_60"                      // Opacity
-    ].join(",");
-
-    return `${baseUrl}/${transformations}/${imagePath}`;
-  };
-
-  // Thumbnail for lazy loading (very small, blurred preview)
-  const getThumbnailUrl = (panelNumber: number) => {
-    const paddedChapter = String(chapter).padStart(3, "0");
-    const paddedPanel = String(panelNumber).padStart(3, "0");
-    const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
-    const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
-
-    // Very small blurred preview
-    const transformations = "f_auto,q_auto:low,w_50,e_blur:1000";
-
-    return `${baseUrl}/${transformations}/${imagePath}`;
-  };
 
   // Set sidebar open by default on desktop only
   useEffect(() => {
@@ -132,6 +76,13 @@ export function MangaReader({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const getPanelPath = (panelNumber: number) => {
+    const paddedChapter = String(chapter).padStart(3, "0");
+    const paddedPanel = String(panelNumber).padStart(3, "0");
+    // return `/Mock/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
+    return `https://res.cloudinary.com/dk9ywbxu1/image/upload/v1761304878/manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
+  };
 
   const loadMorePanels = useCallback(() => {
     if (isLoading || displayedPanels.length >= totalPanels || isLockedChapter)
@@ -290,12 +241,21 @@ export function MangaReader({
     setPanelWidth((prev) => Math.max(prev - 10, 50));
   };
 
+  const increaseBrightness = () => {
+    setBrightness((prev) => Math.min(prev + 10, 150));
+  };
+
+  const decreaseBrightness = () => {
+    setBrightness((prev) => Math.max(prev - 10, 50));
+  };
+
   return (
     <div
       className="h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden"
       style={{ filter: `brightness(${brightness}%)` }}
     >
       <div className="flex flex-1 relative overflow-hidden scroll-bar-thin scrollbar-thumb-cyan-500/30 scrollbar-track-transparent">
+        {/* Overlay backdrop for mobile/tablet */}
         {sidebarOpen && !isFullscreen && (
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
@@ -303,9 +263,11 @@ export function MangaReader({
           />
         )}
 
+        {/* Sidebar - overlay on mobile/tablet, static on desktop */}
         {sidebarOpen && !isFullscreen && (
           <aside className="fixed lg:relative left-0 top-0 bottom-0 w-72 border-r border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-xl z-50 lg:z-30 flex-shrink-0 overflow-auto transition-transform duration-300">
             <div className="space-y-2">
+              {/* Close button for mobile/tablet */}
               <div className="lg:hidden flex justify-end p-4 border-b border-cyan-500/20">
                 <Button
                   variant="ghost"
@@ -601,7 +563,7 @@ export function MangaReader({
                     className="relative group overflow-hidden shadow-2xl border border-cyan-500/20 hover:border-cyan-400 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
                   >
                     <img
-                      src={getOptimizedPanelUrl(panelNumber)}
+                      src={getPanelPath(panelNumber)}
                       alt={`Panel ${panelNumber}`}
                       className="w-full h-auto"
                       loading="lazy"
