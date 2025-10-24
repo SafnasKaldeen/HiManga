@@ -80,7 +80,8 @@ export function MangaReader({
   const getPanelPath = (panelNumber: number) => {
     const paddedChapter = String(chapter).padStart(3, "0");
     const paddedPanel = String(panelNumber).padStart(3, "0");
-    return `Mock/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
+    return `/Mock/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
+    // return `/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
   };
 
   const loadMorePanels = useCallback(() => {
