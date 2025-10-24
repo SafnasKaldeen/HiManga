@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Home, Search } from "lucide-react"
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Home, Search } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -32,10 +32,12 @@ export default function NotFound() {
             </div>
 
             {/* Message */}
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Page Not Found</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
+              Manga Not Found
+            </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
-              Oops! The manga you're looking for seems to have disappeared into another dimension. Let's get you back on
-              track.
+              Oops! The manga you're looking for seems to have disappeared into
+              another dimension. Let's get you back on track.
             </p>
 
             {/* Action Buttons */}
@@ -66,7 +68,11 @@ export default function NotFound() {
               <p className="text-muted-foreground mb-4">Quick Links:</p>
               <div className="flex flex-wrap gap-3 justify-center">
                 <Link href="/library">
-                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-primary hover:text-primary hover:bg-primary/10"
+                  >
                     My Library
                   </Button>
                 </Link>
@@ -80,7 +86,11 @@ export default function NotFound() {
                   </Button>
                 </Link>
                 <Link href="/trending">
-                  <Button variant="ghost" size="sm" className="text-accent hover:text-accent hover:bg-accent/10">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-accent hover:text-accent hover:bg-accent/10"
+                  >
                     Trending
                   </Button>
                 </Link>
@@ -91,5 +101,5 @@ export default function NotFound() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }
