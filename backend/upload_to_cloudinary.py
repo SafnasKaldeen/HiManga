@@ -273,7 +273,9 @@ def extract_metadata():
     output_file = input("💾 Output filename (default: cloudinary_metadata.json): ").strip()
     
     if not output_file:
-        output_file = "cloudinary_metadata.json"
+        output_file = "public/metadata/cloudinary_metadata.json"
+    else:
+        output_file = f"public/metadata/{output_file}"
     
     print(f'\n🔍 Extracting from: "{folder_path or "root"}"...')
     
@@ -319,7 +321,7 @@ def extract_metadata():
         
         # Save to CSV
         csv_file = output_file.replace('.json', '.csv')
-        save_to_csv(formatted_data, csv_file)
+        save_to_csv(formatted_data, csv_file, folder="E:/UOM/My-CODE_RUSH/projects/HiManga/metadata")
         
         # Print summary
         print('\n✅ Extraction Complete!')
@@ -598,10 +600,17 @@ def get_all_public_ids_with_extension(folder_path=""):
     return public_ids
 
 
-def save_to_csv(data, filename):
-    """Save metadata to CSV"""
+def save_to_csv(data, filename, folder="output"):
+    """Save metadata to CSV in a specific folder"""
+    
     if not data:
         return
+    
+    # Ensure folder exists
+    os.makedirs(folder, exist_ok=True)
+    
+    # Combine folder path with filename
+    filepath = os.path.join(folder, filename)
     
     fieldnames = [
         'filename', 'public_id', 'folder', 'url', 'cloudinary_url',
@@ -609,11 +618,12 @@ def save_to_csv(data, filename):
         'created_at', 'resource_type'
     ]
     
-    with open(filename, 'w', newline='', encoding='utf-8') as f:
+    with open(filepath, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
         writer.writeheader()
         writer.writerows(data)
-
+    
+    print(f"✅ CSV saved to: {filepath}")
 
 # ============================================
 # MAIN PROGRAM

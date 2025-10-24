@@ -43,7 +43,7 @@ export function MangaReader({
   nextChapter,
   totalChapters = 1200,
 }: MangaReaderProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [displayedPanels, setDisplayedPanels] = useState<number[]>([
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
@@ -60,6 +60,21 @@ export function MangaReader({
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isLockedChapter = chapter > totalChapters;
+
+  // Set sidebar open by default on desktop only
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const getPanelPath = (panelNumber: number) => {
     const paddedChapter = String(chapter).padStart(3, "0");
@@ -238,9 +253,29 @@ export function MangaReader({
       style={{ filter: `brightness(${brightness}%)` }}
     >
       <div className="flex flex-1 relative overflow-hidden scroll-bar-thin scrollbar-thumb-cyan-500/30 scrollbar-track-transparent">
+        {/* Overlay backdrop for mobile/tablet */}
         {sidebarOpen && !isFullscreen && (
-          <aside className="w-72 border-r border-cyan-500/20 bg-gradient-to-r from-slate-900/60 to-slate-900/30 backdrop-blur-xl z-30 flex-shrink-0 overflow-auto">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar - overlay on mobile/tablet, static on desktop */}
+        {sidebarOpen && !isFullscreen && (
+          <aside className="fixed lg:relative left-0 top-0 bottom-0 w-72 border-r border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-xl z-50 lg:z-30 flex-shrink-0 overflow-auto transition-transform duration-300">
             <div className="space-y-2">
+              {/* Close button for mobile/tablet */}
+              <div className="lg:hidden flex justify-end p-4 border-b border-cyan-500/20">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSidebarOpen(false)}
+                  className="text-slate-400 hover:text-slate-200"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
               <div className="text-slate-400 text-sm">
                 <ChaptersSidebar
                   mangaId={mangaId}
@@ -284,11 +319,11 @@ export function MangaReader({
                     className="gap-2 bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    Previous
+                    <span className="hidden sm:inline">Previous</span>
                   </Button>
 
                   <Card className="px-4 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
-                    <p className="text-sm font-medium">Chapter {chapter}</p>
+                    <p className="text-sm font-medium">Ch {chapter}</p>
                   </Card>
 
                   <Button
@@ -300,7 +335,7 @@ export function MangaReader({
                     }
                     className="gap-2 bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400"
                   >
-                    Next
+                    <span className="hidden sm:inline">Next</span>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>
@@ -336,7 +371,7 @@ export function MangaReader({
                     >
                       <ZoomOut className="w-4 h-4" />
                     </Button>
-                    <span className="text-xs text-slate-300 min-w-[3rem] text-center">
+                    <span className="text-xs text-slate-300 min-w-[3rem] text-center hidden sm:inline">
                       {panelWidth}%
                     </span>
                     <Button
@@ -349,7 +384,7 @@ export function MangaReader({
                     </Button>
                   </div>
 
-                  <div className="flex items-center gap-1 bg-slate-800/50 border border-cyan-500/30 rounded-md px-2 py-1">
+                  <div className="hidden sm:flex items-center gap-1 bg-slate-800/50 border border-cyan-500/30 rounded-md px-2 py-1">
                     <Sun className="w-3 h-3 text-slate-400" />
                     <input
                       type="range"
@@ -364,7 +399,7 @@ export function MangaReader({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 bg-slate-800/50 border border-pink-500/30 rounded-md px-2 py-1">
+                  <div className="hidden sm:flex items-center gap-1 bg-slate-800/50 border border-pink-500/30 rounded-md px-2 py-1">
                     <Gauge className="w-3 h-3 text-pink-400" />
                     <input
                       type="range"
@@ -423,7 +458,7 @@ export function MangaReader({
                       className="gap-2 bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400"
                     >
                       <ChevronLeft className="w-4 h-4" />
-                      Previous
+                      <span className="hidden sm:inline">Previous</span>
                     </Button>
 
                     <Card className="px-4 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
@@ -439,7 +474,7 @@ export function MangaReader({
                       }
                       className="gap-2 bg-slate-800/50 border-cyan-500/30 text-cyan-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400"
                     >
-                      Next
+                      <span className="hidden sm:inline">Next</span>
                       <ChevronRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -475,7 +510,7 @@ export function MangaReader({
                       >
                         <ZoomOut className="w-4 h-4" />
                       </Button>
-                      <span className="text-xs text-slate-300 min-w-[3rem] text-center">
+                      <span className="text-xs text-slate-300 min-w-[3rem] text-center hidden sm:inline">
                         {panelWidth}%
                       </span>
                       <Button
@@ -488,7 +523,7 @@ export function MangaReader({
                       </Button>
                     </div>
 
-                    <div className="flex items-center gap-1 bg-slate-800/50 border border-cyan-500/30 rounded-md px-2 py-1">
+                    <div className="hidden sm:flex items-center gap-1 bg-slate-800/50 border border-cyan-500/30 rounded-md px-2 py-1">
                       <Sun className="w-3 h-3 text-slate-400" />
                       <input
                         type="range"
@@ -503,7 +538,7 @@ export function MangaReader({
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 bg-slate-800/50 border border-pink-500/30 rounded-md px-2 py-1">
+                    <div className="hidden sm:flex items-center gap-1 bg-slate-800/50 border border-pink-500/30 rounded-md px-2 py-1">
                       <Gauge className="w-3 h-3 text-pink-400" />
                       <input
                         type="range"
@@ -591,7 +626,7 @@ export function MangaReader({
                 {displayedPanels.map((panelNumber) => (
                   <div
                     key={panelNumber}
-                    className="relative group overflow-hidden shadow-2xl border border-cyan-500/20 hover:border-cyan-400/50 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                    className="relative group overflow-hidden shadow-2xl border border-cyan-500/20 hover:border-cyan-400 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
                   >
                     <img
                       src={getPanelPath(panelNumber)}
