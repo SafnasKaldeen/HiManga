@@ -59,21 +59,11 @@ export function MangaReader({
 
   // ===== CONFIGURATION: Customize your watermarks here =====
   const WATERMARK_CONFIG = {
-    // Cover existing watermark (adjust position and size to match original watermark location)
-    coverOriginal: {
-      enabled: true, // Set to true to cover the existing watermark
-      color: "FFFFFF", // Color of the rectangle (FFFFFF = white, 000000 = black)
-      width: 500, // Width of covering rectangle - adjust to cover original watermark
-      height: 150, // Height of covering rectangle - adjust to cover original watermark
-      position: "south_east", // Position where original watermark appears
-      offsetX: 10, // X offset - adjust to match original watermark position
-      offsetY: 10, // Y offset - adjust to match original watermark position
-    },
     // Logo watermark (upload your logo to Cloudinary first)
     logo: {
       enabled: true, // Set to true to enable logo
       path: "https://res.cloudinary.com/dk9ywbxu1/image/upload/v1761317156/logo_eyzwjk.png", // Cloudinary path: folder/filename WITH extension
-      width: 160, // Logo width in pixels
+      width: 140, // Logo width in pixels
       opacity: 70, // 0-100
       position: "south_east", // Position: south_east, north_east, south_west, north_west, center
       offsetX: 20, // Pixels from edge
@@ -82,20 +72,20 @@ export function MangaReader({
     // Text watermark
     text: {
       enabled: true, // Set to true to enable text
-      content: "███HiMangacom███", // Text to display
+      content: "██HiManga.com██", // Text to display
       font: "Courier", // Font family: Arial, Times, Courier, etc.
-      size: 55, // Font size
+      size: 40, // Font size
       weight: "bold", // normal, bold
       color: "FFFFFF", // Hex color (without #) purple
-      opacity: 100, // 0-100
+      opacity: 70, // 0-100
       position: "south_east", // Position
       offsetX: 0, // Pixels from edge
       offsetY: 0, // Pixels from edge (below logo if both enabled)
       background: {
         enabled: true, // Enable background
         color: "0f172a", // Background color (black - change to any hex)
-        opacity: 80, // Background opacity 0-100
-        padding: 15, // Padding around text in pixels
+        opacity: 40, // Background opacity 0-100
+        padding: 3, // Padding around text in pixels
       },
     },
   };
