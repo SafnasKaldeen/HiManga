@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
+import { Header } from "./header";
 
 interface MangaReaderProps {
   mangaId: string;
@@ -79,7 +80,7 @@ export function MangaReader({
   const getPanelPath = (panelNumber: number) => {
     const paddedChapter = String(chapter).padStart(3, "0");
     const paddedPanel = String(panelNumber).padStart(3, "0");
-    return `/Mock/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
+    return `/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
   };
 
   const loadMorePanels = useCallback(() => {
@@ -298,10 +299,12 @@ export function MangaReader({
               <Menu className="w-4 h-4" />
             </Button>
           )}
-
+          <div className="lg:hidden">
+            <Header />
+          </div>
           {showControls && !isFullscreen && (
             <div className="bg-gradient-to-r from-slate-900/80 to-slate-900/60 backdrop-blur-xl border-t border-cyan-500/20 p-4 flex-shrink-0 transition-all duration-300">
-              <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
@@ -314,33 +317,33 @@ export function MangaReader({
 
                   <Button
                     variant="outline"
+                    size="sm"
                     onClick={handlePreviousChapter}
                     disabled={previousChapter === null}
-                    className="gap-2 bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400"
+                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    <span className="hidden sm:inline">Previous</span>
                   </Button>
 
-                  <Card className="px-4 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
-                    <p className="text-sm font-medium">Ch {chapter}</p>
+                  <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
+                    <p className="text-xs font-medium">Ch {chapter}</p>
                   </Card>
 
                   <Button
                     variant="outline"
+                    size="sm"
                     onClick={handleNextChapter}
                     disabled={
                       nextChapter === null ||
                       (nextChapter !== null && nextChapter > totalChapters)
                     }
-                    className="gap-2 bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400"
+                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
                   >
-                    <span className="hidden sm:inline">Next</span>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>
 
-                <nav className="hidden md:flex items-center gap-8">
+                <nav className="hidden lg:flex items-center gap-8">
                   <Link
                     href="/"
                     className="text-white/70 hover:text-pink-500 transition font-semibold"
@@ -361,64 +364,29 @@ export function MangaReader({
                   </Link>
                 </nav>
 
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 bg-slate-800/50 border border-cyan-500/30 rounded-md px-2 py-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={decreasePanelSize}
-                      className="h-7 px-2 text-slate-200 hover:bg-slate-700/50"
-                    >
-                      <ZoomOut className="w-4 h-4" />
-                    </Button>
-                    <span className="text-xs text-slate-300 min-w-[3rem] text-center hidden sm:inline">
-                      {panelWidth}%
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={increasePanelSize}
-                      className="h-7 px-2 text-slate-200 hover:bg-slate-700/50"
-                    >
-                      <ZoomIn className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  <div className="hidden sm:flex items-center gap-1 bg-slate-800/50 border border-cyan-500/30 rounded-md px-2 py-1">
-                    <Sun className="w-3 h-3 text-slate-400" />
-                    <input
-                      type="range"
-                      min="50"
-                      max="150"
-                      value={brightness}
-                      onChange={(e) => setBrightness(Number(e.target.value))}
-                      className="w-20 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-                    />
-                    <span className="text-xs text-slate-300 min-w-[2.5rem] text-center">
-                      {brightness}%
-                    </span>
-                  </div>
-
-                  <div className="hidden sm:flex items-center gap-1 bg-slate-800/50 border border-pink-500/30 rounded-md px-2 py-1">
-                    <Gauge className="w-3 h-3 text-pink-400" />
-                    <input
-                      type="range"
-                      min="10"
-                      max="100"
-                      value={scrollSpeed}
-                      onChange={(e) => setScrollSpeed(Number(e.target.value))}
-                      className="w-20 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-pink-500"
-                    />
-                    <span className="text-xs text-slate-300 min-w-[2.5rem] text-center">
-                      {scrollSpeed}%
-                    </span>
-                  </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={decreasePanelSize}
+                    className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={increasePanelSize}
+                    className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </Button>
 
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleFullscreenToggle}
-                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50"
+                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
                   >
                     {isFullscreen ? (
                       <Minimize2 className="w-4 h-4" />
@@ -449,37 +417,37 @@ export function MangaReader({
               }`}
             >
               <div className="bg-gradient-to-r from-slate-900/95 to-slate-900/80 backdrop-blur-xl border-b border-cyan-500/20 p-4">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
+                      size="sm"
                       onClick={handlePreviousChapter}
                       disabled={previousChapter === null}
-                      className="gap-2 bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400"
+                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
                     >
                       <ChevronLeft className="w-4 h-4" />
-                      <span className="hidden sm:inline">Previous</span>
                     </Button>
 
-                    <Card className="px-4 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
-                      <p className="text-sm font-medium">Chapter {chapter}</p>
+                    <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
+                      <p className="text-xs font-medium">Ch {chapter}</p>
                     </Card>
 
                     <Button
                       variant="outline"
+                      size="sm"
                       onClick={handleNextChapter}
                       disabled={
                         nextChapter === null ||
                         (nextChapter !== null && nextChapter > totalChapters)
                       }
-                      className="gap-2 bg-slate-800/50 border-cyan-500/30 text-cyan-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400"
+                      className="bg-slate-800/50 border-cyan-500/30 text-cyan-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
                     >
-                      <span className="hidden sm:inline">Next</span>
                       <ChevronRight className="w-4 h-4" />
                     </Button>
                   </div>
 
-                  <nav className="hidden md:flex items-center gap-8">
+                  <nav className="hidden lg:flex items-center gap-8">
                     <Link
                       href="/"
                       className="text-white/70 hover:text-pink-500 transition font-semibold"
@@ -500,64 +468,29 @@ export function MangaReader({
                     </Link>
                   </nav>
 
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 bg-slate-800/50 border border-cyan-500/30 rounded-md px-2 py-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={decreasePanelSize}
-                        className="h-7 px-2 text-slate-200 hover:bg-slate-700/50"
-                      >
-                        <ZoomOut className="w-4 h-4" />
-                      </Button>
-                      <span className="text-xs text-slate-300 min-w-[3rem] text-center hidden sm:inline">
-                        {panelWidth}%
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={increasePanelSize}
-                        className="h-7 px-2 text-slate-200 hover:bg-slate-700/50"
-                      >
-                        <ZoomIn className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    <div className="hidden sm:flex items-center gap-1 bg-slate-800/50 border border-cyan-500/30 rounded-md px-2 py-1">
-                      <Sun className="w-3 h-3 text-slate-400" />
-                      <input
-                        type="range"
-                        min="50"
-                        max="150"
-                        value={brightness}
-                        onChange={(e) => setBrightness(Number(e.target.value))}
-                        className="w-20 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-                      />
-                      <span className="text-xs text-slate-300 min-w-[2.5rem] text-center">
-                        {brightness}%
-                      </span>
-                    </div>
-
-                    <div className="hidden sm:flex items-center gap-1 bg-slate-800/50 border border-pink-500/30 rounded-md px-2 py-1">
-                      <Gauge className="w-3 h-3 text-pink-400" />
-                      <input
-                        type="range"
-                        min="10"
-                        max="100"
-                        value={scrollSpeed}
-                        onChange={(e) => setScrollSpeed(Number(e.target.value))}
-                        className="w-20 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-pink-500"
-                      />
-                      <span className="text-xs text-slate-300 min-w-[2.5rem] text-center">
-                        {scrollSpeed}%
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={decreasePanelSize}
+                      className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                    >
+                      <ZoomOut className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={increasePanelSize}
+                      className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                    >
+                      <ZoomIn className="w-4 h-4" />
+                    </Button>
 
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handleFullscreenToggle}
-                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50"
+                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
                     >
                       <Minimize2 className="w-4 h-4" />
                     </Button>
