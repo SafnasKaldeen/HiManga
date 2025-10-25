@@ -50,13 +50,13 @@ export function Header() {
           </nav>
 
           {/* Right Section */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {/* Notifications */}
             <NotificationsPanel />
 
             {/* Auth Buttons */}
             {user ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1 md:gap-4">
                 <Link href="/profile">
                   <Button
                     variant="ghost"
@@ -64,7 +64,7 @@ export function Header() {
                     className="gap-2 hover:text-pink-500 text-white"
                   >
                     <User className="w-4 h-4" />
-                    {user.username}
+                    <span className="hidden sm:inline">{user.username}</span>
                   </Button>
                 </Link>
                 <Button
@@ -74,7 +74,7 @@ export function Header() {
                   className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500 text-white rounded-full"
                 >
                   <LogOut className="w-4 h-4" />
-                  Logout
+                  <span className="hidden sm:inline">Logout</span>
                 </Button>
               </div>
             ) : (
