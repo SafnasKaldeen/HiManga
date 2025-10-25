@@ -13,6 +13,33 @@ export function Header() {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Generate avatar URL based on user's avatarId
+  const getAvatarUrl = (avatarId: number = 42) => {
+    const categories = [
+      { name: "Anime", service: "adventurer", count: 200 },
+      { name: "Pixel", service: "pixel-art", count: 200 },
+      { name: "Bottts", service: "bottts", count: 200 },
+      { name: "Avataaars", service: "avataaars", count: 200 },
+      { name: "Fun Emoji", service: "fun-emoji", count: 200 },
+    ];
+
+    let currentId = avatarId;
+    for (const category of categories) {
+      if (currentId < category.count) {
+        const seed = `${category.service}-${currentId}`;
+        return `https://api.dicebear.com/7.x/${category.service}/svg?seed=${seed}`;
+      }
+      currentId -= category.count;
+    }
+
+    // Fallback to default
+    return `https://api.dicebear.com/7.x/adventurer/svg?seed=default`;
+  };
+
+  const avatarUrl = user?.avatarId
+    ? getAvatarUrl(user.avatarId)
+    : getAvatarUrl(42);
+
   return (
     <header className="border-b border-white/10 bg-[#0a0a1a]/80 backdrop-blur-xl sticky top-0 z-50">
       <div className="w-full px-4 md:px-8 lg:px-10 py-2">
@@ -61,9 +88,16 @@ export function Header() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-2 hover:text-pink-500 text-white"
+                    className="gap-2 hover:text-pink-500 text-white pl-1 pr-3"
                   >
-                    <User className="w-4 h-4" />
+                    {/* Avatar Image */}
+                    <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-pink-500/50 flex-shrink-0">
+                      <img
+                        src={avatarUrl}
+                        alt={user.username}
+                        className="w-full h-full object-cover bg-slate-800"
+                      />
+                    </div>
                     <span className="hidden sm:inline">{user.username}</span>
                   </Button>
                 </Link>
