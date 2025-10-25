@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
 import { Header } from "./header";
+import { WATERMARK_CONFIG } from "@/lib/config";
 
 interface MangaReaderProps {
   mangaId: string;
@@ -59,37 +60,6 @@ export function MangaReader({
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isLockedChapter = chapter > totalChapters;
-
-  // ===== CONFIGURATION: Customize your watermarks here =====
-  const WATERMARK_CONFIG = {
-    logo: {
-      enabled: true,
-      path: "https://res.cloudinary.com/dk9ywbxu1/image/upload/v1761317156/logo_eyzwjk.png",
-      width: 140,
-      opacity: 70,
-      position: "south_east",
-      offsetX: 20,
-      offsetY: 20,
-    },
-    text: {
-      enabled: true,
-      content: "██HiManga.com██",
-      font: "Courier",
-      size: 40,
-      weight: "bold",
-      color: "FFFFFF",
-      opacity: 70,
-      position: "south_east",
-      offsetX: 0,
-      offsetY: 0,
-      background: {
-        enabled: true,
-        color: "0f172a",
-        opacity: 40,
-        padding: 3,
-      },
-    },
-  };
 
   const getOptimizedPanelUrl = (panelNumber: number) => {
     const paddedChapter = String(chapter).padStart(3, "0");

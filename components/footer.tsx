@@ -1,20 +1,25 @@
 // ========== FOOTER COMPONENT ==========
 import Link from "next/link";
 import { BookOpen, Heart } from "lucide-react";
+import Image from "next/image";
 
 export function Footer() {
   return (
     <footer className="border-t border-white/10 bg-[#0a0a1a]">
-      <div className="container mx-auto px-6 md:px-12 lg:px-16 py-12">
+      <div className="container mx-auto px-4 md:px-8 lg:px- py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 font-black text-lg mb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="HiManga Logo"
+                width={40}
+                height={40}
+              />
+
               <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-                AnimeFlow
+                HiManga
               </span>
             </div>
             <p className="text-sm text-white/60 leading-relaxed">
@@ -120,8 +125,7 @@ export function Footer() {
 
         <div className="border-t border-white/10 pt-8 text-center">
           <p className="text-sm text-white/40">
-            © 2025 AnimeFlow. All rights reserved. Made with ❤️ for anime
-            lovers.
+            © 2025 HiManga. All rights reserved. Made with ❤️ for anime lovers.
           </p>
         </div>
       </div>
