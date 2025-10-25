@@ -38,7 +38,7 @@ export function FeaturesSection() {
             Why Choose HiManga?
           </h2>
           <p className="text-white/60 text-lg max-w-2xl mx-auto">
-            Experience the best anime platform with features designed for your
+            Experience the best manga platform with features designed for your
             enjoyment.
           </p>
         </div>

@@ -23,7 +23,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sm text-white/60 leading-relaxed">
-              Your favorite anime platform with a beautiful, modern interface
+              Your favorite manga platform with a beautiful, modern interface
               designed for the ultimate viewing experience.
             </p>
           </div>
@@ -125,7 +125,7 @@ export function Footer() {
 
         <div className="border-t border-white/10 pt-8 text-center">
           <p className="text-sm text-white/40">
-            © 2025 HiManga. All rights reserved. Made with ❤️ for anime lovers.
+            © 2025 HiManga. All rights reserved. Made with ❤️ for manga lovers.
           </p>
         </div>
       </div>
