@@ -16,7 +16,7 @@ export function TrendingSection() {
 
   // Filter mangas based on selected genre
   const filteredMangas = selectedGenre
-    ? trendingMangas.filter((manga) => manga.genres?.includes(selectedGenre))
+    ? trendingMangas.filter((manga) => manga.genre?.includes(selectedGenre))
     : trendingMangas;
 
   // Get visible mangas based on count
