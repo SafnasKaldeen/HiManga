@@ -67,26 +67,30 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
             <div className="flex flex-wrap items-center gap-6">
               {/* Rating - No Card */}
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 sm:hidden">
+                <div className="hidden sm:flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       className={`w-5 h-5 ${
                         i < Math.floor(manga.rating)
-                          ? "fill-pink-500 text-pink-500"
-                          : "fill-pink-500/20 text-pink-500/20"
+                          ? "fill-yellow-500 text-yellow-500"
+                          : "fill-yellow-500/20 text-yellow-500/20"
                       } transition-all`}
                     />
                   ))}
                 </div>
-                <div className="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center lg:hidden">
-                  <BookOpen className="w-5 h-5 text-pink-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-white leading-none">
-                    {manga.rating}
-                  </p>
-                  <p className="text-xs text-white/50 font-semibold">Rating</p>
+                <div className="flex items-center gap-3 sm:block">
+                  <div className="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center sm:hidden">
+                    <Star className="w-5 h-5 fill-pink-500 text-pink-500" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black text-white leading-none">
+                      {manga.rating}
+                    </p>
+                    <p className="text-xs text-white/50 font-semibold">
+                      Rating
+                    </p>
+                  </div>
                 </div>
               </div>
 
