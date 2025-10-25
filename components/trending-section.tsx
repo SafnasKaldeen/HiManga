@@ -4,7 +4,7 @@
 import { trendingMangas } from "@/lib/mock-data";
 import { AnimeCard } from "./anime-card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Filter, ChevronDown } from "lucide-react";
+import { ArrowRight, Filter, ChevronDown, X } from "lucide-react";
 import { useState } from "react";
 
 export function TrendingSection() {
@@ -27,7 +27,7 @@ export function TrendingSection() {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-[#0a0a1a] to-[#0f0f1f]">
+    <section className="py-16 md:py-24 bg-gradient-to-b from-[#0a0a1a] to-[#0f0f1f] relative">
       <div className="w-full px-4 md:px-10 lg:px-24">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
@@ -39,7 +39,7 @@ export function TrendingSection() {
               Most popular anime this season
             </p>
           </div>
-          <Button
+          {/* <Button
             variant="outline"
             onClick={() => setShowFilterMenu(!showFilterMenu)}
             className="gap-2 bg-transparent border-pink-500/40 hover:bg-pink-500/10 text-pink-500 w-fit rounded-full font-bold"
@@ -47,11 +47,11 @@ export function TrendingSection() {
             <Filter className="w-4 h-4" />
             <span className="hidden sm:inline">Advanced Filters</span>
             <span className="sm:hidden">Filters</span>
-          </Button>
+          </Button> */}
         </div>
 
         {/* Genre Filter - Desktop: Horizontal scroll, Mobile: Dropdown */}
-        <div className="mb-12">
+        <div className="mb-12 relative">
           {/* Mobile Dropdown */}
           <div className="md:hidden">
             <button
@@ -67,29 +67,6 @@ export function TrendingSection() {
                 }`}
               />
             </button>
-
-            {showFilterMenu && (
-              <div className="mt-2 bg-[#0f0f1f] border border-white/20 rounded-xl overflow-hidden backdrop-blur-xl">
-                {genres.map((genre) => (
-                  <button
-                    key={genre}
-                    onClick={() => {
-                      setSelectedGenre(genre === "All" ? null : genre);
-                      setShowFilterMenu(false);
-                      setVisibleCount(8); // Reset visible count on filter change
-                    }}
-                    className={`w-full px-5 py-3 text-left font-bold transition-all ${
-                      (genre === "All" && selectedGenre === null) ||
-                      selectedGenre === genre
-                        ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white"
-                        : "text-white/70 hover:bg-white/10 hover:text-white"
-                    }`}
-                  >
-                    {genre}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Desktop Horizontal Scroll */}
@@ -163,6 +140,53 @@ export function TrendingSection() {
           </div>
         )}
       </div>
+
+      {/* Mobile Overlay Dropdown Menu */}
+      {showFilterMenu && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            onClick={() => setShowFilterMenu(false)}
+          />
+
+          {/* Dropdown Menu */}
+          <div className="md:hidden fixed left-4 right-4 top-1/2 -translate-y-1/2 z-50 bg-[#0f0f1f]/95 border border-pink-500/30 rounded-2xl overflow-hidden backdrop-blur-xl shadow-2xl shadow-pink-500/20 max-h-[70vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <h3 className="text-lg font-bold text-white">Select Genre</h3>
+              <button
+                onClick={() => setShowFilterMenu(false)}
+                className="p-2 hover:bg-white/10 rounded-full transition"
+              >
+                <X className="w-5 h-5 text-white/70" />
+              </button>
+            </div>
+
+            {/* Genre List */}
+            <div className="p-2">
+              {genres.map((genre) => (
+                <button
+                  key={genre}
+                  onClick={() => {
+                    setSelectedGenre(genre === "All" ? null : genre);
+                    setShowFilterMenu(false);
+                    setVisibleCount(8); // Reset visible count on filter change
+                  }}
+                  className={`w-full px-5 py-3.5 text-left font-bold transition-all rounded-xl mb-1 ${
+                    (genre === "All" && selectedGenre === null) ||
+                    selectedGenre === genre
+                      ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-500/30"
+                      : "text-white/70 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {genre}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }
