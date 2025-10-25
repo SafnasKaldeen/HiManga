@@ -1,38 +1,40 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import type { Manga } from "@/lib/mock-data"
-import { Star, BookOpen, Eye, Bell, BellOff } from "lucide-react"
-import { FavoriteButton } from "@/components/favorite-button"
-import { BookmarkButton } from "@/components/bookmark-button"
-import Link from "next/link"
-import { useState } from "react"
-import { useNotifications } from "@/lib/notifications-context"
-import { useAuth } from "@/lib/auth-context"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { Manga } from "@/lib/mock-data";
+import { Star, BookOpen, Eye, Bell, BellOff } from "lucide-react";
+import { FavoriteButton } from "@/components/favorite-button";
+import { BookmarkButton } from "@/components/bookmark-button";
+import Link from "next/link";
+import { useState } from "react";
+import { useNotifications } from "@/lib/notifications-context";
+import { useAuth } from "@/lib/auth-context";
 
 interface MangaDetailsHeroProps {
-  manga: Manga
+  manga: Manga;
 }
 
 export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
-  const { subscribeManga, unsubscribeManga, isSubscribed } = useNotifications()
-  const { user } = useAuth()
-  const [isSubscribedLocal, setIsSubscribedLocal] = useState(isSubscribed(manga.id))
+  const { subscribeManga, unsubscribeManga, isSubscribed } = useNotifications();
+  const { user } = useAuth();
+  const [isSubscribedLocal, setIsSubscribedLocal] = useState(
+    isSubscribed(manga.id)
+  );
 
   const handleSubscribe = () => {
     if (isSubscribedLocal) {
-      unsubscribeManga(manga.id)
-      setIsSubscribedLocal(false)
+      unsubscribeManga(manga.id);
+      setIsSubscribedLocal(false);
     } else {
-      subscribeManga(manga.id)
-      setIsSubscribedLocal(true)
+      subscribeManga(manga.id);
+      setIsSubscribedLocal(true);
     }
-  }
+  };
 
   return (
     <section className="py-12 md:py-16 border-b bg-[#0a0a1a]">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Cover Image */}
           <div className="flex justify-center md:justify-start">
@@ -51,37 +53,77 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
           </div>
 
           {/* Details */}
-          <div className="md:col-span-2">
-            <h1 className="text-4xl md:text-5xl font-black mb-2 text-white">{manga.title}</h1>
-            <p className="text-lg text-white/60 mb-6 font-semibold">by {manga.author}</p>
+          <div className="md:col-span-2 space-y-6">
+            <div>
+              <h1 className="text-3xl md:text-5xl font-black mb-2 text-white">
+                {manga.title}
+              </h1>
+              <p className="text-base md:text-lg text-white/60 font-semibold">
+                by {manga.author}
+              </p>
+            </div>
 
-            {/* Rating and Stats */}
-            <div className="flex flex-wrap gap-6 mb-8">
-              <div className="flex items-center gap-2 p-3 bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-lg backdrop-blur-xl hover:bg-white/15 hover:border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/20 transition-all duration-300 group">
-                <Star className="w-5 h-5 fill-pink-500 text-pink-500 group-hover:scale-110 transition-transform" />
+            {/* Stats Row */}
+            <div className="flex flex-wrap items-center gap-6">
+              {/* Rating - No Card */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 ${
+                        i < Math.floor(manga.rating)
+                          ? "fill-pink-500 text-pink-500"
+                          : "fill-pink-500/20 text-pink-500/20"
+                      } transition-all`}
+                    />
+                  ))}
+                </div>
                 <div>
-                  <p className="text-sm text-white/60 font-semibold">Rating</p>
-                  <p className="text-xl font-black text-white">{manga.rating}/5.0</p>
+                  <p className="text-2xl font-black text-white leading-none">
+                    {manga.rating}
+                  </p>
+                  <p className="text-xs text-white/50 font-semibold">Rating</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-3 bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-lg backdrop-blur-xl hover:bg-white/15 hover:border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/20 transition-all duration-300 group">
-                <BookOpen className="w-5 h-5 text-pink-500 group-hover:scale-110 transition-transform" />
+
+              {/* Divider */}
+              <div className="hidden sm:block w-px h-12 bg-white/10" />
+
+              {/* Chapters */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-pink-500" />
+                </div>
                 <div>
-                  <p className="text-sm text-white/60 font-semibold">Chapters</p>
-                  <p className="text-xl font-black text-white">{manga.chapters}</p>
+                  <p className="text-2xl font-black text-white leading-none">
+                    {manga.chapters}
+                  </p>
+                  <p className="text-xs text-white/50 font-semibold">
+                    Chapters
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-3 bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-lg backdrop-blur-xl hover:bg-white/15 hover:border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/20 transition-all duration-300 group">
-                <Eye className="w-5 h-5 text-pink-500 group-hover:scale-110 transition-transform" />
+
+              {/* Divider */}
+              <div className="hidden sm:block w-px h-12 bg-white/10" />
+
+              {/* Views */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center">
+                  <Eye className="w-5 h-5 text-pink-500" />
+                </div>
                 <div>
-                  <p className="text-sm text-white/60 font-semibold">Views</p>
-                  <p className="text-xl font-black text-white">{(manga.views / 1000000).toFixed(1)}M</p>
+                  <p className="text-2xl font-black text-white leading-none">
+                    {(manga.views / 1000000).toFixed(1)}M
+                  </p>
+                  <p className="text-xs text-white/50 font-semibold">Views</p>
                 </div>
               </div>
             </div>
 
             {/* Genres */}
-            <div className="mb-8">
+            <div>
               <p className="text-sm text-white/60 mb-3 font-bold">Genres</p>
               <div className="flex flex-wrap gap-2">
                 {manga.genre.map((g) => (
@@ -97,51 +139,62 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
             </div>
 
             {/* Description */}
-            <div className="mb-8">
-              <p className="text-sm text-white/60 mb-3 font-bold">Description</p>
-              <p className="text-base leading-relaxed text-white/80 font-medium">{manga.description}</p>
+            <div>
+              <p className="text-sm text-white/60 mb-3 font-bold">
+                Description
+              </p>
+              <p className="text-sm md:text-base leading-relaxed text-white/80 font-medium">
+                {manga.description}
+              </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap gap-4">
-              <Link href={`/manga/${manga.id}/chapter/1`}>
+            <div className="space-y-3">
+              {/* Primary Action - Full Width */}
+              <Link href={`/manga/${manga.id}/chapter/1`} className="block">
                 <Button
                   size="lg"
-                  className="gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-105 transition-all duration-300 font-bold rounded-full"
+                  className="w-full gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02] transition-all duration-300 font-bold rounded-xl"
                 >
                   <BookOpen className="w-5 h-5" />
                   Start Reading
                 </Button>
               </Link>
-              <FavoriteButton mangaId={manga.id} size="lg" showText />
-              <BookmarkButton mangaId={manga.id} size="lg" showText />
-              {user && (
-                <Button
-                  size="lg"
-                  onClick={handleSubscribe}
-                  className={`gap-2 font-bold rounded-full transition-all duration-300 ${
-                    isSubscribedLocal
-                      ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50"
-                      : "bg-white/10 border border-white/20 text-white/80 hover:bg-white/15 hover:border-blue-500/40 hover:shadow-lg hover:shadow-blue-500/20"
-                  }`}
-                >
-                  {isSubscribedLocal ? (
-                    <>
-                      <Bell className="w-5 h-5" />
-                      Subscribed
-                    </>
-                  ) : (
-                    <>
-                      <BellOff className="w-5 h-5" />
-                      Subscribe
-                    </>
-                  )}
-                </Button>
-              )}
+
+              {/* Secondary Actions - Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <FavoriteButton mangaId={manga.id} size="lg" showText />
+                <BookmarkButton mangaId={manga.id} size="lg" showText />
+                {user && (
+                  <Button
+                    size="lg"
+                    onClick={handleSubscribe}
+                    className={`gap-2 font-bold rounded-xl transition-all duration-300 col-span-2 sm:col-span-1 ${
+                      isSubscribedLocal
+                        ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50"
+                        : "bg-white/10 border border-white/20 text-white/80 hover:bg-white/15 hover:border-blue-500/40 hover:shadow-lg hover:shadow-blue-500/20"
+                    }`}
+                  >
+                    {isSubscribedLocal ? (
+                      <>
+                        <Bell className="w-5 h-5" />
+                        <span className="hidden sm:inline">Subscribed</span>
+                        <span className="sm:hidden">Notify</span>
+                      </>
+                    ) : (
+                      <>
+                        <BellOff className="w-5 h-5" />
+                        <span className="hidden sm:inline">Subscribe</span>
+                        <span className="sm:hidden">Notify</span>
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
