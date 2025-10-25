@@ -67,7 +67,7 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
             <div className="flex flex-wrap items-center gap-6">
               {/* Rating - No Card */}
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 sm:hidden">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
@@ -78,6 +78,9 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
                       } transition-all`}
                     />
                   ))}
+                </div>
+                <div className="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center lg:hidden">
+                  <BookOpen className="w-5 h-5 text-pink-500" />
                 </div>
                 <div>
                   <p className="text-2xl font-black text-white leading-none">
@@ -117,7 +120,7 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
                   <p className="text-2xl font-black text-white leading-none">
                     {(manga.views / 1000000).toFixed(1)}M
                   </p>
-                  <p className="text-xs text-white/50 font-semibold">Views</p>
+                  <p className="text-xs text-white/50 font-semibold">Reads</p>
                 </div>
               </div>
             </div>
