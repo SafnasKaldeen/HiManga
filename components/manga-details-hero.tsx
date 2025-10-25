@@ -64,7 +64,7 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
             </div>
 
             {/* Stats Row */}
-            <div className="flex flex-wrap items-center gap-6">
+            <div className="flex flex-wrap items-center gap-6 sm:gap-3">
               {/* Rating - No Card */}
               <div className="flex items-center gap-3">
                 <div className="hidden sm:flex items-center gap-1">
