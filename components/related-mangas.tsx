@@ -26,7 +26,7 @@ export function RelatedMangas({ mangas }: RelatedMangasProps) {
       <div className="flex-1 overflow-y-auto bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-lg p-3 sm:p-4 backdrop-blur-sm [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-cyan-500/40">
         {mangas.length > 0 ? (
           <div className="grid grid-cols-1 gap-4">
-            {mangas.concat(mangas).map((manga) => (
+            {mangas.map((manga) => (
               <Link key={manga.id} href={`/manga/${manga.id}`}>
                 <Card className="group relative overflow-hidden bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-slate-950/90 border border-white/5 hover:border-pink-500/50 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-pink-500/25 backdrop-blur-xl h-full">
                   {/* Animated Background Effect */}
@@ -80,7 +80,7 @@ export function RelatedMangas({ mangas }: RelatedMangasProps) {
                           <Eye className="w-3.5 h-3.5 text-purple-400" />
                           <div className="flex flex-col">
                             <span className="text-[10px] text-white/50 font-medium leading-tight">
-                              Views
+                              Reads
                             </span>
                             <span className="text-xs font-bold text-white">
                               {(manga.views / 1000000).toFixed(1)}M
