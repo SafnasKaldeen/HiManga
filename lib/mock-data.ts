@@ -129,7 +129,7 @@ export const trendingMangas: Manga[] = [
     views: 2000000,
   },
   {
-    id: "8",
+    id: "9",
     title: "One Punch Man",
     author: "ONE",
     slug: "one-punch-man",

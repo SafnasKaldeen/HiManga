@@ -60,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark overflow-x-hidden">
       <head>
         <script
           type="application/ld+json"
@@ -94,12 +94,10 @@ export default function RootLayout({
         ></script>
         <meta name="favicon" content="/favicon.ico" />
       </head>
-      <body className={`font-sans antialiased`}>
+      <body className="font-sans antialiased overflow-x-hidden w-full max-w-[100vw]">
         <AuthProvider>
           <NotificationsProvider>
-            <div className="fixed top-0 left-0 right-0 z-50 w-full">
-              {children}
-            </div>
+            <div className="overflow-x-hidden w-full">{children}</div>
             <Analytics />
           </NotificationsProvider>
         </AuthProvider>

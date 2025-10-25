@@ -14,10 +14,11 @@ import {
   ZoomIn,
   ZoomOut,
   Lock,
+  Settings,
+  RotateCcw,
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
-import { Header } from "./header";
 
 interface MangaReaderProps {
   mangaId: string;
@@ -42,6 +43,7 @@ export function MangaReader({
 }: MangaReaderProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
   const [displayedPanels, setDisplayedPanels] = useState<number[]>([
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23,
@@ -50,6 +52,8 @@ export function MangaReader({
   const [isLoading, setIsLoading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [brightness, setBrightness] = useState(100);
+  const [contrast, setContrast] = useState(100);
+  const [saturation, setSaturation] = useState(100);
   const [panelWidth, setPanelWidth] = useState(80);
   const [scrollSpeed, setScrollSpeed] = useState(50);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -59,144 +63,104 @@ export function MangaReader({
 
   // ===== CONFIGURATION: Customize your watermarks here =====
   const WATERMARK_CONFIG = {
-    // Logo watermark (upload your logo to Cloudinary first)
     logo: {
-      enabled: true, // Set to true to enable logo
-      path: "https://res.cloudinary.com/dk9ywbxu1/image/upload/v1761317156/logo_eyzwjk.png", // Cloudinary path: folder/filename WITH extension
-      width: 140, // Logo width in pixels
-      opacity: 70, // 0-100
-      position: "south_east", // Position: south_east, north_east, south_west, north_west, center
-      offsetX: 20, // Pixels from edge
-      offsetY: 20, // Pixels from edge
+      enabled: true,
+      path: "https://res.cloudinary.com/dk9ywbxu1/image/upload/v1761317156/logo_eyzwjk.png",
+      width: 140,
+      opacity: 70,
+      position: "south_east",
+      offsetX: 20,
+      offsetY: 20,
     },
-    // Text watermark
     text: {
-      enabled: true, // Set to true to enable text
-      content: "██HiManga.com██", // Text to display
-      font: "Courier", // Font family: Arial, Times, Courier, etc.
-      size: 40, // Font size
-      weight: "bold", // normal, bold
-      color: "FFFFFF", // Hex color (without #) purple
-      opacity: 70, // 0-100
-      position: "south_east", // Position
-      offsetX: 0, // Pixels from edge
-      offsetY: 0, // Pixels from edge (below logo if both enabled)
+      enabled: true,
+      content: "██HiManga.com██",
+      font: "Courier",
+      size: 40,
+      weight: "bold",
+      color: "FFFFFF",
+      opacity: 70,
+      position: "south_east",
+      offsetX: 0,
+      offsetY: 0,
       background: {
-        enabled: true, // Enable background
-        color: "0f172a", // Background color (black - change to any hex)
-        opacity: 40, // Background opacity 0-100
-        padding: 3, // Padding around text in pixels
+        enabled: true,
+        color: "0f172a",
+        opacity: 40,
+        padding: 3,
       },
     },
   };
 
-  // Cloudinary optimization helper with watermark covering + logo + text overlays
   const getOptimizedPanelUrl = (panelNumber: number) => {
     const paddedChapter = String(chapter).padStart(3, "0");
     const paddedPanel = String(panelNumber).padStart(3, "0");
     const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
     const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
 
-    // Base transformations (all FREE features):
     const baseTransformations = [
-      "f_auto", // Auto format (WebP for modern browsers, JPEG for older)
-      "q_auto:good", // Auto quality optimization (good quality preset)
-      "w_1200", // Max width 1200px (adjust based on your needs)
-      "c_limit", // Limit dimensions without cropping
-      "dpr_auto", // Device Pixel Ratio for retina displays
-      "fl_progressive", // Progressive loading (blurred preview loads first)
-      "fl_lossy", // Lossy compression for smaller file sizes
+      "f_auto",
+      "q_auto:good",
+      "w_1200",
+      "c_limit",
+      "dpr_auto",
+      "fl_progressive",
+      "fl_lossy",
     ];
 
     const overlays = [];
 
-    // STEP 1: Cover the existing watermark with a solid rectangle (this goes FIRST)
-    // if (WATERMARK_CONFIG.coverOriginal.enabled) {
-    //   overlays.push(
-    //     "l_video:transparent.png", // Use transparent layer as base
-    //     "e_colorize:100", // Make it fully colored
-    //     `co_rgb:${WATERMARK_CONFIG.coverOriginal.color}`, // Color of rectangle
-    //     `w_${WATERMARK_CONFIG.coverOriginal.width}`, // Width
-    //     `h_${WATERMARK_CONFIG.coverOriginal.height}`, // Height
-    //     `g_${WATERMARK_CONFIG.coverOriginal.position}`, // Gravity/position
-    //     `x_${WATERMARK_CONFIG.coverOriginal.offsetX}`, // X offset
-    //     `y_${WATERMARK_CONFIG.coverOriginal.offsetY}`, // Y offset
-    //     "fl_layer_apply" // Apply layer
-    //   );
-    // }
-
-    // STEP 2: Add your logo overlay (goes on top of the cover rectangle)
     if (WATERMARK_CONFIG.logo.enabled) {
       overlays.push(
-        `l_${WATERMARK_CONFIG.logo.path.replace(/\//g, ":")}`, // Layer: logo path
-        `w_${WATERMARK_CONFIG.logo.width}`, // Width
-        `g_${WATERMARK_CONFIG.logo.position}`, // Gravity/position
-        `x_${WATERMARK_CONFIG.logo.offsetX}`, // X offset
-        `y_${WATERMARK_CONFIG.logo.offsetY}`, // Y offset
-        `o_${WATERMARK_CONFIG.logo.opacity}`, // Opacity
-        "fl_layer_apply" // Apply layer
+        `l_${WATERMARK_CONFIG.logo.path.replace(/\//g, ":")}`,
+        `w_${WATERMARK_CONFIG.logo.width}`,
+        `g_${WATERMARK_CONFIG.logo.position}`,
+        `x_${WATERMARK_CONFIG.logo.offsetX}`,
+        `y_${WATERMARK_CONFIG.logo.offsetY}`,
+        `o_${WATERMARK_CONFIG.logo.opacity}`,
+        "fl_layer_apply"
       );
     }
 
-    // STEP 3: Add your text overlay (goes on top of everything)
     if (WATERMARK_CONFIG.text.enabled) {
       const textContent = encodeURIComponent(WATERMARK_CONFIG.text.content);
       const fontStyle = `${WATERMARK_CONFIG.text.font}_${WATERMARK_CONFIG.text.size}_${WATERMARK_CONFIG.text.weight}`;
 
-      // Add text background if enabled
       if (WATERMARK_CONFIG.text.background.enabled) {
         overlays.push(
-          `l_text:${fontStyle}:${textContent}`, // Layer: text
-          `co_rgb:${WATERMARK_CONFIG.text.color}`, // Text color
-          `b_rgb:${WATERMARK_CONFIG.text.background.color}`, // Background color
-          `bo_${WATERMARK_CONFIG.text.background.padding}px_solid_rgb:${WATERMARK_CONFIG.text.background.color}`, // Border/padding
-          `g_${WATERMARK_CONFIG.text.position}`, // Gravity/position
-          `x_${WATERMARK_CONFIG.text.offsetX}`, // X offset
-          `y_${WATERMARK_CONFIG.text.offsetY}`, // Y offset
-          `o_${WATERMARK_CONFIG.text.opacity}`, // Opacity
-          "fl_layer_apply" // Apply layer
+          `l_text:${fontStyle}:${textContent}`,
+          `co_rgb:${WATERMARK_CONFIG.text.color}`,
+          `b_rgb:${WATERMARK_CONFIG.text.background.color}`,
+          `bo_${WATERMARK_CONFIG.text.background.padding}px_solid_rgb:${WATERMARK_CONFIG.text.background.color}`,
+          `g_${WATERMARK_CONFIG.text.position}`,
+          `x_${WATERMARK_CONFIG.text.offsetX}`,
+          `y_${WATERMARK_CONFIG.text.offsetY}`,
+          `o_${WATERMARK_CONFIG.text.opacity}`,
+          "fl_layer_apply"
         );
       } else {
-        // Text without background
         overlays.push(
-          `l_text:${fontStyle}:${textContent}`, // Layer: text
-          `co_rgb:${WATERMARK_CONFIG.text.color}`, // Color
-          `g_${WATERMARK_CONFIG.text.position}`, // Gravity/position
-          `x_${WATERMARK_CONFIG.text.offsetX}`, // X offset
-          `y_${WATERMARK_CONFIG.text.offsetY}`, // Y offset
-          `o_${WATERMARK_CONFIG.text.opacity}`, // Opacity
-          "fl_layer_apply" // Apply layer
+          `l_text:${fontStyle}:${textContent}`,
+          `co_rgb:${WATERMARK_CONFIG.text.color}`,
+          `g_${WATERMARK_CONFIG.text.position}`,
+          `x_${WATERMARK_CONFIG.text.offsetX}`,
+          `y_${WATERMARK_CONFIG.text.offsetY}`,
+          `o_${WATERMARK_CONFIG.text.opacity}`,
+          "fl_layer_apply"
         );
       }
     }
 
-    // Combine all transformations
     const allTransformations = [...baseTransformations, ...overlays].join(",");
-
     return `${baseUrl}/${allTransformations}/${imagePath}`;
   };
 
-  // Thumbnail for lazy loading (very small, blurred preview)
-  const getThumbnailUrl = (panelNumber: number) => {
-    const paddedChapter = String(chapter).padStart(3, "0");
-    const paddedPanel = String(panelNumber).padStart(3, "0");
-    const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
-    const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
-
-    // Very small blurred preview (no watermarks on thumbnails)
-    const transformations = "f_auto,q_auto:low,w_50,e_blur:1000";
-
-    return `${baseUrl}/${transformations}/${imagePath}`;
-  };
-
-  // Set sidebar open by default on desktop only
+  // Set sidebar and advanced controls open by default on desktop only
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setSidebarOpen(true);
-      } else {
-        setSidebarOpen(false);
-      }
+      const isDesktop = window.innerWidth >= 1024;
+      setSidebarOpen(isDesktop);
+      setShowAdvancedControls(isDesktop);
     };
 
     handleResize();
@@ -361,12 +325,24 @@ export function MangaReader({
     setPanelWidth((prev) => Math.max(prev - 10, 50));
   };
 
+  const resetAdvancedControls = () => {
+    setBrightness(100);
+    setContrast(100);
+    setSaturation(100);
+    setPanelWidth(80);
+    setScrollSpeed(50);
+  };
+
+  const hasChangedSettings =
+    brightness !== 100 ||
+    contrast !== 100 ||
+    saturation !== 100 ||
+    panelWidth !== 80 ||
+    scrollSpeed !== 50;
+
   return (
-    <div
-      className="h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden"
-      style={{ filter: `brightness(${brightness}%)` }}
-    >
-      <div className="flex flex-1 relative overflow-hidden scroll-bar-thin scrollbar-thumb-cyan-500/30 scrollbar-track-transparent">
+    <div className="h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden">
+      <div className="flex flex-1 relative overflow-hidden">
         {sidebarOpen && !isFullscreen && (
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
@@ -398,7 +374,12 @@ export function MangaReader({
           </aside>
         )}
 
-        <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-900/50 to-slate-950 overflow-hidden">
+        <div
+          className="flex-1 flex flex-col bg-gradient-to-b from-slate-900/50 to-slate-950 overflow-hidden"
+          style={{
+            filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
+          }}
+        >
           {!showControls && !isFullscreen && (
             <Button
               variant="ghost"
@@ -409,126 +390,22 @@ export function MangaReader({
               <Menu className="w-4 h-4" />
             </Button>
           )}
-          <div className="lg:hidden">
-            <Header />
-          </div>
+
           {showControls && !isFullscreen && (
             <div className="bg-gradient-to-r from-slate-900/80 to-slate-900/60 backdrop-blur-xl border-t border-cyan-500/20 p-4 flex-shrink-0 transition-all duration-300">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 hover:text-cyan-400"
-                  >
-                    <Menu className="w-4 h-4" />
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handlePreviousChapter}
-                    disabled={previousChapter === null}
-                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </Button>
-
-                  <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
-                    <p className="text-xs font-medium">Ch {chapter}</p>
-                  </Card>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleNextChapter}
-                    disabled={
-                      nextChapter === null ||
-                      (nextChapter !== null && nextChapter > totalChapters)
-                    }
-                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </div>
-
-                <nav className="hidden lg:flex items-center gap-8">
-                  <Link
-                    href="/"
-                    className="text-white/70 hover:text-pink-500 transition font-semibold"
-                  >
-                    Home
-                  </Link>
-                  <Link
-                    href="/library"
-                    className="text-white/70 hover:text-pink-500 transition font-semibold"
-                  >
-                    Library
-                  </Link>
-                  <Link
-                    href="/trending"
-                    className="text-white/70 hover:text-pink-500 transition font-semibold"
-                  >
-                    Trending
-                  </Link>
-                </nav>
-
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={decreasePanelSize}
-                    className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
-                  >
-                    <ZoomOut className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={increasePanelSize}
-                    className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
-                  >
-                    <ZoomIn className="w-4 h-4" />
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleFullscreenToggle}
-                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
-                  >
-                    {isFullscreen ? (
-                      <Minimize2 className="w-4 h-4" />
-                    ) : (
-                      <Maximize2 className="w-4 h-4" />
-                    )}
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowControls(false)}
-                    className="text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isFullscreen && (
-            <div
-              className={`absolute top-0 left-0 right-0 z-50 transition-all duration-300 ${
-                showControls
-                  ? "translate-y-0 opacity-100"
-                  : "-translate-y-full opacity-0"
-              }`}
-            >
-              <div className="bg-gradient-to-r from-slate-900/95 to-slate-900/80 backdrop-blur-xl border-b border-cyan-500/20 p-4">
-                <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col gap-4">
+                {/* Main Controls */}
+                <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSidebarOpen(!sidebarOpen)}
+                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 hover:text-cyan-400"
+                    >
+                      <Menu className="w-4 h-4" />
+                    </Button>
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -551,7 +428,7 @@ export function MangaReader({
                         nextChapter === null ||
                         (nextChapter !== null && nextChapter > totalChapters)
                       }
-                      className="bg-slate-800/50 border-cyan-500/30 text-cyan-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
+                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </Button>
@@ -602,9 +479,501 @@ export function MangaReader({
                       onClick={handleFullscreenToggle}
                       className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
                     >
-                      <Minimize2 className="w-4 h-4" />
+                      <Maximize2 className="w-4 h-4" />
+                    </Button>
+
+                    <div className="relative">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setShowAdvancedControls(!showAdvancedControls)
+                        }
+                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
+                      >
+                        <Settings
+                          className={`w-4 h-4 transition-transform duration-300 ${
+                            showAdvancedControls ? "rotate-90" : ""
+                          }`}
+                        />
+                      </Button>
+                      {hasChangedSettings && (
+                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></span>
+                      )}
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowControls(false)}
+                      className="text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 lg:hidden"
+                    >
+                      <X className="w-4 h-4" />
                     </Button>
                   </div>
+                </div>
+
+                {/* Advanced Controls */}
+                {showAdvancedControls && (
+                  <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-sm rounded-lg p-4 border border-pink-500/20 animate-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-semibold text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text flex items-center gap-2">
+                        <Settings className="w-4 h-4 text-pink-400" />
+                        Advanced Controls
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        {hasChangedSettings && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={resetAdvancedControls}
+                            className="h-7 px-2 text-xs text-pink-400 hover:text-pink-300 hover:bg-pink-500/10"
+                          >
+                            <RotateCcw className="w-3 h-3 mr-1" />
+                            Reset
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowAdvancedControls(false)}
+                          className="h-7 px-2 text-slate-400 hover:text-slate-200 lg:hidden"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Brightness */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-medium text-slate-300">
+                            🌞 Brightness
+                          </label>
+                          <span className="text-xs text-pink-400 font-mono">
+                            {brightness}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="50"
+                          max="150"
+                          value={brightness}
+                          onChange={(e) =>
+                            setBrightness(Number(e.target.value))
+                          }
+                          className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                          style={{
+                            background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                              ((brightness - 50) / 100) * 100
+                            }%, rgb(51, 65, 85) ${
+                              ((brightness - 50) / 100) * 100
+                            }%, rgb(51, 65, 85) 100%)`,
+                          }}
+                        />
+                      </div>
+
+                      {/* Contrast */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-medium text-slate-300">
+                            🎨 Contrast
+                          </label>
+                          <span className="text-xs text-pink-400 font-mono">
+                            {contrast}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="50"
+                          max="150"
+                          value={contrast}
+                          onChange={(e) => setContrast(Number(e.target.value))}
+                          className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                          style={{
+                            background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                              ((contrast - 50) / 100) * 100
+                            }%, rgb(51, 65, 85) ${
+                              ((contrast - 50) / 100) * 100
+                            }%, rgb(51, 65, 85) 100%)`,
+                          }}
+                        />
+                      </div>
+
+                      {/* Saturation */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-medium text-slate-300">
+                            💧 Saturation
+                          </label>
+                          <span className="text-xs text-pink-400 font-mono">
+                            {saturation}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="200"
+                          value={saturation}
+                          onChange={(e) =>
+                            setSaturation(Number(e.target.value))
+                          }
+                          className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                          style={{
+                            background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                              (saturation / 200) * 100
+                            }%, rgb(51, 65, 85) ${
+                              (saturation / 200) * 100
+                            }%, rgb(51, 65, 85) 100%)`,
+                          }}
+                        />
+                      </div>
+
+                      {/* Panel Width */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-medium text-slate-300">
+                            🔍 Panel Width
+                          </label>
+                          <span className="text-xs text-pink-400 font-mono">
+                            {panelWidth}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="50"
+                          max="150"
+                          value={panelWidth}
+                          onChange={(e) =>
+                            setPanelWidth(Number(e.target.value))
+                          }
+                          className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                          style={{
+                            background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                              ((panelWidth - 50) / 100) * 100
+                            }%, rgb(51, 65, 85) ${
+                              ((panelWidth - 50) / 100) * 100
+                            }%, rgb(51, 65, 85) 100%)`,
+                          }}
+                        />
+                      </div>
+
+                      {/* Scroll Speed */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-medium text-slate-300">
+                            ⚡ Scroll Speed
+                          </label>
+                          <span className="text-xs text-pink-400 font-mono">
+                            {scrollSpeed}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="25"
+                          max="100"
+                          value={scrollSpeed}
+                          onChange={(e) =>
+                            setScrollSpeed(Number(e.target.value))
+                          }
+                          className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                          style={{
+                            background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                              ((scrollSpeed - 25) / 75) * 100
+                            }%, rgb(51, 65, 85) ${
+                              ((scrollSpeed - 25) / 75) * 100
+                            }%, rgb(51, 65, 85) 100%)`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {isFullscreen && (
+            <div
+              className={`absolute top-0 left-0 right-0 z-50 transition-all duration-300 ${
+                showControls
+                  ? "translate-y-0 opacity-100"
+                  : "-translate-y-full opacity-0"
+              }`}
+            >
+              <div className="bg-gradient-to-r from-slate-900/95 to-slate-900/80 backdrop-blur-xl border-b border-cyan-500/20 p-4">
+                <div className="flex flex-col gap-4">
+                  {/* Main Controls */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePreviousChapter}
+                        disabled={previousChapter === null}
+                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+
+                      <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
+                        <p className="text-xs font-medium">Ch {chapter}</p>
+                      </Card>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleNextChapter}
+                        disabled={
+                          nextChapter === null ||
+                          (nextChapter !== null && nextChapter > totalChapters)
+                        }
+                        className="bg-slate-800/50 border-cyan-500/30 text-cyan-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    <nav className="hidden lg:flex items-center gap-8">
+                      <Link
+                        href="/"
+                        className="text-white/70 hover:text-pink-500 transition font-semibold"
+                      >
+                        Home
+                      </Link>
+                      <Link
+                        href="/library"
+                        className="text-white/70 hover:text-pink-500 transition font-semibold"
+                      >
+                        Library
+                      </Link>
+                      <Link
+                        href="/trending"
+                        className="text-white/70 hover:text-pink-500 transition font-semibold"
+                      >
+                        Trending
+                      </Link>
+                    </nav>
+
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={decreasePanelSize}
+                        className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                      >
+                        <ZoomOut className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={increasePanelSize}
+                        className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                      >
+                        <ZoomIn className="w-4 h-4" />
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleFullscreenToggle}
+                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
+                      >
+                        <Minimize2 className="w-4 h-4" />
+                      </Button>
+
+                      <div className="relative">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setShowAdvancedControls(!showAdvancedControls)
+                          }
+                          className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
+                        >
+                          <Settings
+                            className={`w-4 h-4 transition-transform duration-300 ${
+                              showAdvancedControls ? "rotate-90" : ""
+                            }`}
+                          />
+                        </Button>
+                        {hasChangedSettings && (
+                          <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Advanced Controls in Fullscreen */}
+                  {showAdvancedControls && (
+                    <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-sm rounded-lg p-4 border border-pink-500/20 animate-in slide-in-from-top-2 duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-semibold text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text flex items-center gap-2">
+                          <Settings className="w-4 h-4 text-pink-400" />
+                          Advanced Controls
+                        </h3>
+                        {hasChangedSettings && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={resetAdvancedControls}
+                            className="h-7 px-2 text-xs text-pink-400 hover:text-pink-300 hover:bg-pink-500/10"
+                          >
+                            <RotateCcw className="w-3 h-3 mr-1" />
+                            Reset
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        {/* Brightness */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-medium text-slate-300">
+                              🌞 Brightness
+                            </label>
+                            <span className="text-xs text-pink-400 font-mono">
+                              {brightness}%
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="50"
+                            max="150"
+                            value={brightness}
+                            onChange={(e) =>
+                              setBrightness(Number(e.target.value))
+                            }
+                            className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                            style={{
+                              background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                                ((brightness - 50) / 100) * 100
+                              }%, rgb(51, 65, 85) ${
+                                ((brightness - 50) / 100) * 100
+                              }%, rgb(51, 65, 85) 100%)`,
+                            }}
+                          />
+                        </div>
+
+                        {/* Contrast */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-medium text-slate-300">
+                              🎨 Contrast
+                            </label>
+                            <span className="text-xs text-pink-400 font-mono">
+                              {contrast}%
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="50"
+                            max="150"
+                            value={contrast}
+                            onChange={(e) =>
+                              setContrast(Number(e.target.value))
+                            }
+                            className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                            style={{
+                              background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                                ((contrast - 50) / 100) * 100
+                              }%, rgb(51, 65, 85) ${
+                                ((contrast - 50) / 100) * 100
+                              }%, rgb(51, 65, 85) 100%)`,
+                            }}
+                          />
+                        </div>
+
+                        {/* Saturation */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-medium text-slate-300">
+                              💧 Saturation
+                            </label>
+                            <span className="text-xs text-pink-400 font-mono">
+                              {saturation}%
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="200"
+                            value={saturation}
+                            onChange={(e) =>
+                              setSaturation(Number(e.target.value))
+                            }
+                            className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                            style={{
+                              background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                                (saturation / 200) * 100
+                              }%, rgb(51, 65, 85) ${
+                                (saturation / 200) * 100
+                              }%, rgb(51, 65, 85) 100%)`,
+                            }}
+                          />
+                        </div>
+
+                        {/* Panel Width */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-medium text-slate-300">
+                              🔍 Panel Width
+                            </label>
+                            <span className="text-xs text-pink-400 font-mono">
+                              {panelWidth}%
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="50"
+                            max="150"
+                            value={panelWidth}
+                            onChange={(e) =>
+                              setPanelWidth(Number(e.target.value))
+                            }
+                            className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                            style={{
+                              background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                                ((panelWidth - 50) / 100) * 100
+                              }%, rgb(51, 65, 85) ${
+                                ((panelWidth - 50) / 100) * 100
+                              }%, rgb(51, 65, 85) 100%)`,
+                            }}
+                          />
+                        </div>
+
+                        {/* Scroll Speed */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-medium text-slate-300">
+                              ⚡ Scroll Speed
+                            </label>
+                            <span className="text-xs text-pink-400 font-mono">
+                              {scrollSpeed}%
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="25"
+                            max="100"
+                            value={scrollSpeed}
+                            onChange={(e) =>
+                              setScrollSpeed(Number(e.target.value))
+                            }
+                            className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                            style={{
+                              background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                                ((scrollSpeed - 25) / 75) * 100
+                              }%, rgb(51, 65, 85) ${
+                                ((scrollSpeed - 25) / 75) * 100
+                              }%, rgb(51, 65, 85) 100%)`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
