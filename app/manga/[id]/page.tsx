@@ -47,7 +47,7 @@ export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
-                  <CommentsSection mangaId={manga.id} />
+                  {/* <CommentsSection mangaId={manga.id} /> */}
                 </div>
                 <div className="lg:border-l lg:border-slate-800 lg:pl-8">
                   <div className="sticky top-4">
