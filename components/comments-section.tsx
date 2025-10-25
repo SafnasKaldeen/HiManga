@@ -49,8 +49,9 @@ export function CommentsSection({ mangaId }: CommentsSectionProps) {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col h-[100vh] space-y-4">
+      {/* Header */}
+      <div className="flex items-center gap-2 flex-shrink-0">
         <MessageSquare className="h-5 w-5 text-pink-500" />
         <h2 className="text-2xl font-bold text-white">Community Discussion</h2>
         <span className="text-sm text-white/60 ml-auto">
@@ -59,7 +60,7 @@ export function CommentsSection({ mangaId }: CommentsSectionProps) {
       </div>
 
       {/* Comment Input */}
-      <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-lg p-3 sm:p-4 space-y-3 backdrop-blur-sm">
+      <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-lg p-3 sm:p-4 space-y-3 backdrop-blur-sm flex-shrink-0">
         <div className="flex gap-2 sm:gap-3">
           <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
             <AvatarImage src="/abstract-user-representation.png" alt="You" />
@@ -121,7 +122,7 @@ export function CommentsSection({ mangaId }: CommentsSectionProps) {
       </div>
 
       {/* Sort and Filter */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-shrink-0">
         <Tabs
           value={sortBy}
           onValueChange={(v) => setSortBy(v as "newest" | "popular")}
@@ -143,8 +144,8 @@ export function CommentsSection({ mangaId }: CommentsSectionProps) {
         </Tabs>
       </div>
 
-      {/* Comments List */}
-      <div className="space-y-6">
+      {/* Comments List - Scrollable */}
+      <div className="flex-1 overflow-y-auto rounded-sm bg-slate-700/30 p-5 space-y-6 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-cyan-500/40">
         {sortedComments.length > 0 ? (
           sortedComments.map((comment) => (
             <div
