@@ -97,7 +97,9 @@ export default function RootLayout({
       <body className={`font-sans antialiased`}>
         <AuthProvider>
           <NotificationsProvider>
-            {children}
+            <div className="fixed top-0 left-0 right-0 z-50 w-full">
+              {children}
+            </div>
             <Analytics />
           </NotificationsProvider>
         </AuthProvider>
