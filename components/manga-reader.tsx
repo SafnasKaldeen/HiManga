@@ -11,8 +11,6 @@ import {
   Loader2,
   Maximize2,
   Minimize2,
-  ZoomIn,
-  ZoomOut,
   Lock,
   Settings,
   RotateCcw,
@@ -316,14 +314,6 @@ export function MangaReader({
     }
   };
 
-  const increasePanelSize = () => {
-    setPanelWidth((prev) => Math.min(prev + 10, 150));
-  };
-
-  const decreasePanelSize = () => {
-    setPanelWidth((prev) => Math.max(prev - 10, 50));
-  };
-
   const resetAdvancedControls = () => {
     setBrightness(100);
     setContrast(100);
@@ -454,23 +444,6 @@ export function MangaReader({
 
                 <div className="flex items-center gap-1">
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={decreasePanelSize}
-                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                  >
-                    <ZoomOut className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={increasePanelSize}
-                    className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                  >
-                    <ZoomIn className="w-4 h-4" />
-                  </Button>
-
-                  <Button
                     variant="outline"
                     size="sm"
                     onClick={handleFullscreenToggle}
@@ -523,10 +496,10 @@ export function MangaReader({
 
               {/* Advanced Controls Panel */}
               <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[50] w-[90vw] max-w-4xl animate-in zoom-in-95 duration-300">
-                <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-lg p-6 border border-pink-500/30 shadow-2xl shadow-pink-500/20">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text flex items-center gap-2">
-                      <Settings className="w-5 h-5 text-pink-400" />
+                <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-lg p-4 md:p-6 border border-pink-500/30 shadow-2xl shadow-pink-500/20 max-h-[80vh] overflow-y-auto">
+                  <div className="flex items-center justify-between mb-4 md:mb-6">
+                    <h3 className="text-base md:text-lg font-semibold text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text flex items-center gap-2">
+                      <Settings className="w-4 h-4 md:w-5 md:h-5 text-pink-400" />
                       Advanced Controls
                     </h3>
                     <div className="flex items-center gap-2">
@@ -535,9 +508,9 @@ export function MangaReader({
                           variant="ghost"
                           size="sm"
                           onClick={resetAdvancedControls}
-                          className="h-8 px-3 text-sm text-pink-400 hover:text-pink-300 hover:bg-pink-500/10"
+                          className="h-7 md:h-8 px-2 md:px-3 text-xs md:text-sm text-pink-400 hover:text-pink-300 hover:bg-pink-500/10"
                         >
-                          <RotateCcw className="w-4 h-4 mr-1" />
+                          <RotateCcw className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                           Reset
                         </Button>
                       )}
@@ -545,21 +518,21 @@ export function MangaReader({
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowAdvancedControls(false)}
-                        className="h-8 px-2 text-slate-400 hover:text-slate-200"
+                        className="h-7 md:h-8 px-2 text-slate-400 hover:text-slate-200"
                       >
-                        <X className="w-5 h-5" />
+                        <X className="w-4 h-4 md:w-5 md:h-5" />
                       </Button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     {/* Brightness */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-300">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
                           🌞 Brightness
                         </label>
-                        <span className="text-sm text-pink-400 font-mono">
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
                           {brightness}%
                         </span>
                       </div>
@@ -580,13 +553,67 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Panel Width */}
-                    <div className="space-y-3">
+                    {/* Contrast */}
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-300">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
+                          🎨 Contrast
+                        </label>
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
+                          {contrast}%
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="50"
+                        max="150"
+                        value={contrast}
+                        onChange={(e) => setContrast(Number(e.target.value))}
+                        className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                        style={{
+                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                            ((contrast - 50) / 100) * 100
+                          }%, rgb(51, 65, 85) ${
+                            ((contrast - 50) / 100) * 100
+                          }%, rgb(51, 65, 85) 100%)`,
+                        }}
+                      />
+                    </div>
+
+                    {/* Saturation */}
+                    <div className="space-y-2 md:space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
+                          💧 Saturation
+                        </label>
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
+                          {saturation}%
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="200"
+                        value={saturation}
+                        onChange={(e) => setSaturation(Number(e.target.value))}
+                        className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
+                        style={{
+                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
+                            (saturation / 200) * 100
+                          }%, rgb(51, 65, 85) ${
+                            (saturation / 200) * 100
+                          }%, rgb(51, 65, 85) 100%)`,
+                        }}
+                      />
+                    </div>
+
+                    {/* Panel Width */}
+                    <div className="space-y-2 md:space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
                           🔍 Panel Width
                         </label>
-                        <span className="text-sm text-pink-400 font-mono">
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
                           {panelWidth}%
                         </span>
                       </div>
@@ -608,12 +635,12 @@ export function MangaReader({
                     </div>
 
                     {/* Scroll Speed */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-300">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
                           ⚡ Scroll Speed
                         </label>
-                        <span className="text-sm text-pink-400 font-mono">
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
                           {scrollSpeed}%
                         </span>
                       </div>
@@ -648,105 +675,85 @@ export function MangaReader({
               }`}
             >
               <div className="bg-gradient-to-r from-slate-900/95 to-slate-900/80 backdrop-blur-xl border-b border-cyan-500/20 p-4">
-                <div className="flex flex-col gap-4">
-                  {/* Main Controls */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePreviousChapter}
+                      disabled={previousChapter === null}
+                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+
+                    <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
+                      <p className="text-xs font-medium">Ch {chapter}</p>
+                    </Card>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleNextChapter}
+                      disabled={
+                        nextChapter === null ||
+                        (nextChapter !== null && nextChapter > totalChapters)
+                      }
+                      className="bg-slate-800/50 border-cyan-500/30 text-cyan-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <nav className="hidden lg:flex items-center gap-8">
+                    <Link
+                      href="/"
+                      className="text-white/70 hover:text-pink-500 transition font-semibold"
+                    >
+                      Home
+                    </Link>
+                    <Link
+                      href="/library"
+                      className="text-white/70 hover:text-pink-500 transition font-semibold"
+                    >
+                      Library
+                    </Link>
+                    <Link
+                      href="/trending"
+                      className="text-white/70 hover:text-pink-500 transition font-semibold"
+                    >
+                      Trending
+                    </Link>
+                  </nav>
+
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleFullscreenToggle}
+                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
+                    >
+                      <Minimize2 className="w-4 h-4" />
+                    </Button>
+
+                    <div className="relative">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={handlePreviousChapter}
-                        disabled={previousChapter === null}
-                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </Button>
-
-                      <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
-                        <p className="text-xs font-medium">Ch {chapter}</p>
-                      </Card>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleNextChapter}
-                        disabled={
-                          nextChapter === null ||
-                          (nextChapter !== null && nextChapter > totalChapters)
+                        onClick={() =>
+                          setShowAdvancedControls(!showAdvancedControls)
                         }
-                        className="bg-slate-800/50 border-cyan-500/30 text-cyan-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    <nav className="hidden lg:flex items-center gap-8">
-                      <Link
-                        href="/"
-                        className="text-white/70 hover:text-pink-500 transition font-semibold"
-                      >
-                        Home
-                      </Link>
-                      <Link
-                        href="/library"
-                        className="text-white/70 hover:text-pink-500 transition font-semibold"
-                      >
-                        Library
-                      </Link>
-                      <Link
-                        href="/trending"
-                        className="text-white/70 hover:text-pink-500 transition font-semibold"
-                      >
-                        Trending
-                      </Link>
-                    </nav>
-
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={decreasePanelSize}
                         className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
                       >
-                        <ZoomOut className="w-4 h-4" />
+                        <Settings
+                          className={`w-4 h-4 transition-transform duration-300 ${
+                            showAdvancedControls ? "rotate-90" : ""
+                          }`}
+                        />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={increasePanelSize}
-                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                      >
-                        <ZoomIn className="w-4 h-4" />
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleFullscreenToggle}
-                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                      >
-                        <Minimize2 className="w-4 h-4" />
-                      </Button>
-
-                      <div className="relative">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setShowAdvancedControls(!showAdvancedControls)
-                          }
-                          className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 disabled:opacity-50 hover:text-cyan-400 px-2"
-                        >
-                          <Settings
-                            className={`w-4 h-4 transition-transform duration-300 ${
-                              showAdvancedControls ? "rotate-90" : ""
-                            }`}
-                          />
-                        </Button>
-                        {hasChangedSettings && (
-                          <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></span>
-                        )}
-                      </div>
+                      {hasChangedSettings && (
+                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -765,10 +772,10 @@ export function MangaReader({
 
               {/* Advanced Controls Panel */}
               <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[60] w-[90vw] max-w-5xl animate-in zoom-in-95 duration-300">
-                <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-lg p-6 border border-pink-500/30 shadow-2xl shadow-pink-500/20">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text flex items-center gap-2">
-                      <Settings className="w-5 h-5 text-pink-400" />
+                <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-lg p-4 md:p-6 border border-pink-500/30 shadow-2xl shadow-pink-500/20 max-h-[80vh] overflow-y-auto">
+                  <div className="flex items-center justify-between mb-4 md:mb-6">
+                    <h3 className="text-base md:text-lg font-semibold text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text flex items-center gap-2">
+                      <Settings className="w-4 h-4 md:w-5 md:h-5 text-pink-400" />
                       Advanced Controls
                     </h3>
                     <div className="flex items-center gap-2">
@@ -777,9 +784,9 @@ export function MangaReader({
                           variant="ghost"
                           size="sm"
                           onClick={resetAdvancedControls}
-                          className="h-8 px-3 text-sm text-pink-400 hover:text-pink-300 hover:bg-pink-500/10"
+                          className="h-7 md:h-8 px-2 md:px-3 text-xs md:text-sm text-pink-400 hover:text-pink-300 hover:bg-pink-500/10"
                         >
-                          <RotateCcw className="w-4 h-4 mr-1" />
+                          <RotateCcw className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                           Reset
                         </Button>
                       )}
@@ -787,21 +794,21 @@ export function MangaReader({
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowAdvancedControls(false)}
-                        className="h-8 px-2 text-slate-400 hover:text-slate-200"
+                        className="h-7 md:h-8 px-2 text-slate-400 hover:text-slate-200"
                       >
-                        <X className="w-5 h-5" />
+                        <X className="w-4 h-4 md:w-5 md:h-5" />
                       </Button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
                     {/* Brightness */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-300">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
                           🌞 Brightness
                         </label>
-                        <span className="text-sm text-pink-400 font-mono">
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
                           {brightness}%
                         </span>
                       </div>
@@ -823,12 +830,12 @@ export function MangaReader({
                     </div>
 
                     {/* Contrast */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-300">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
                           🎨 Contrast
                         </label>
-                        <span className="text-sm text-pink-400 font-mono">
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
                           {contrast}%
                         </span>
                       </div>
@@ -850,12 +857,12 @@ export function MangaReader({
                     </div>
 
                     {/* Saturation */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-300">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
                           💧 Saturation
                         </label>
-                        <span className="text-sm text-pink-400 font-mono">
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
                           {saturation}%
                         </span>
                       </div>
@@ -877,12 +884,12 @@ export function MangaReader({
                     </div>
 
                     {/* Panel Width */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-300">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
                           🔍 Panel Width
                         </label>
-                        <span className="text-sm text-pink-400 font-mono">
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
                           {panelWidth}%
                         </span>
                       </div>
@@ -904,12 +911,12 @@ export function MangaReader({
                     </div>
 
                     {/* Scroll Speed */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-300">
+                        <label className="text-xs md:text-sm font-medium text-slate-300">
                           ⚡ Scroll Speed
                         </label>
-                        <span className="text-sm text-pink-400 font-mono">
+                        <span className="text-xs md:text-sm text-pink-400 font-mono">
                           {scrollSpeed}%
                         </span>
                       </div>
