@@ -155,12 +155,11 @@ export function MangaReader({
     return `${baseUrl}/${allTransformations}/${imagePath}`;
   };
 
-  // Set sidebar and advanced controls open by default on desktop only
+  // Set sidebar open by default on desktop only (advanced controls always closed)
   useEffect(() => {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 1024;
       setSidebarOpen(isDesktop);
-      setShowAdvancedControls(isDesktop);
     };
 
     handleResize();
@@ -460,7 +459,7 @@ export function MangaReader({
                       variant="ghost"
                       size="sm"
                       onClick={decreasePanelSize}
-                      className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                      className="h-8 px-2 text-slate-200 hover:bg-pink-800/50"
                     >
                       <ZoomOut className="w-4 h-4" />
                     </Button>
@@ -468,7 +467,7 @@ export function MangaReader({
                       variant="ghost"
                       size="sm"
                       onClick={increasePanelSize}
-                      className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                      className="h-8 px-2 text-slate-200 hover:text-pink-800/70"
                     >
                       <ZoomIn className="w-4 h-4" />
                     </Button>
@@ -477,7 +476,7 @@ export function MangaReader({
                       variant="outline"
                       size="sm"
                       onClick={handleFullscreenToggle}
-                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
+                      className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:text-cyan-800/70 hover:border-cyan-400/50 ml-1"
                     >
                       <Maximize2 className="w-4 h-4" />
                     </Button>
@@ -489,7 +488,7 @@ export function MangaReader({
                         onClick={() =>
                           setShowAdvancedControls(!showAdvancedControls)
                         }
-                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
+                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:text-pink-500/70 hover:border-cyan-400/50 ml-1"
                       >
                         <Settings
                           className={`w-4 h-4 transition-transform duration-300 ${
@@ -575,7 +574,7 @@ export function MangaReader({
                       </div>
 
                       {/* Contrast */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <label className="text-xs font-medium text-slate-300">
                             🎨 Contrast
@@ -599,10 +598,10 @@ export function MangaReader({
                             }%, rgb(51, 65, 85) 100%)`,
                           }}
                         />
-                      </div>
+                      </div> */}
 
                       {/* Saturation */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <label className="text-xs font-medium text-slate-300">
                             💧 Saturation
@@ -628,7 +627,7 @@ export function MangaReader({
                             }%, rgb(51, 65, 85) 100%)`,
                           }}
                         />
-                      </div>
+                      </div> */}
 
                       {/* Panel Width */}
                       <div className="space-y-2">
@@ -761,7 +760,7 @@ export function MangaReader({
                         variant="ghost"
                         size="sm"
                         onClick={decreasePanelSize}
-                        className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                        className="h-8 px-2 text-slate-200 hover:bg-pink-800/50"
                       >
                         <ZoomOut className="w-4 h-4" />
                       </Button>
@@ -769,7 +768,7 @@ export function MangaReader({
                         variant="ghost"
                         size="sm"
                         onClick={increasePanelSize}
-                        className="h-8 px-2 text-slate-200 hover:bg-slate-800/50"
+                        className="h-8 px-2 text-slate-200 hover:text-pink-800/70"
                       >
                         <ZoomIn className="w-4 h-4" />
                       </Button>
@@ -778,7 +777,7 @@ export function MangaReader({
                         variant="outline"
                         size="sm"
                         onClick={handleFullscreenToggle}
-                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
+                        className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:text-pink-500/70 hover:border-cyan-400/50 ml-1"
                       >
                         <Minimize2 className="w-4 h-4" />
                       </Button>
@@ -790,7 +789,7 @@ export function MangaReader({
                           onClick={() =>
                             setShowAdvancedControls(!showAdvancedControls)
                           }
-                          className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 ml-1"
+                          className="bg-slate-800/50 border-cyan-500/30 text-slate-200 hover:text-pink-500/70 hover:border-cyan-400/50 ml-1"
                         >
                           <Settings
                             className={`w-4 h-4 transition-transform duration-300 ${
