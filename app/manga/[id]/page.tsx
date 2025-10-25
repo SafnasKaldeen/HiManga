@@ -43,8 +43,8 @@ export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
           {/* Smooth gradient transition zone */}
           <div className="h-24 bg-gradient-to-b from-[#0a0a1a] via-[#0f1729] to-slate-900"></div>
 
-          <div className="bg-slate-900 px-0 py-8">
-            <div className="container mx-auto px-4">
+          <div className="bg-slate-900 px-0 py-4">
+            <div className="mx-auto max-w-[1600px] px-6 lg:px-10">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                   <CommentsSection mangaId={manga.id} />
