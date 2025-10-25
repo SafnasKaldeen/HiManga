@@ -30,12 +30,7 @@ export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
       <Header />
 
       {/* Main content area */}
-      <main className="flex flex-1 h-[calc(100vh-100px)] overflow-hidden">
-        {/* Sidebar (chapters list) */}
-        {/* <aside className="w-72 border-r border-border/30 overflow-y-auto h-full">
-          <ChaptersSidebar manga={manga} />
-        </aside> */}
-
+      <main className="flex flex-1 lg:h-[calc(100vh-100px)] overflow-hidden">
         {/* Manga details (independent scroll area) */}
         <section className="flex-1 overflow-y-auto h-full">
           <MangaDetailsHero manga={manga} />
@@ -45,7 +40,8 @@ export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
 
           <div className="bg-slate-900 px-0 py-4">
             <div className="mx-auto max-w-[1600px] px-6 lg:px-10">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Desktop Layout: Side by side */}
+              <div className="hidden lg:grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                   <CommentsSection mangaId={manga.id} />
                 </div>
@@ -53,6 +49,19 @@ export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
                   <div className="sticky top-4">
                     <RelatedMangas mangas={relatedMangas} />
                   </div>
+                </div>
+              </div>
+
+              {/* Mobile Layout: Stacked (Related first, then Comments) */}
+              <div className="lg:hidden space-y-8">
+                {/* Related mangas on top for mobile */}
+                <div>
+                  <RelatedMangas mangas={relatedMangas} />
+                </div>
+
+                {/* Comments section below for mobile */}
+                <div>
+                  <CommentsSection mangaId={manga.id} />
                 </div>
               </div>
             </div>
