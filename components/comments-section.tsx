@@ -145,7 +145,7 @@ export function CommentsSection({ mangaId }: CommentsSectionProps) {
       </div>
 
       {/* Comments List - Scrollable */}
-      <div className="flex-1 overflow-y-auto rounded-sm bg-slate-700/30 p-5 space-y-6 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-cyan-500/40">
+      <div className="flex-1 overflow-y-auto bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-lg p-3 sm:p-4 space-y-3 backdrop-blur-sm flex-shrink-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-cyan-500/40">
         {sortedComments.length > 0 ? (
           sortedComments.map((comment) => (
             <div
