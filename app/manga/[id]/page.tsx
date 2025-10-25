@@ -1,10 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import { trendingMangas } from "@/lib/mock-data";
 import { MangaDetailsHero } from "@/components/manga-details-hero";
 import { RelatedMangas } from "@/components/related-mangas";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { notFound } from "next/navigation";
 import { CommentsSection } from "@/components/comments-section";
+import { MobileCommentsOverlay } from "@/components/mobile-comments-overlay";
+import { MessageCircle } from "lucide-react";
 
 interface MangaDetailsPageProps {
   params: {
@@ -13,10 +17,12 @@ interface MangaDetailsPageProps {
 }
 
 export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+
   const manga = trendingMangas.find((m) => m.id === params.id);
 
   if (!manga) {
-    notFound();
+    return null; // or notFound()
   }
 
   const relatedMangas = trendingMangas
@@ -52,23 +58,37 @@ export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
                 </div>
               </div>
 
-              {/* Mobile Layout: Stacked (Related first, then Comments) */}
+              {/* Mobile Layout: Related mangas only, comments in overlay */}
               <div className="lg:hidden space-y-8">
-                {/* Related mangas on top for mobile */}
+                {/* Mobile Comment Button */}
+                <button
+                  onClick={() => setIsCommentsOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white py-3 px-4 rounded-lg transition-colors"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  <span className="font-medium">View Comments</span>
+                </button>
+
+                {/* Related mangas */}
                 <div>
                   <RelatedMangas mangas={relatedMangas} />
-                </div>
-
-                {/* Comments section below for mobile */}
-                <div>
-                  <CommentsSection mangaId={manga.id} />
                 </div>
               </div>
             </div>
           </div>
         </section>
       </main>
+
       <Footer />
+
+      {/* Mobile Comments Overlay */}
+      <div className="lg:hidden">
+        <MobileCommentsOverlay
+          mangaId={manga.id}
+          isOpen={isCommentsOpen}
+          onClose={() => setIsCommentsOpen(false)}
+        />
+      </div>
     </div>
   );
 }
