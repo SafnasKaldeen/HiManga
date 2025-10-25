@@ -80,18 +80,37 @@ export function MangaReader({
     const overlays = [];
 
     if (WATERMARK_CONFIG.logo.enabled) {
+      // Extract the public ID from the full Cloudinary URL
+      let logoPublicId = WATERMARK_CONFIG.logo.path;
+
+      // If it's a full URL, extract just the public ID
+      if (logoPublicId.startsWith("http")) {
+        logoPublicId = logoPublicId
+          .replace(
+            /^https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\//,
+            ""
+          )
+          .replace(/^v\d+\//, "") // Remove version number if present
+          .replace(/\.[^.]+$/, ""); // Remove file extension
+      }
+
+      // Replace forward slashes with colons for Cloudinary overlay syntax
+      const formattedLogoId = logoPublicId.replace(/\//g, ":");
+
       overlays.push(
-        `l_${WATERMARK_CONFIG.logo.path.replace(/\//g, ":")}`,
+        `l_${formattedLogoId}`,
         `w_${WATERMARK_CONFIG.logo.width}`,
+        `o_${WATERMARK_CONFIG.logo.opacity}`,
         `g_${WATERMARK_CONFIG.logo.position}`,
         `x_${WATERMARK_CONFIG.logo.offsetX}`,
         `y_${WATERMARK_CONFIG.logo.offsetY}`,
-        `o_${WATERMARK_CONFIG.logo.opacity}`,
         "fl_layer_apply"
       );
     }
 
-    if (WATERMARK_CONFIG.text.enabled) {
+    const isHideWaterMark = mangaSlug === "one-piece" && Number(chapter) <= 700;
+
+    if (isHideWaterMark) {
       const textContent = encodeURIComponent(WATERMARK_CONFIG.text.content);
       const fontStyle = `${WATERMARK_CONFIG.text.font}_${WATERMARK_CONFIG.text.size}_${WATERMARK_CONFIG.text.weight}`;
 
