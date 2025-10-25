@@ -65,6 +65,7 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
 
             {/* Stats Row */}
             <div className="flex flex-wrap items-center gap-6 sm:gap-3">
+              {" "}
               {/* Rating - No Card */}
               <div className="flex items-center gap-3">
                 <div className="hidden sm:flex items-center gap-1">
@@ -93,10 +94,8 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
                   </div>
                 </div>
               </div>
-
               {/* Divider */}
               <div className="hidden sm:block w-px h-12 bg-white/10" />
-
               {/* Chapters */}
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center">
@@ -111,10 +110,8 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
                   </p>
                 </div>
               </div>
-
               {/* Divider */}
               <div className="hidden sm:block w-px h-12 bg-white/10" />
-
               {/* Views */}
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center">
