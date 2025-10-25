@@ -14,11 +14,17 @@ import {
   Lock,
   Settings,
   RotateCcw,
+  MessageCircle,
+  Send,
+  Heart,
+  Reply,
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
 import { Header } from "./header";
 import { WATERMARK_CONFIG } from "@/lib/config";
+import { mockComments } from "@/lib/mock-comments";
+import { MobileCommentsOverlay } from "./mobile-comments-overlay";
 
 interface MangaReaderProps {
   mangaId: string;
@@ -44,6 +50,7 @@ export function MangaReader({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [displayedPanels, setDisplayedPanels] = useState<number[]>([
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23,
@@ -80,21 +87,18 @@ export function MangaReader({
     const overlays = [];
 
     if (WATERMARK_CONFIG.logo.enabled) {
-      // Extract the public ID from the full Cloudinary URL
       let logoPublicId = WATERMARK_CONFIG.logo.path;
 
-      // If it's a full URL, extract just the public ID
       if (logoPublicId.startsWith("http")) {
         logoPublicId = logoPublicId
           .replace(
             /^https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\//,
             ""
           )
-          .replace(/^v\d+\//, "") // Remove version number if present
-          .replace(/\.[^.]+$/, ""); // Remove file extension
+          .replace(/^v\d+\//, "")
+          .replace(/\.[^.]+$/, "");
       }
 
-      // Replace forward slashes with colons for Cloudinary overlay syntax
       const formattedLogoId = logoPublicId.replace(/\//g, ":");
 
       overlays.push(
@@ -143,7 +147,6 @@ export function MangaReader({
     return `${baseUrl}/${allTransformations}/${imagePath}`;
   };
 
-  // Set sidebar open by default on desktop only (advanced controls always closed)
   useEffect(() => {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 1024;
@@ -357,7 +360,7 @@ export function MangaReader({
         )}
 
         <div
-          className="flex-1 flex flex-col bg-gradient-to-b from-slate-900/50 to-slate-950 overflow-hidden"
+          className="flex-1 flex flex-col bg-gradient-to-b from-slate-900/50 to-slate-950 overflow-hidden relative"
           style={{
             filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
           }}
@@ -480,14 +483,12 @@ export function MangaReader({
           {/* Advanced Controls Overlay - Non-Fullscreen */}
           {showAdvancedControls && !isFullscreen && (
             <>
-              {/* Backdrop */}
               <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] animate-in fade-in duration-300"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm z-[45] animate-in fade-in duration-300"
                 onClick={() => setShowAdvancedControls(false)}
               />
 
-              {/* Advanced Controls Panel */}
-              <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[50] w-[90vw] max-w-4xl animate-in zoom-in-95 duration-300">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[50] w-[90vw] max-w-4xl animate-in zoom-in-95 duration-300">
                 <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-lg p-4 md:p-6 border border-pink-500/30 shadow-2xl shadow-pink-500/20 max-h-[80vh] overflow-y-auto">
                   <div className="flex items-center justify-between mb-4 md:mb-6">
                     <h3 className="text-base md:text-lg font-semibold text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text flex items-center gap-2">
@@ -518,7 +519,6 @@ export function MangaReader({
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                    {/* Brightness */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -545,7 +545,6 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Contrast */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -572,7 +571,6 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Saturation */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -599,7 +597,6 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Panel Width */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -626,7 +623,6 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Scroll Speed */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -756,14 +752,12 @@ export function MangaReader({
           {/* Advanced Controls Overlay - Fullscreen */}
           {showAdvancedControls && isFullscreen && (
             <>
-              {/* Backdrop */}
               <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] animate-in fade-in duration-300"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm z-[55] animate-in fade-in duration-300"
                 onClick={() => setShowAdvancedControls(false)}
               />
 
-              {/* Advanced Controls Panel */}
-              <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[60] w-[90vw] max-w-5xl animate-in zoom-in-95 duration-300">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[60] w-[90vw] max-w-5xl animate-in zoom-in-95 duration-300">
                 <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-lg p-4 md:p-6 border border-pink-500/30 shadow-2xl shadow-pink-500/20 max-h-[80vh] overflow-y-auto">
                   <div className="flex items-center justify-between mb-4 md:mb-6">
                     <h3 className="text-base md:text-lg font-semibold text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text flex items-center gap-2">
@@ -794,7 +788,6 @@ export function MangaReader({
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-                    {/* Brightness */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -821,7 +814,6 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Contrast */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -848,7 +840,6 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Saturation */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -875,7 +866,6 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Panel Width */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -902,7 +892,6 @@ export function MangaReader({
                       />
                     </div>
 
-                    {/* Scroll Speed */}
                     <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center justify-between">
                         <label className="text-xs md:text-sm font-medium text-slate-300">
@@ -933,6 +922,25 @@ export function MangaReader({
               </div>
             </>
           )}
+
+          {/* Minimal Comments Button - Centered */}
+          <button
+            onClick={() => setIsCommentsOpen(true)}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center justify-between gap-3 bg-slate-800/90 border border-slate-700/50 hover:bg-slate-800 hover:border-cyan-400/40 text-slate-100 px-4 py-2.5 rounded-lg transition-all duration-200 group min-w-[140px]"
+          >
+            <div className="flex items-center gap-2">
+              <MessageCircle className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" />
+              <span className="text-sm font-medium">Comments</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-cyan-400/60 group-hover:text-cyan-400 transition-colors" />
+          </button>
+
+          {/* Comments Overlay */}
+          <MobileCommentsOverlay
+            mangaId={mangaId}
+            isOpen={isCommentsOpen}
+            onClose={() => setIsCommentsOpen(false)}
+          />
 
           <div
             ref={scrollContainerRef}

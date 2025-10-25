@@ -1,19 +1,25 @@
+"use client";
+
+import { useState, use } from "react";
 import { trendingMangas } from "@/lib/mock-data";
 import { MangaReader } from "@/components/manga-reader";
-import { Header } from "@/components/header";
-import { CommentsSection } from "@/components/comments-section";
+import { MobileCommentsOverlay } from "@/components/mobile-comments-overlay";
+import { MessageCircle, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
 
 interface ChapterPageProps {
-  params: {
+  params: Promise<{
     id: string;
     chapterNumber: string;
-  };
+  }>;
 }
 
 export default function ChapterPage({ params }: ChapterPageProps) {
-  const manga = trendingMangas.find((m) => m.id === params.id);
-  const chapterNum = Number.parseInt(params.chapterNumber);
+  const { id, chapterNumber } = use(params);
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+
+  const manga = trendingMangas.find((m) => m.id === id);
+  const chapterNum = Number.parseInt(chapterNumber);
 
   if (!manga || chapterNum < 1 || chapterNum > manga.chapters) {
     notFound();
@@ -31,23 +37,24 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   const nextChapter = chapterNum < manga.chapters ? chapterNum + 1 : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      {/* <Header /> */}
-      <MangaReader
-        manga={manga}
-        mangaId={manga.id}
-        mangaTitle={manga.title}
-        mangaSlug={manga.slug}
-        chapter={chapterNum}
-        pages={pages}
-        previousChapter={previousChapter}
-        nextChapter={nextChapter}
-        totalChapters={manga.chapters + 1}
-      />
-      <div className="bg-gradient-to-b from-slate-900 to-slate-950 border-t border-cyan-500/20 px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <CommentsSection mangaId={manga.id} />
-        </div>
+    <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      {/* Main content - blur when comments open */}
+      <div
+        className={`h-full flex flex-col transition-all duration-300 ${
+          isCommentsOpen ? "blur-sm" : ""
+        }`}
+      >
+        <MangaReader
+          manga={manga}
+          mangaId={manga.id}
+          mangaTitle={manga.title}
+          mangaSlug={manga.slug}
+          chapter={chapterNum}
+          pages={pages}
+          previousChapter={previousChapter}
+          nextChapter={nextChapter}
+          totalChapters={manga.chapters + 1}
+        />
       </div>
     </div>
   );
