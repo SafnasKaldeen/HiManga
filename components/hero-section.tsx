@@ -169,10 +169,11 @@ export function HeroSection() {
 
             {/* Metadata Pills */}
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10 backdrop-blur-sm sm:hidden">
+              <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10 backdrop-blur-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                 <span className="text-white font-medium">{anime.tags[0]}</span>
               </div>
+
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10 backdrop-blur-sm">
                 <span className="text-white/90 font-medium">
                   ⏱️ {anime.episodes.replace("+", "eps")}
