@@ -59,53 +59,60 @@ export function CommentsSection({ mangaId }: CommentsSectionProps) {
       </div>
 
       {/* Comment Input */}
-      <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-lg p-4 space-y-3 backdrop-blur-sm">
-        <div className="flex gap-3">
-          <Avatar className="h-10 w-10 flex-shrink-0">
+      <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-lg p-3 sm:p-4 space-y-3 backdrop-blur-sm">
+        <div className="flex gap-2 sm:gap-3">
+          <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
             <AvatarImage src="/abstract-user-representation.png" alt="You" />
             <AvatarFallback>YOU</AvatarFallback>
           </Avatar>
 
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 min-w-0 space-y-2">
             <Textarea
               placeholder="Share your thoughts about this manga..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="min-h-20 resize-none bg-white/5 border-white/10 text-white placeholder:text-white/40"
+              className="min-h-20 resize-none bg-white/5 border-white/10 text-white placeholder:text-white/40 text-sm"
             />
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsSpoiler(!isSpoiler)}
-                className={`gap-2 ${
+                className={`gap-2 text-xs sm:text-sm ${
                   isSpoiler
                     ? "bg-destructive/20 border-destructive/40 text-destructive hover:bg-destructive/30"
-                    : "bg-white/10 border-white/20 text-white/70 hover:bg-white/15 hover:border-white/30"
+                    : "bg-white/10 border-white/20 text-white/70 hover:text-cyan-500 hover:border-white/30"
                 }`}
               >
-                <Flag className="h-4 w-4" />
-                {isSpoiler ? "Spoiler" : "Mark as Spoiler"}
+                <Flag className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">
+                  {isSpoiler ? "Spoiler" : "Mark as Spoiler"}
+                </span>
+                <span className="sm:hidden">
+                  {isSpoiler ? "Spoiler" : "Spoiler"}
+                </span>
               </Button>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => {
                     setNewComment("");
                     setIsSpoiler(false);
                   }}
                   disabled={!newComment.trim()}
-                  className="bg-white/10 border-white/20 text-white/70 hover:bg-white/15 hover:text-white hover:border-white/30"
+                  className="bg-white/10 border-white/20 text-white/70 hover:text-red-500/60 hover:border-white/30 text-xs sm:text-sm flex-1 sm:flex-none"
                 >
                   Clear
                 </Button>
                 <Button
                   onClick={handlePostComment}
                   disabled={!newComment.trim()}
-                  className="gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg shadow-pink-500/20"
+                  size="sm"
+                  className="gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg shadow-pink-500/20 text-xs sm:text-sm flex-1 sm:flex-none"
                 >
-                  <Send className="h-4 w-4" />
-                  Post Comment
+                  <Send className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Post
                 </Button>
               </div>
             </div>
