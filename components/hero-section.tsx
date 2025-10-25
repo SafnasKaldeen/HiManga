@@ -12,7 +12,7 @@ interface FeaturedAnime {
   image: string;
   rating: number;
   episodes: string;
-  date: string;
+  latestRelease: string;
   tags: string[];
   badge?: string;
 }
@@ -27,7 +27,7 @@ const featuredAnimes: FeaturedAnime[] = [
     image: "/anime-one-piece-hero.jpg",
     rating: 9.2,
     episodes: "1000+",
-    date: "Oct 20, 1999",
+    latestRelease: "Apr 7, 2024",
     tags: ["TV", "Adventure", "Action"],
     badge: "#8 Spotlight",
   },
@@ -40,7 +40,7 @@ const featuredAnimes: FeaturedAnime[] = [
     image: "/anime-kaiju-no-8-hero.jpg",
     rating: 8.8,
     episodes: "12",
-    date: "Apr 3, 2024",
+    latestRelease: "Apr 3, 2024",
     tags: ["TV", "Action", "Sci-Fi"],
     badge: "#2 Featured",
   },
@@ -53,7 +53,7 @@ const featuredAnimes: FeaturedAnime[] = [
     image: "/anime-attack-on-titan-hero.jpg",
     rating: 9.0,
     episodes: "139",
-    date: "Apr 7, 2013",
+    latestRelease: "Mar 29, 2023",
     tags: ["TV", "Action", "Dark Fantasy"],
     badge: "#5 Spotlight",
   },
@@ -66,7 +66,7 @@ const featuredAnimes: FeaturedAnime[] = [
     image: "/anime-demon-slayer-hero.jpg",
     rating: 8.9,
     episodes: "55+",
-    date: "Apr 6, 2019",
+    latestRelease: "Feb 13, 2024",
     tags: ["TV", "Action", "Supernatural"],
     badge: "#3 Featured",
   },
@@ -79,7 +79,7 @@ const featuredAnimes: FeaturedAnime[] = [
     image: "/anime-jujutsu-kaisen-hero.jpg",
     rating: 8.7,
     episodes: "47+",
-    date: "Oct 3, 2020",
+    latestRelease: "Mar 26, 2024",
     tags: ["TV", "Action", "Supernatural"],
     badge: "#1 Spotlight",
   },
@@ -169,10 +169,10 @@ export function HeroSection() {
 
             {/* Metadata Pills */}
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10 backdrop-blur-sm">
+              {/* <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10 backdrop-blur-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                 <span className="text-white font-medium">{anime.tags[0]}</span>
-              </div>
+              </div> */}
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10 backdrop-blur-sm">
                 <span className="text-white/90 font-medium">
                   ⏱️ {anime.episodes.replace("+", "eps")}
@@ -180,12 +180,12 @@ export function HeroSection() {
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10 backdrop-blur-sm">
                 <span className="text-white/90 font-medium">
-                  📅 {anime.date}
+                  📅 {anime.latestRelease}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 backdrop-blur-sm">
+              {/* <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 backdrop-blur-sm">
                 <span className="text-yellow-400 font-bold">HD</span>
-              </div>
+              </div> */}
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/40 backdrop-blur-sm">
                 <span className="text-green-400 font-bold">
                   ⭐ {anime.rating}
