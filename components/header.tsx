@@ -71,7 +71,7 @@ export function Header() {
                   variant="outline"
                   size="sm"
                   onClick={logout}
-                  className="gap-2 bg-transparent border-pink-500/40 hover:bg-pink-500/10 text-pink-500 rounded-full"
+                  className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500 text-white rounded-full"
                 >
                   <LogOut className="w-4 h-4" />
                   Logout

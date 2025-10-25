@@ -1,50 +1,57 @@
-"use client"
+"use client";
 
-import { useNotifications } from "@/lib/notifications-context"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Bell, X, CheckCheck, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { useNotifications } from "@/lib/notifications-context";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Bell, X, CheckCheck, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 export function NotificationsPanel() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification, clearAll } = useNotifications()
-  const [isOpen, setIsOpen] = useState(false)
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    removeNotification,
+    clearAll,
+  } = useNotifications();
+  const [isOpen, setIsOpen] = useState(false);
 
   const getNotificationColor = (type: string) => {
     switch (type) {
       case "new_chapter":
-        return "bg-cyan-500/10 text-cyan-400"
+        return "bg-cyan-500/10 text-cyan-400";
       case "favorite":
-        return "bg-pink-500/10 text-pink-400"
+        return "bg-pink-500/10 text-pink-400";
       case "donation":
-        return "bg-purple-500/10 text-purple-400"
+        return "bg-purple-500/10 text-purple-400";
       case "update":
-        return "bg-blue-500/10 text-blue-400"
+        return "bg-blue-500/10 text-blue-400";
       default:
-        return "bg-slate-800/50 text-slate-300"
+        return "bg-slate-800/50 text-slate-300";
     }
-  }
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "new_chapter":
-        return "📖"
+        return "📖";
       case "favorite":
-        return "❤️"
+        return "❤️";
       case "donation":
-        return "🎁"
+        return "🎁";
       case "update":
-        return "✨"
+        return "✨";
       default:
-        return "ℹ️"
+        return "ℹ️";
     }
-  }
+  };
 
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:bg-slate-800/50 rounded-lg transition-colors text-slate-200"
+        className="relative p-2 hover:text-pink-800 rounded-lg transition-colors text-slate-200"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -90,15 +97,25 @@ export function NotificationsPanel() {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`p-4 transition-colors ${!notification.read ? "bg-slate-800/30" : "hover:bg-slate-800/20"}`}
+                    className={`p-4 transition-colors ${
+                      !notification.read
+                        ? "bg-slate-800/30"
+                        : "hover:bg-slate-800/20"
+                    }`}
                   >
                     <div className="flex gap-3">
-                      <div className="text-2xl flex-shrink-0">{getNotificationIcon(notification.type)}</div>
+                      <div className="text-2xl flex-shrink-0">
+                        {getNotificationIcon(notification.type)}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <h4 className="font-semibold text-sm text-slate-100">{notification.title}</h4>
-                            <p className="text-xs text-slate-400 mt-1">{notification.message}</p>
+                            <h4 className="font-semibold text-sm text-slate-100">
+                              {notification.title}
+                            </h4>
+                            <p className="text-xs text-slate-400 mt-1">
+                              {notification.message}
+                            </p>
                           </div>
                           <button
                             onClick={() => removeNotification(notification.id)}
@@ -109,7 +126,9 @@ export function NotificationsPanel() {
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                           <span className="text-xs text-slate-500">
-                            {new Date(notification.timestamp).toLocaleTimeString()}
+                            {new Date(
+                              notification.timestamp
+                            ).toLocaleTimeString()}
                           </span>
                           {!notification.read && (
                             <Button
@@ -138,7 +157,9 @@ export function NotificationsPanel() {
       )}
 
       {/* Close on outside click */}
-      {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
+      {isOpen && (
+        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+      )}
     </div>
-  )
+  );
 }

@@ -2,7 +2,7 @@
  export const WATERMARK_CONFIG = {
     logo: {
       enabled: true,
-      path: "https://res.cloudinary.com/dk9ywbxu1/image/upload/v1761317156/logo_eyzwjk.png",
+      path: "dfsfdsfs_gqmfct",
       width: 140,
       opacity: 70,
       position: "south_east",
@@ -11,11 +11,11 @@
     },
     text: {
       enabled: true,
-      content: "██HiManga.com██",
-      font: "Courier",
+      content: "HiManga.com",
+      font: "Raleway", // Try: Roboto, Montserrat, Oswald, Raleway, Lato
       size: 40,
       weight: "bold",
-      color: "FFFFFF",
+      color: "00FFFF",
       opacity: 100,
       position: "south_east",
       offsetX: 2,
