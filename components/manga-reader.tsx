@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Menu,
   X,
   Loader2,
@@ -926,13 +927,10 @@ export function MangaReader({
           {/* Minimal Comments Button - Centered */}
           <button
             onClick={() => setIsCommentsOpen(true)}
-            className="absolute bottom-[2.5px] left-1/2 -translate-x-1/2 z-40 flex items-center justify-between gap-3 bg-slate-800/90 border border-slate-700/50 hover:bg-slate-800 hover:border-cyan-400/40 text-slate-100 px-4 py-2.5 rounded-lg transition-all duration-200 group min-w-[140px]"
+            className="absolute bottom-[2.5px] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-1 bg-slate-800/90 border border-slate-700/50 hover:bg-slate-800 hover:border-cyan-400/40 text-slate-100 px-3 py-2 rounded-lg transition-all duration-200 group min-w-[60px]"
           >
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" />
-              <span className="text-sm font-medium">Comments</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-cyan-400/60 group-hover:text-cyan-400 transition-colors" />
+            <ChevronUp className="w-4 h-4 text-cyan-400/60 group-hover:text-cyan-400 transition-colors" />
+            <span className="text-xs font-medium text-center">Comments</span>
           </button>
 
           {/* Comments Overlay */}
