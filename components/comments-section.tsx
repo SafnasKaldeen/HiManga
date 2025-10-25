@@ -49,7 +49,7 @@ export function CommentsSection({ mangaId }: CommentsSectionProps) {
   });
 
   return (
-    <div className="flex flex-col h-[100vh] space-y-4">
+    <div className="flex flex-col h-[150vh] space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <MessageSquare className="h-5 w-5 text-pink-500" />
