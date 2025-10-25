@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
+import { Header } from "./header";
 
 interface MangaReaderProps {
   mangaId: string;
@@ -331,6 +332,9 @@ export function MangaReader({
 
   return (
     <div className="h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden">
+      <div className="lg:hidden">
+        <Header />
+      </div>
       <div className="flex flex-1 relative overflow-hidden">
         {sidebarOpen && !isFullscreen && (
           <div
@@ -379,7 +383,6 @@ export function MangaReader({
               <Menu className="w-4 h-4" />
             </Button>
           )}
-
           {showControls && !isFullscreen && (
             <div className="bg-gradient-to-r from-slate-900/80 to-slate-900/60 backdrop-blur-xl border-t border-cyan-500/20 p-4 flex-shrink-0 transition-all duration-300 relative z-40">
               <div className="flex items-center justify-between gap-2 flex-wrap">
