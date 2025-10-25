@@ -77,7 +77,12 @@ export function MobileCommentsOverlay({
 
           {/* Comments content */}
           <div
-            className="overflow-y-auto"
+            className="overflow-y-auto [&::-webkit-scrollbar]:w-1.5 
+                   [&::-webkit-scrollbar-track]:bg-transparent 
+                   [&::-webkit-scrollbar-thumb]:bg-white/20 
+                   hover:[&::-webkit-scrollbar-thumb]:bg-slate-300/40 
+                   [&::-webkit-scrollbar-thumb]:rounded-full 
+                   shadow-md shadow-black/10"
             style={{ height: "calc(85vh - 120px)" }}
           >
             <div className="px-4 py-4">
