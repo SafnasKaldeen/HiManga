@@ -63,7 +63,7 @@ def upload_images():
         return
     
     # Get Cloudinary base folder
-    cloudinary_base = input("☁️  Enter Cloudinary base folder (leave empty for root): ").strip()
+    cloudinary_base = input("☁️  Enter Cloudinary base folder (leave empty for root) (manga/one-piece): ").strip()
     
     # Ask if should skip existing
     skip_existing_input = input("⏭️  Skip images that already exist? (y/n, default: y): ").strip().lower()
@@ -437,7 +437,7 @@ def compare_local_cloudinary():
     print("\n🔍 COMPARE LOCAL VS CLOUDINARY")
     print("="*60)
     
-    local_folder = input("\n📁 Enter local folder path: ").strip()
+    local_folder = input("\n📁 Enter local folder path : ").strip()
     
     if not os.path.exists(local_folder):
         print(f"❌ Folder not found: {local_folder}")

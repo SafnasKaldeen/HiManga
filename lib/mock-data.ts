@@ -31,7 +31,7 @@ export const trendingMangas: Manga[] = [
     author: "Eiichiro Oda",
     cover: "/anime-manga-cover-one-piece.jpg",
     rating: 4.9,
-    chapters: 1162,
+    chapters: 1163,
     status: "ongoing",
     genre: ["Action", "Adventure", "Fantasy"],
     description: "Follow Monkey D. Luffy and his pirate crew in their quest to find the One Piece and become the Pirate King.",
