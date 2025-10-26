@@ -10,7 +10,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MangaFlow - Read Manga Online | Best Manga Reader",
+  title: "HiManga - Read Manga Online | Level Up Your Manga Experience",
   description:
     "Discover and read your favorite manga with a beautiful, anime-inspired interface. Thousands of manga titles, infinite scroll, and community discussions.",
   keywords: [
@@ -19,17 +19,24 @@ export const metadata: Metadata = {
     "anime",
     "read manga online",
     "manga community",
+    "One Piece",
+    "Solo Leveling",
+    "Kaiju No 8",
+    "Naruto",
+    "Bleach",
+    "Attack on Titan",
+    "Demon Slayer",
   ],
-  authors: [{ name: "MangaFlow" }],
-  creator: "MangaFlow",
-  publisher: "MangaFlow",
+  authors: [{ name: "HiManga" }],
+  creator: "HiManga",
+  publisher: "HiManga",
   robots: "index, follow",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://mangaflow.app",
-    siteName: "MangaFlow",
-    title: "MangaFlow - Read Manga Online",
+    url: "https://himanga.app",
+    siteName: "HiManga",
+    title: "HiManga - Read Manga Online",
     description:
       "Discover and read your favorite manga with a beautiful, anime-inspired interface",
     images: [
@@ -68,9 +75,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "MangaFlow",
-              description: "Read manga online with a beautiful interface",
-              url: "https://mangaflow.app",
+              name: "HiManga",
+              description:
+                "Read manga online with a beautiful interface and anime inspired design.",
+              url: "https://himanga.app",
               applicationCategory: "EntertainmentApplication",
               offers: {
                 "@type": "Offer",
