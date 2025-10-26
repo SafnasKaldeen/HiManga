@@ -6,7 +6,7 @@ export interface Manga {
   cover: string
   rating: number
   chapters: number
-  status: "ongoing" | "completed"
+  status: "ongoing" | "completed" | "Not yet released" | "Locked"
   genre: string[]
   description: string
   views: number
@@ -45,7 +45,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-solo-leveling.jpg",
     rating: 4.8,
     chapters: 200,
-    status: "ongoing",
+    status: "completed",
     genre: ["Action", "Fantasy", "Adventure"],
     description: "In a world where hunters battle monsters, one man’s journey from the weakest to the strongest begins.",
     views: 4500000,
@@ -58,7 +58,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-kaiju-no-8.jpg",
     rating: 4.7,
     chapters: 80,
-    status: "ongoing",
+    status: "Locked",
     genre: ["Action", "Fantasy", "Adventure"],
     description: "In a world where kaiju threaten humanity, one man's transformation into a kaiju may be the key to saving us all.",
     views: 3000000,
@@ -71,7 +71,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-demon-slayers.jpg",
     rating: 4.8,
     chapters: 150,
-    status: "ongoing",
+    status: "Locked",
     genre: ["Action", "Adventure", "Fantasy"],
     description: "A young warrior embarks on a perilous journey to vanquish demons and protect humanity.",
     views: 2500000,
@@ -84,7 +84,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-jujutsu-kaisen.jpg",
     rating: 4.9,
     chapters: 160,
-    status: "ongoing",
+    status: "Locked",
     genre: ["Action", "Supernatural", "Fantasy"],
     description: "A high school student joins a secret organization to combat curses and supernatural threats.",
     views: 4000000,
@@ -97,7 +97,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-black-clover.jpg",
     rating: 4.5,
     chapters: 300,
-    status: "ongoing",
+    status: "Locked",
     genre: ["Action", "Adventure", "Fantasy"],
     description: "In a world where magic is everything, two orphans strive to become the Wizard King.",
     views: 2200000,
@@ -110,7 +110,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-boruto.jpg",
     rating: 4.5,
     chapters: 80,
-    status: "ongoing",
+    status: "Locked",
     genre: ["Action", "Adventure", "Fantasy"],
     description: "The adventures of Naruto Uzumaki's son, Boruto, as he navigates the challenges of being a ninja in a new era.",
     views: 1800000,
@@ -136,7 +136,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-one-punch-man.jpg",
     rating: 4.6,
     chapters: 160,
-    status: "ongoing",
+    status: "Locked",
     genre: ["Action", "Comedy", "Superhero"],
     description: "Saitama, a hero who can defeat any opponent with a single punch, seeks excitement in his heroic endeavors.",
     views: 3500000,
