@@ -23,7 +23,9 @@ export function ChaptersSidebar({
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [containerHeight, setContainerHeight] = useState("100vh");
 
   const allChapters = Array.from({ length: totalChapters }, (_, i) => {
     const chapterNumber = sortOrder === "desc" ? totalChapters - i : i + 1;
@@ -47,6 +49,34 @@ export function ChaptersSidebar({
   // Get visible chapters for display
   const chaptersList = filteredChapters.slice(0, displayedChapters);
   const hasMore = displayedChapters < filteredChapters.length;
+
+  // Handle viewport changes when keyboard appears
+  useEffect(() => {
+    const handleViewportChange = () => {
+      if (window.visualViewport) {
+        const newHeight = `${window.visualViewport.height}px`;
+        setContainerHeight(newHeight);
+      }
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", handleViewportChange);
+      window.visualViewport.addEventListener("scroll", handleViewportChange);
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener(
+          "resize",
+          handleViewportChange
+        );
+        window.visualViewport.removeEventListener(
+          "scroll",
+          handleViewportChange
+        );
+      }
+    };
+  }, []);
 
   // Infinite scroll handler
   const handleScroll = useCallback(() => {
@@ -96,38 +126,6 @@ export function ChaptersSidebar({
     setIsLoadingMore(false);
   }, [searchQuery, sortOrder]);
 
-  // Handle viewport resize when keyboard appears
-  useEffect(() => {
-    if (!isSearchFocused) return;
-
-    // Prevent body scroll on iOS when keyboard appears
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleResize = () => {
-      // Keep the sidebar visible when keyboard appears
-      if (searchInputRef.current) {
-        setTimeout(() => {
-          searchInputRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-        }, 100);
-      }
-    };
-
-    handleResize();
-
-    window.addEventListener("resize", handleResize);
-    window.visualViewport?.addEventListener("resize", handleResize);
-
-    return () => {
-      document.body.style.overflow = originalStyle;
-      window.removeEventListener("resize", handleResize);
-      window.visualViewport?.removeEventListener("resize", handleResize);
-    };
-  }, [isSearchFocused]);
-
   // Toggle sort order
   const toggleSortOrder = () => {
     setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
@@ -142,16 +140,9 @@ export function ChaptersSidebar({
 
   return (
     <div
-      className="w-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden"
-      style={{
-        height: "100dvh",
-        maxHeight: "100dvh",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-      }}
+      ref={containerRef}
+      className="w-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl"
+      style={{ height: containerHeight }}
     >
       {/* Fixed Header Section */}
       <div className="flex-shrink-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
@@ -162,29 +153,24 @@ export function ChaptersSidebar({
           {totalChapters - 1} available chapters
         </p>
 
-        {/* Search Input - Improved mobile handling */}
+        {/* Search Input */}
         <div className="mt-3 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none z-10" />
           <input
             ref={searchInputRef}
-            type="search"
+            type="text"
             inputMode="numeric"
             placeholder="Search chapter..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => {
-              setIsSearchFocused(true);
-              // Scroll to top when focusing on mobile
-              if (scrollContainerRef.current) {
-                scrollContainerRef.current.scrollTop = 0;
-              }
-            }}
+            onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
             className="w-full pl-9 pr-9 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-800/70 transition-all"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck="false"
+            style={{ fontSize: "16px" }}
           />
           {searchQuery && (
             <button
@@ -316,15 +302,6 @@ export function ChaptersSidebar({
       </div>
 
       <style jsx global>{`
-        /* Prevent entire page from shifting when keyboard appears */
-        html,
-        body {
-          overflow: hidden;
-          height: 100%;
-          position: fixed;
-          width: 100%;
-        }
-
         div[style*="scrollbarWidth"]::-webkit-scrollbar {
           width: 8px;
         }
@@ -340,13 +317,6 @@ export function ChaptersSidebar({
 
         div[style*="scrollbarWidth"]::-webkit-scrollbar-thumb:hover {
           background: #64748b;
-        }
-
-        /* Prevent iOS zoom on input focus */
-        @supports (-webkit-touch-callout: none) {
-          input[type="search"] {
-            font-size: 16px;
-          }
         }
       `}</style>
     </div>
