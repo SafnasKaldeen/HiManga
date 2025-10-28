@@ -3,6 +3,7 @@
 import { Bell, X, CheckCheck, Trash2, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 
 // This would come from your notifications context
 // import { useNotifications } from "@/lib/notifications-context";
@@ -138,7 +139,12 @@ export default function NotificationsPanel() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/50">
-                            <Zap className="w-7 h-7 text-white" />
+                            <Image
+                              src="/logo.png"
+                              alt="HiManga Logo"
+                              width={40}
+                              height={40}
+                            />
                           </div>
                           <div>
                             <h2 className="text-xl sm:text-3xl font-black tracking-wider text-white uppercase system-font">
