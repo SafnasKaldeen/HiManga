@@ -141,7 +141,7 @@ export default function NotificationsPanel() {
                             <Zap className="w-7 h-7 text-white" />
                           </div>
                           <div>
-                            <h2 className="text-3xl sm:text-2xl font-black tracking-wider text-white uppercase system-font">
+                            <h2 className="text-3xl sm:text-xl font-black tracking-wider text-white uppercase system-font">
                               Notifications
                             </h2>
                             <p className="text-blue-300 text-sm font-bold tracking-wide">
