@@ -329,7 +329,7 @@ export function ChaptersSidebar({
             </div>
             <div className="grid grid-cols-3 gap-2">
               {keyboardButtons.map((row, rowIndex) => (
-                <React.Fragment key={rowIndex}>
+                <div key={rowIndex}>
                   {row.map((key) => (
                     <button
                       key={key}
@@ -352,7 +352,7 @@ export function ChaptersSidebar({
                       )}
                     </button>
                   ))}
-                </React.Fragment>
+                </div>
               ))}
             </div>
           </div>
