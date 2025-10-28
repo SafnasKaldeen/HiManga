@@ -106,14 +106,22 @@ export function ChaptersSidebar({
         setTimeout(() => {
           searchInputRef.current?.scrollIntoView({
             behavior: "smooth",
-            block: "start",
+            block: "nearest",
           });
-        }, 100);
+        }, 150);
       }
     };
 
+    // Initial scroll when focused
+    handleResize();
+
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.visualViewport?.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("resize", handleResize);
+    };
   }, [isSearchFocused]);
 
   // Toggle sort order
@@ -129,9 +137,9 @@ export function ChaptersSidebar({
   };
 
   return (
-    <div className="w-full h-screen flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl">
-      {/* Fixed Header Section - Made sticky for mobile */}
-      <div className="flex-shrink-0 sticky top-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
+    <div className="w-full h-screen flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden">
+      {/* Fixed Header Section */}
+      <div className="flex-shrink-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
         <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
           Chapters
         </h2>
@@ -149,7 +157,13 @@ export function ChaptersSidebar({
             placeholder="Search chapter..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setIsSearchFocused(true)}
+            onFocus={() => {
+              setIsSearchFocused(true);
+              // Scroll to top when focusing on mobile
+              if (scrollContainerRef.current) {
+                scrollContainerRef.current.scrollTop = 0;
+              }
+            }}
             onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
             className="w-full pl-9 pr-9 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-800/70 transition-all"
             autoComplete="off"
