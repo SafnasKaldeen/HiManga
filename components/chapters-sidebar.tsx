@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Lock, ChevronRight, Search, ArrowUpDown } from "lucide-react";
+import { Lock, ChevronRight, Search, ArrowUpDown, X } from "lucide-react";
 import Link from "next/link";
 
 interface ChaptersSidebarProps {
@@ -20,7 +20,9 @@ export function ChaptersSidebar({
   const [displayedChapters, setDisplayedChapters] = useState(50);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const allChapters = Array.from({ length: totalChapters }, (_, i) => {
@@ -94,15 +96,42 @@ export function ChaptersSidebar({
     setIsLoadingMore(false);
   }, [searchQuery, sortOrder]);
 
+  // Handle viewport resize when keyboard appears
+  useEffect(() => {
+    if (!isSearchFocused) return;
+
+    const handleResize = () => {
+      // Scroll the input into view when keyboard appears
+      if (searchInputRef.current) {
+        setTimeout(() => {
+          searchInputRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isSearchFocused]);
+
   // Toggle sort order
   const toggleSortOrder = () => {
     setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
   };
 
+  // Clear search
+  const clearSearch = () => {
+    setSearchQuery("");
+    searchInputRef.current?.blur();
+    setIsSearchFocused(false);
+  };
+
   return (
     <div className="w-full h-screen flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl">
-      {/* Fixed Header Section */}
-      <div className="flex-shrink-0 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/60 to-slate-900/30 backdrop-blur-md">
+      {/* Fixed Header Section - Made sticky for mobile */}
+      <div className="flex-shrink-0 sticky top-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
         <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
           Chapters
         </h2>
@@ -110,22 +139,40 @@ export function ChaptersSidebar({
           {totalChapters - 1} available chapters
         </p>
 
-        {/* Search Input */}
+        {/* Search Input - Improved mobile handling */}
         <div className="mt-3 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none z-10" />
           <input
-            type="text"
+            ref={searchInputRef}
+            type="search"
+            inputMode="numeric"
             placeholder="Search chapter..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-800/70 transition-all"
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+            className="w-full pl-9 pr-9 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-800/70 transition-all"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
           />
+          {searchQuery && (
+            <button
+              onClick={clearSearch}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+              type="button"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {/* Sort Button */}
         <button
           onClick={toggleSortOrder}
-          className="mt-2 w-full flex items-center justify-between px-3 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 transition-all"
+          type="button"
+          className="mt-2 w-full flex items-center justify-between px-3 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 hover:bg-slate-800/70 hover:border-cyan-400/50 transition-all active:scale-[0.98]"
         >
           <span>
             Sort: {sortOrder === "desc" ? "Newest First" : "Oldest First"}
@@ -163,7 +210,7 @@ export function ChaptersSidebar({
               className={chapter.isLocked ? "pointer-events-none" : ""}
             >
               <div
-                className={`p-3 my-1 rounded-lg transition-all duration-200 group border flex items-center justify-between ${
+                className={`p-3 my-1 rounded-lg transition-all duration-200 group border flex items-center justify-between active:scale-[0.98] ${
                   currentChapter === chapter.number
                     ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 shadow-lg shadow-cyan-500/20"
                     : "bg-slate-800/30 border-slate-700/50 hover:bg-slate-800/50 hover:border-cyan-400/40"
@@ -198,6 +245,14 @@ export function ChaptersSidebar({
         ) : (
           <div className="text-center py-8">
             <p className="text-sm text-slate-400">No chapters found</p>
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                className="mt-2 text-xs text-cyan-400 hover:text-cyan-300"
+              >
+                Clear search
+              </button>
+            )}
           </div>
         )}
 
@@ -247,6 +302,13 @@ export function ChaptersSidebar({
 
         div[style*="scrollbarWidth"]::-webkit-scrollbar-thumb:hover {
           background: #64748b;
+        }
+
+        /* Prevent iOS zoom on input focus */
+        @supports (-webkit-touch-callout: none) {
+          input[type="search"] {
+            font-size: 16px;
+          }
         }
       `}</style>
     </div>
