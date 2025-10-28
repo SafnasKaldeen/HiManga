@@ -68,7 +68,7 @@ export const trendingMangas: Manga[] = [
     id: "4",
     title: "Demon Slayers",
     author: "Haruto Takahashi",
-    slug: "demon-slayers",
+    slug: "demon-slayer-kimetsu-no-yaiba",
     cover: "/anime-manga-cover-demon-slayers.jpg",
     rating: 4.8,
     chapters: 150,
