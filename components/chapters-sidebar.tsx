@@ -3,14 +3,7 @@
 import type React from "react";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import {
-  Lock,
-  ChevronRight,
-  Search,
-  ArrowUpDown,
-  X,
-  Delete,
-} from "lucide-react";
+import { Lock, ChevronRight, Search, ArrowUpDown, X } from "lucide-react";
 import Link from "next/link";
 
 interface ChaptersSidebarProps {
@@ -27,23 +20,10 @@ export function ChaptersSidebar({
   const [displayedChapters, setDisplayedChapters] = useState(50);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
-  const [showKeyboard, setShowKeyboard] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-
-  // Detect if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   const allChapters = Array.from({ length: totalChapters }, (_, i) => {
     const chapterNumber = sortOrder === "desc" ? totalChapters - i : i + 1;
@@ -116,6 +96,38 @@ export function ChaptersSidebar({
     setIsLoadingMore(false);
   }, [searchQuery, sortOrder]);
 
+  // Handle viewport resize when keyboard appears
+  useEffect(() => {
+    if (!isSearchFocused) return;
+
+    // Prevent body scroll on iOS when keyboard appears
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleResize = () => {
+      // Keep the sidebar visible when keyboard appears
+      if (searchInputRef.current) {
+        setTimeout(() => {
+          searchInputRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }, 100);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    window.visualViewport?.addEventListener("resize", handleResize);
+
+    return () => {
+      document.body.style.overflow = originalStyle;
+      window.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("resize", handleResize);
+    };
+  }, [isSearchFocused]);
+
   // Toggle sort order
   const toggleSortOrder = () => {
     setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
@@ -124,38 +136,23 @@ export function ChaptersSidebar({
   // Clear search
   const clearSearch = () => {
     setSearchQuery("");
-    setShowKeyboard(false);
+    searchInputRef.current?.blur();
+    setIsSearchFocused(false);
   };
-
-  // Handle keyboard input
-  const handleKeyPress = (value: string) => {
-    if (value === "backspace") {
-      setSearchQuery((prev) => prev.slice(0, -1));
-    } else if (value === "clear") {
-      setSearchQuery("");
-    } else {
-      setSearchQuery((prev) => prev + value);
-    }
-  };
-
-  // Handle input focus for mobile
-  const handleInputFocus = () => {
-    if (isMobile) {
-      setShowKeyboard(true);
-      searchInputRef.current?.blur(); // Prevent native keyboard
-    }
-  };
-
-  // Custom keyboard buttons
-  const keyboardButtons = [
-    ["1", "2", "3"],
-    ["4", "5", "6"],
-    ["7", "8", "9"],
-    ["clear", "0", "backspace"],
-  ];
 
   return (
-    <div className="w-full h-screen flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden">
+    <div
+      className="w-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden"
+      style={{
+        height: "100dvh",
+        maxHeight: "100dvh",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
+    >
       {/* Fixed Header Section */}
       <div className="flex-shrink-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
         <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -165,19 +162,25 @@ export function ChaptersSidebar({
           {totalChapters - 1} available chapters
         </p>
 
-        {/* Search Input */}
+        {/* Search Input - Improved mobile handling */}
         <div className="mt-3 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none z-10" />
           <input
             ref={searchInputRef}
-            type="text"
-            readOnly={isMobile}
+            type="search"
+            inputMode="numeric"
             placeholder="Search chapter..."
             value={searchQuery}
-            onChange={(e) => !isMobile && setSearchQuery(e.target.value)}
-            onFocus={handleInputFocus}
-            onClick={handleInputFocus}
-            className="w-full pl-9 pr-9 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-800/70 transition-all cursor-pointer"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => {
+              setIsSearchFocused(true);
+              // Scroll to top when focusing on mobile
+              if (scrollContainerRef.current) {
+                scrollContainerRef.current.scrollTop = 0;
+              }
+            }}
+            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+            className="w-full pl-9 pr-9 py-2 text-xs bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-800/70 transition-all"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -218,9 +221,7 @@ export function ChaptersSidebar({
       {/* Scrollable Chapters List */}
       <div
         ref={scrollContainerRef}
-        className={`flex-1 overflow-y-auto p-3 space-y-2 transition-all ${
-          showKeyboard && isMobile ? "pb-48" : ""
-        }`}
+        className="flex-1 overflow-y-auto p-3 space-y-2"
         style={{
           scrollbarWidth: "thin",
           scrollbarColor: "#475569 transparent",
@@ -314,52 +315,16 @@ export function ChaptersSidebar({
         )}
       </div>
 
-      {/* Custom Numeric Keyboard - Only on Mobile */}
-      {showKeyboard && isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 bg-slate-900/98 backdrop-blur-xl border-t border-cyan-500/30 p-3 z-50 animate-slide-up">
-          <div className="max-w-sm mx-auto">
-            <div className="flex justify-between items-center mb-3">
-              <p className="text-xs text-slate-400">Enter chapter number</p>
-              <button
-                onClick={() => setShowKeyboard(false)}
-                className="text-cyan-400 hover:text-cyan-300 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {keyboardButtons.map((row, rowIndex) => (
-                <div key={rowIndex}>
-                  {row.map((key) => (
-                    <button
-                      key={key}
-                      onClick={() => handleKeyPress(key)}
-                      className={`p-4 rounded-lg font-semibold transition-all active:scale-95 ${
-                        key === "clear"
-                          ? "bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30"
-                          : key === "backspace"
-                          ? "bg-orange-500/20 text-orange-400 border border-orange-500/40 hover:bg-orange-500/30 flex items-center justify-center"
-                          : "bg-slate-800/80 text-slate-100 border border-slate-700/50 hover:bg-slate-700/80 hover:border-cyan-400/50"
-                      }`}
-                      type="button"
-                    >
-                      {key === "backspace" ? (
-                        <Delete className="w-5 h-5" />
-                      ) : key === "clear" ? (
-                        "Clear"
-                      ) : (
-                        key
-                      )}
-                    </button>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       <style jsx global>{`
+        /* Prevent entire page from shifting when keyboard appears */
+        html,
+        body {
+          overflow: hidden;
+          height: 100%;
+          position: fixed;
+          width: 100%;
+        }
+
         div[style*="scrollbarWidth"]::-webkit-scrollbar {
           width: 8px;
         }
@@ -377,19 +342,11 @@ export function ChaptersSidebar({
           background: #64748b;
         }
 
-        @keyframes slide-up {
-          from {
-            transform: translateY(100%);
-            opacity: 0;
+        /* Prevent iOS zoom on input focus */
+        @supports (-webkit-touch-callout: none) {
+          input[type="search"] {
+            font-size: 16px;
           }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        .animate-slide-up {
-          animation: slide-up 0.3s ease-out;
         }
       `}</style>
     </div>
