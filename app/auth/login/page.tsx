@@ -1,39 +1,39 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import { BookOpen, AlertCircle, Eye, EyeOff } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { BookOpen, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { login } = useAuth()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
-      await login(email, password)
-      router.push("/")
+      await login(email, password);
+      router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed")
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4 relative overflow-hidden">
@@ -57,12 +57,14 @@ export default function LoginPage() {
               <BookOpen className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              MangaFlow
+              HiManga
             </h1>
           </div>
 
           <h2 className="text-2xl font-bold mb-2 text-center">Welcome Back</h2>
-          <p className="text-muted-foreground text-center mb-6">Sign in to your account</p>
+          <p className="text-muted-foreground text-center mb-6">
+            Sign in to your account
+          </p>
 
           {error && (
             <div className="mb-6 p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex gap-2 backdrop-blur-sm">
@@ -81,6 +83,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
                 className="bg-white/5 border-white/10 focus:border-primary/50 focus:bg-white/10 transition-colors"
+                required
               />
             </div>
 
@@ -94,13 +97,18 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
                   className="bg-white/5 border-white/10 focus:border-primary/50 focus:bg-white/10 transition-colors pr-10"
+                  required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -117,22 +125,16 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+              <Link
+                href="/auth/signup"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign up
               </Link>
-            </p>
-          </div>
-
-          <div className="mt-6 pt-6 border-t border-border/50">
-            <p className="text-xs text-muted-foreground text-center mb-3">Demo credentials:</p>
-            <p className="text-xs text-muted-foreground text-center">
-              Email: demo@example.com
-              <br />
-              Password: demo123
             </p>
           </div>
         </div>
       </Card>
     </div>
-  )
+  );
 }

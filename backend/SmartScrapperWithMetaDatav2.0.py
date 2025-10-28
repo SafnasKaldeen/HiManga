@@ -551,7 +551,7 @@ def scrape_all_chapters(manga_url, manga_name, manga_slug, base_path, start_chap
 
 if __name__ == "__main__":
     # Base path (public folder)
-    base_path = r"E:\UOM\My-CODE_RUSH\projects\One Piece\manga-app\public"
+    base_path = r"E:\UOM\My-CODE_RUSH\projects\HiManga\public"
     
     print("=" * 60)
     print("Universal Manga Scraper")

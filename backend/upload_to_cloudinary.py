@@ -39,11 +39,178 @@ def show_menu():
     print("4. 🏷️  Search by tag")
     print("5. 🔍 Compare local vs Cloudinary (find missing)")
     print("6. 🗑️  Delete images from Cloudinary")
-    print("7. ❌ Exit")
+    print("7. ⚡ AUTO-UPLOAD MISSING FILES (Smart Upload)")
+    print("8. ❌ Exit")
     print("\n" + "="*60)
     
-    choice = input("\n👉 Enter your choice (1-7): ").strip()
+    choice = input("\n👉 Enter your choice (1-8): ").strip()
     return choice
+
+
+# ============================================
+# OPTION 7: AUTO-UPLOAD MISSING FILES
+# ============================================
+
+def auto_upload_missing():
+    """Compare local vs Cloudinary and automatically upload missing files"""
+    print("\n⚡ AUTO-UPLOAD MISSING FILES")
+    print("="*60)
+    
+    # Get paths
+    local_folder = input("\n📁 Enter local folder path: ").strip()
+    
+    if not os.path.exists(local_folder):
+        print(f"❌ Folder not found: {local_folder}")
+        return
+    
+    cloudinary_base = input("☁️  Enter Cloudinary base folder (e.g., manga/one-piece): ").strip()
+    
+    print("\n" + "="*60)
+    print("STEP 1: COMPARING LOCAL vs CLOUDINARY")
+    print("="*60)
+    
+    # Step 1: Scan local files
+    print("\n🔍 Scanning local files...")
+    image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.tiff'}
+    local_files_map = {}  # Maps cloudinary_path -> local_file_path
+    
+    for root, dirs, files in os.walk(local_folder):
+        for file in files:
+            if Path(file).suffix.lower() in image_extensions:
+                full_path = os.path.join(root, file)
+                relative_path = os.path.relpath(full_path, local_folder)
+                
+                # Build expected Cloudinary path WITH extension
+                if cloudinary_base:
+                    cloudinary_path = f"{cloudinary_base}/{relative_path}".replace('\\', '/')
+                else:
+                    cloudinary_path = relative_path.replace('\\', '/')
+                
+                local_files_map[cloudinary_path] = full_path
+    
+    print(f"✅ Found {len(local_files_map)} local images")
+    
+    # Step 2: Get Cloudinary files
+    print("\n🔍 Fetching Cloudinary images...")
+    cloudinary_files = get_all_public_ids_with_extension(cloudinary_base)
+    print(f"✅ Found {len(cloudinary_files)} Cloudinary images")
+    
+    # Step 3: Find missing files
+    local_files_set = set(local_files_map.keys())
+    missing_in_cloudinary = local_files_set - cloudinary_files
+    
+    print("\n" + "="*60)
+    print("📊 COMPARISON RESULTS")
+    print("="*60)
+    print(f"📁 Local files: {len(local_files_set)}")
+    print(f"☁️  Cloudinary files: {len(cloudinary_files)}")
+    print(f"❌ Missing in Cloudinary: {len(missing_in_cloudinary)}")
+    
+    if len(missing_in_cloudinary) == 0:
+        print("\n✅ All files are already in Cloudinary! Nothing to upload.")
+        return
+    
+    # Show preview of missing files
+    print("\n📋 Preview of missing files:")
+    for i, file_path in enumerate(sorted(list(missing_in_cloudinary)[:10]), 1):
+        print(f"   {i}. {file_path}")
+    if len(missing_in_cloudinary) > 10:
+        print(f"   ... and {len(missing_in_cloudinary) - 10} more")
+    
+    # Confirm upload
+    print("\n" + "="*60)
+    print("STEP 2: UPLOAD MISSING FILES")
+    print("="*60)
+    confirm = input(f"\n⚡ Auto-upload {len(missing_in_cloudinary)} missing images? (y/n): ").strip().lower()
+    
+    if confirm != 'y':
+        print("❌ Upload cancelled")
+        return
+    
+    # Step 4: Create folder structure
+    print("\n📁 Creating folder structure...")
+    folders_to_create = set()
+    
+    for cloudinary_path in missing_in_cloudinary:
+        # Extract folder path (everything before the filename)
+        folder_path = '/'.join(cloudinary_path.split('/')[:-1])
+        if folder_path:
+            # Add all parent folders
+            parts = folder_path.split('/')
+            for i in range(len(parts)):
+                folder = '/'.join(parts[:i+1])
+                folders_to_create.add(folder)
+    
+    # Create folders
+    for folder in sorted(folders_to_create):
+        try:
+            cloudinary.api.create_folder(folder)
+            print(f"✅ Created: {folder}")
+        except Exception as e:
+            if 'already exists' not in str(e).lower() and 'exist' not in str(e).lower():
+                print(f"⚠️  {folder}: {str(e)[:50]}")
+    
+    # Step 5: Upload missing files
+    print("\n📤 Uploading missing files...\n")
+    
+    uploaded = 0
+    failed = 0
+    failed_files = []
+    
+    missing_list = sorted(list(missing_in_cloudinary))
+    
+    for i, cloudinary_path in enumerate(missing_list, 1):
+        local_path = local_files_map[cloudinary_path]
+        
+        # Extract folder and filename
+        path_parts = cloudinary_path.split('/')
+        filename_with_ext = path_parts[-1]
+        filename_no_ext = os.path.splitext(filename_with_ext)[0]
+        folder_path = '/'.join(path_parts[:-1])
+        
+        try:
+            upload_params = {
+                'public_id': filename_no_ext,
+                'overwrite': False,
+                'resource_type': "auto",
+                'use_filename': False,
+                'unique_filename': False
+            }
+            
+            if folder_path:
+                upload_params['folder'] = folder_path
+            
+            result = cloudinary.uploader.upload(local_path, **upload_params)
+            uploaded_public_id = result.get('public_id', cloudinary_path)
+            print(f"✅ [{i}/{len(missing_list)}] Uploaded: {uploaded_public_id}")
+            uploaded += 1
+            
+        except Exception as e:
+            error_msg = str(e)
+            print(f"❌ [{i}/{len(missing_list)}] Failed: {cloudinary_path}")
+            print(f"   Error: {error_msg[:100]}")
+            failed += 1
+            failed_files.append((cloudinary_path, error_msg))
+    
+    # Summary
+    print("\n" + "="*60)
+    print("📊 UPLOAD SUMMARY")
+    print("="*60)
+    print(f"✅ Uploaded: {uploaded}")
+    print(f"❌ Failed: {failed}")
+    print(f"📁 Total processed: {len(missing_list)}")
+    
+    if failed_files:
+        print("\n❌ Failed files:")
+        for file_path, error in failed_files[:10]:
+            print(f"   - {file_path}")
+            print(f"     Error: {error[:80]}")
+        if len(failed_files) > 10:
+            print(f"   ... and {len(failed_files) - 10} more")
+    
+    print("\n" + "="*60)
+    print("✅ Auto-upload complete!")
+    print("="*60)
 
 
 # ============================================
@@ -247,17 +414,6 @@ def upload_images():
     print(f"❌ Failed: {failed}")
     print(f"📁 Total: {len(all_files)}")
     print("\n" + "="*60)
-    print("🌐 HOW TO VIEW IN CLOUDINARY UI")
-    print("="*60)
-    print("1. Go to: https://console.cloudinary.com/console/media_library")
-    print("2. Look at the LEFT SIDEBAR - you'll see your folders")
-    print("3. Click on any folder to see images inside")
-    print("4. OR use the breadcrumb navigation at the top")
-    print("\n💡 Your images ARE organized - the folder structure is")
-    print("   reflected in both the UI sidebar and the image URLs!")
-    if cloudinary_base:
-        print(f"\n📁 Navigate to: Media Library > {cloudinary_base}")
-    print("="*60)
 
 
 # ============================================
@@ -659,10 +815,12 @@ def main():
         elif choice == '6':
             delete_images()
         elif choice == '7':
+            auto_upload_missing()
+        elif choice == '8':
             print("\n👋 Goodbye!")
             break
         else:
-            print("\n❌ Invalid choice. Please enter 1-7")
+            print("\n❌ Invalid choice. Please enter 1-8")
         
         input("\n⏎ Press Enter to continue...")
 

@@ -1,0 +1,2 @@
+manga_name,manga_slug,chapter_number,panel_count,expected_count,status,timestamp,error
+One Piece,one-piece,1163,15,15,success,2025-10-26T11:56:57.068509,

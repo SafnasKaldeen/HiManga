@@ -1,52 +1,58 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import { BookOpen, AlertCircle, Eye, EyeOff, Check } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { BookOpen, AlertCircle, Eye, EyeOff, Check } from "lucide-react";
 
 export default function SignupPage() {
-  const router = useRouter()
-  const { signup } = useAuth()
-  const [email, setEmail] = useState("")
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const router = useRouter();
+  const { signup } = useAuth();
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const passwordStrength = password.length >= 6
-  const passwordsMatch = password === confirmPassword && password.length > 0
-  const isFormValid = email && username && password && confirmPassword && passwordsMatch
+  const passwordStrength = password.length >= 6;
+  const passwordsMatch = password === confirmPassword && password.length > 0;
+  const isFormValid =
+    email && username && password && confirmPassword && passwordsMatch;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
+      setError("Passwords do not match");
+      return;
     }
 
-    setIsLoading(true)
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
-      await signup(email, username, password)
-      router.push("/")
+      await signup(email, username, password);
+      router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed")
+      setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5 flex items-center justify-center p-4 relative overflow-hidden">
@@ -74,8 +80,12 @@ export default function SignupPage() {
             </h1>
           </div>
 
-          <h2 className="text-2xl font-bold mb-2 text-center">Create Account</h2>
-          <p className="text-muted-foreground text-center mb-6">Join our manga community</p>
+          <h2 className="text-2xl font-bold mb-2 text-center">
+            Create Account
+          </h2>
+          <p className="text-muted-foreground text-center mb-6">
+            Join our manga community
+          </p>
 
           {error && (
             <div className="mb-6 p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex gap-2 backdrop-blur-sm">
@@ -125,19 +135,31 @@ export default function SignupPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
               {password && (
                 <div className="mt-2 flex items-center gap-2">
-                  <div className={`h-1 flex-1 rounded-full ${passwordStrength ? "bg-secondary" : "bg-muted"}`}></div>
-                  <span className="text-xs text-muted-foreground">{passwordStrength ? "Strong" : "Weak"}</span>
+                  <div
+                    className={`h-1 flex-1 rounded-full ${
+                      passwordStrength ? "bg-secondary" : "bg-muted"
+                    }`}
+                  ></div>
+                  <span className="text-xs text-muted-foreground">
+                    {passwordStrength ? "Strong" : "Weak"}
+                  </span>
                 </div>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Confirm Password</label>
+              <label className="block text-sm font-medium mb-2">
+                Confirm Password
+              </label>
               <div className="relative">
                 <Input
                   type={showConfirmPassword ? "text" : "password"}
@@ -152,7 +174,11 @@ export default function SignupPage() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
               {confirmPassword && (
@@ -160,12 +186,16 @@ export default function SignupPage() {
                   {passwordsMatch ? (
                     <>
                       <Check className="w-4 h-4 text-secondary" />
-                      <span className="text-xs text-secondary">Passwords match</span>
+                      <span className="text-xs text-secondary">
+                        Passwords match
+                      </span>
                     </>
                   ) : (
                     <>
                       <div className="w-4 h-4 rounded-full bg-destructive/50"></div>
-                      <span className="text-xs text-destructive">Passwords don't match</span>
+                      <span className="text-xs text-destructive">
+                        Passwords don't match
+                      </span>
                     </>
                   )}
                 </div>
@@ -184,7 +214,10 @@ export default function SignupPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/auth/login" className="text-secondary hover:underline font-medium">
+              <Link
+                href="/auth/login"
+                className="text-secondary hover:underline font-medium"
+              >
                 Sign in
               </Link>
             </p>
@@ -192,5 +225,5 @@ export default function SignupPage() {
         </div>
       </Card>
     </div>
-  )
+  );
 }

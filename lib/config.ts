@@ -18,7 +18,7 @@ export const WATERMARK_CONFIG = {
   
   text: {
     enabled: false,
-    content: "HiManga.com",
+    content: "HiManga.fun",
     font: "Raleway", // Try: Roboto, Montserrat, Oswald, Raleway, Lato
     size: 40,
     weight: "bold",

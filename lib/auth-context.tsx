@@ -1,115 +1,181 @@
-"use client"
+// lib/auth-context.tsx
+"use client";
 
-import type React from "react"
-import { createContext, useContext, useState, useEffect } from "react"
+import type React from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { 
+  signUp as supabaseSignUp, 
+  signIn as supabaseSignIn, 
+  getUserProfile,
+  updateUserProfile 
+} from "@/lib/supabase";
 
 export interface User {
-  id: string
-  email: string
-  username: string
-  avatar?: string
-  createdAt: number
+  id: string;
+  email: string;
+  username: string;
+  displayName?: string;
+  avatarUrl?: string;
+  avatarId?: number;
+  xp: number;
+  rank: string;
+  totalPanelsRead: number;
+  totalMangasRead: number;
+  createdAt: string;
 }
 
 interface AuthContextType {
-  user: User | null
-  isLoading: boolean
-  isAuthenticated: boolean
-  login: (email: string, password: string) => Promise<void>
-  signup: (email: string, username: string, password: string) => Promise<void>
-  logout: () => void
-  updateProfile: (updates: Partial<User>) => void
+  user: User | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  updateProfile: (updates: Partial<User>) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load user from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem("manga-user")
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored))
-      } catch (error) {
-        console.error("Failed to load user:", error)
+  // Convert database user to User type
+  const convertToUser = (data: any): User => ({
+    id: data.id,
+    email: data.email || "",
+    username: data.username,
+    displayName: data.display_name,
+    avatarUrl: data.avatar_url,
+    avatarId: data.avatar_id,
+    xp: data.xp,
+    rank: data.rank,
+    totalPanelsRead: data.total_panels_read,
+    totalMangasRead: data.total_mangas_read,
+    createdAt: data.created_at,
+  });
+
+  // In lib/auth-context.tsx - update the useEffect
+useEffect(() => {
+  const loadUser = async () => {
+    try {
+      const savedUserId = localStorage.getItem("userId");
+      console.log("Loading user with ID:", savedUserId);
+      
+      if (savedUserId) {
+        const profile = await getUserProfile(savedUserId);
+        console.log("Loaded user profile:", profile);
+        setUser(convertToUser(profile));
       }
+    } catch (error) {
+      console.error("Error loading user:", error);
+      localStorage.removeItem("userId");
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false)
-  }, [])
+  };
+
+  loadUser();
+}, []);
+
+  // Sign In with Supabase Auth
+export async function signIn(email, password) {
+  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (authError) throw new Error(authError.message);
+
+  // Get user profile
+  const { data: profileData, error: profileError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", authData.user.id)
+    .single();
+
+  if (profileError) throw new Error("User profile not found");
+
+  return profileData;
+}
 
   const login = async (email: string, password: string) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    // Mock validation
-    if (!email || !password) {
-      throw new Error("Email and password are required")
+    try {
+      const data = await supabaseSignIn(email, password);
+      const userData = convertToUser(data);
+      
+      setUser(userData);
+      localStorage.setItem("userId", data.id);
+    } catch (error: any) {
+      console.error("Login error:", error);
+      throw new Error(error.message || "Failed to login");
     }
-
-    if (!email.includes("@")) {
-      throw new Error("Invalid email format")
-    }
-
-    // Create mock user
-    const newUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      email,
-      username: email.split("@")[0],
-      createdAt: Date.now(),
-    }
-
-    setUser(newUser)
-    localStorage.setItem("manga-user", JSON.stringify(newUser))
-  }
+  };
 
   const signup = async (email: string, username: string, password: string) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    try {
+      // Basic validation
+      if (!email || !username || !password) {
+        throw new Error("All fields are required");
+      }
 
-    // Mock validation
-    if (!email || !username || !password) {
-      throw new Error("All fields are required")
+      if (password.length < 6) {
+        throw new Error("Password must be at least 6 characters");
+      }
+
+      if (username.length < 3) {
+        throw new Error("Username must be at least 3 characters");
+      }
+
+      console.log("Starting signup...", { email, username });
+
+      const data = await supabaseSignUp(email, password, username);
+      
+      console.log("Signup successful!", data);
+
+      const userData = convertToUser(data);
+
+      setUser(userData);
+      localStorage.setItem("userId", data.id);
+    } catch (error: any) {
+      console.error("Signup error:", error);
+      throw new Error(error.message || "Failed to create account");
     }
+  };
 
-    if (!email.includes("@")) {
-      throw new Error("Invalid email format")
+  const logout = async () => {
+    try {
+      setUser(null);
+      localStorage.removeItem("userId");
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      throw new Error(error.message || "Failed to logout");
     }
+  };
 
-    if (password.length < 6) {
-      throw new Error("Password must be at least 6 characters")
+  const updateProfile = async (updates: Partial<User>) => {
+    try {
+      if (!user) throw new Error("No user logged in");
+
+      const updatedData = await updateUserProfile(user.id, updates);
+      setUser(convertToUser(updatedData));
+    } catch (error: any) {
+      console.error("Update profile error:", error);
+      throw new Error(error.message || "Failed to update profile");
     }
+  };
 
-    if (username.length < 3) {
-      throw new Error("Username must be at least 3 characters")
+  const refreshUser = async () => {
+    try {
+      if (!user) return;
+      const profile = await getUserProfile(user.id);
+      setUser(convertToUser(profile));
+    } catch (error) {
+      console.error("Refresh user error:", error);
     }
-
-    // Create mock user
-    const newUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      email,
-      username,
-      createdAt: Date.now(),
-    }
-
-    setUser(newUser)
-    localStorage.setItem("manga-user", JSON.stringify(newUser))
-  }
-
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem("manga-user")
-  }
-
-  const updateProfile = (updates: Partial<User>) => {
-    if (user) {
-      const updatedUser = { ...user, ...updates }
-      setUser(updatedUser)
-      localStorage.setItem("manga-user", JSON.stringify(updatedUser))
-    }
-  }
+  };
 
   return (
     <AuthContext.Provider
@@ -121,17 +187,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signup,
         logout,
         updateProfile,
+        refreshUser,
       }}
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
+  return context;
 }
