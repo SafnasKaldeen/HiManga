@@ -97,7 +97,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-black-clover.jpg",
     rating: 4.5,
     chapters: 300,
-    status: "Locked",
+    status: "ongoing",
     genre: ["Action", "Adventure", "Fantasy"],
     description: "In a world where magic is everything, two orphans strive to become the Wizard King.",
     views: 2200000,
