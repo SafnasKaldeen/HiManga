@@ -71,7 +71,7 @@ export const trendingMangas: Manga[] = [
     slug: "demon-slayer-kimetsu-no-yaiba",
     cover: "/anime-manga-cover-demon-slayers.jpg",
     rating: 4.8,
-    chapters: 150,
+    chapters: 206,
     status: "completed",
     genre: ["Action", "Adventure", "Fantasy"],
     description: "A young warrior embarks on a perilous journey to vanquish demons and protect humanity.",
