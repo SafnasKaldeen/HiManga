@@ -72,7 +72,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-demon-slayers.jpg",
     rating: 4.8,
     chapters: 150,
-    status: "Locked",
+    status: "completed",
     genre: ["Action", "Adventure", "Fantasy"],
     description: "A young warrior embarks on a perilous journey to vanquish demons and protect humanity.",
     views: 2500000,
