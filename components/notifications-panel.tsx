@@ -120,7 +120,18 @@ export default function NotificationsPanel() {
 
             {/* Main Notification Panel */}
             <div className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none">
-              <div className="pointer-events-auto w-full max-w-2xl animate-systemAppear">
+              <div
+                className="
+      pointer-events-auto 
+      w-full 
+      max-w-2xl 
+      sm:scale-100 
+      scale-[0.8] 
+      sm:max-h-[90vh] 
+      max-h-[80vh]
+      animate-systemAppear
+    "
+              >
                 {/* Glowing Border Effect */}
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-xl animate-pulse" />
