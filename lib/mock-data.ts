@@ -49,7 +49,7 @@ export const trendingMangas: Manga[] = [
     genre: ["Action", "Fantasy", "Adventure"],
     description: "In a world where hunters battle monsters, one man’s journey from the weakest to the strongest begins.",
     views: 4500000,
-  }
+  },
   {
     id: "3",
     title: "Black Clover",
