@@ -3,12 +3,13 @@
 
 import type React from "react";
 import { createContext, useContext, useState, useEffect } from "react";
-import { 
-  signUp as supabaseSignUp, 
-  signIn as supabaseSignIn, 
+import {
+  signUp as supabaseSignUp,
+  signIn as supabaseSignIn,
   getUserProfile,
-  updateUserProfile 
+  updateUserProfile,
 } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase"; // ✅ make sure supabase client is imported
 
 export interface User {
   id: string;
@@ -37,11 +38,30 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// ✅ Move the signIn helper OUTSIDE the component
+export async function signIn(email: string, password: string) {
+  const { data: authData, error: authError } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+  if (authError) throw new Error(authError.message);
+
+  const { data: profileData, error: profileError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", authData.user.id)
+    .single();
+
+  if (profileError) throw new Error("User profile not found");
+  return profileData;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Convert database user to User type
   const convertToUser = (data: any): User => ({
     id: data.id,
     email: data.email || "",
@@ -56,56 +76,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     createdAt: data.created_at,
   });
 
-  // In lib/auth-context.tsx - update the useEffect
-useEffect(() => {
-  const loadUser = async () => {
-    try {
-      const savedUserId = localStorage.getItem("userId");
-      console.log("Loading user with ID:", savedUserId);
-      
-      if (savedUserId) {
-        const profile = await getUserProfile(savedUserId);
-        console.log("Loaded user profile:", profile);
-        setUser(convertToUser(profile));
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const savedUserId = localStorage.getItem("userId");
+        if (savedUserId) {
+          const profile = await getUserProfile(savedUserId);
+          setUser(convertToUser(profile));
+        }
+      } catch (error) {
+        console.error("Error loading user:", error);
+        localStorage.removeItem("userId");
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error loading user:", error);
-      localStorage.removeItem("userId");
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  loadUser();
-}, []);
-
-  // Sign In with Supabase Auth
-export async function signIn(email, password) {
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (authError) throw new Error(authError.message);
-
-  // Get user profile
-  const { data: profileData, error: profileError } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", authData.user.id)
-    .single();
-
-  if (profileError) throw new Error("User profile not found");
-
-  return profileData;
-}
+    };
+    loadUser();
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {
       const data = await supabaseSignIn(email, password);
       const userData = convertToUser(data);
-      
       setUser(userData);
       localStorage.setItem("userId", data.id);
     } catch (error: any) {
@@ -116,27 +109,15 @@ export async function signIn(email, password) {
 
   const signup = async (email: string, username: string, password: string) => {
     try {
-      // Basic validation
-      if (!email || !username || !password) {
+      if (!email || !username || !password)
         throw new Error("All fields are required");
-      }
-
-      if (password.length < 6) {
+      if (password.length < 6)
         throw new Error("Password must be at least 6 characters");
-      }
-
-      if (username.length < 3) {
+      if (username.length < 3)
         throw new Error("Username must be at least 3 characters");
-      }
-
-      console.log("Starting signup...", { email, username });
 
       const data = await supabaseSignUp(email, password, username);
-      
-      console.log("Signup successful!", data);
-
       const userData = convertToUser(data);
-
       setUser(userData);
       localStorage.setItem("userId", data.id);
     } catch (error: any) {
@@ -158,7 +139,6 @@ export async function signIn(email, password) {
   const updateProfile = async (updates: Partial<User>) => {
     try {
       if (!user) throw new Error("No user logged in");
-
       const updatedData = await updateUserProfile(user.id, updates);
       setUser(convertToUser(updatedData));
     } catch (error: any) {
