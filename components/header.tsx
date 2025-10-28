@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Zap, User, LogOut } from "lucide-react";
-import { NotificationsPanel } from "@/components/notifications-panel";
+import NotificationsPanel from "@/components/notifications-panel";
 import { useState } from "react";
 import Image from "next/image";
 
