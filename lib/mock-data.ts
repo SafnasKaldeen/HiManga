@@ -57,7 +57,7 @@ export const trendingMangas: Manga[] = [
     slug: "black-clover",
     cover: "/anime-manga-cover-black-clover.jpg",
     rating: 4.5,
-    chapters: 300,
+    chapters: 383,
     status: "ongoing",
     genre: ["Action", "Adventure", "Fantasy"],
     description: "In a world where magic is everything, two orphans strive to become the Wizard King.",
