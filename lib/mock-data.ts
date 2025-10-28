@@ -90,7 +90,7 @@ export const trendingMangas: Manga[] = [
     description: "A high school student joins a secret organization to combat curses and supernatural threats.",
     views: 4000000,
   },
-  ,{
+  {
     id: "6",
     title: "kaiju no 8",
     author: "Naoya Matsumoto",
