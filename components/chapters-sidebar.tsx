@@ -100,25 +100,29 @@ export function ChaptersSidebar({
   useEffect(() => {
     if (!isSearchFocused) return;
 
+    // Prevent body scroll on iOS when keyboard appears
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+
     const handleResize = () => {
-      // Scroll the input into view when keyboard appears
+      // Keep the sidebar visible when keyboard appears
       if (searchInputRef.current) {
         setTimeout(() => {
           searchInputRef.current?.scrollIntoView({
             behavior: "smooth",
-            block: "nearest",
+            block: "center",
           });
-        }, 150);
+        }, 100);
       }
     };
 
-    // Initial scroll when focused
     handleResize();
 
     window.addEventListener("resize", handleResize);
     window.visualViewport?.addEventListener("resize", handleResize);
 
     return () => {
+      document.body.style.overflow = originalStyle;
       window.removeEventListener("resize", handleResize);
       window.visualViewport?.removeEventListener("resize", handleResize);
     };
@@ -137,7 +141,18 @@ export function ChaptersSidebar({
   };
 
   return (
-    <div className="w-full h-screen flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden">
+    <div
+      className="w-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden"
+      style={{
+        height: "100dvh",
+        maxHeight: "100dvh",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
+    >
       {/* Fixed Header Section */}
       <div className="flex-shrink-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
         <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -301,6 +316,15 @@ export function ChaptersSidebar({
       </div>
 
       <style jsx global>{`
+        /* Prevent entire page from shifting when keyboard appears */
+        html,
+        body {
+          overflow: hidden;
+          height: 100%;
+          position: fixed;
+          width: 100%;
+        }
+
         div[style*="scrollbarWidth"]::-webkit-scrollbar {
           width: 8px;
         }
