@@ -45,7 +45,7 @@ export function AnimeCard({ manga }: AnimeCardProps) {
         }}
       >
         <Card
-          className={`overflow-hidden h-full flex flex-col group relative
+          className={`overflow-hidden h-full flex flex-col group relative p-0
             bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/90
             border border-white/10 backdrop-blur-xl
             transition-all duration-500 ease-out
