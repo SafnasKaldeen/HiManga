@@ -105,6 +105,19 @@ export const trendingMangas: Manga[] = [
   },
   {
     id: "7",
+    title: "One Punch Man",
+    author: "ONE",
+    slug: "one-punch-man",
+    cover: "/anime-manga-cover-one-punch-man.jpg",
+    rating: 4.6,
+    chapters: 160,
+    status: "Locked",
+    genre: ["Action", "Comedy", "Superhero"],
+    description: "Saitama, a hero who can defeat any opponent with a single punch, seeks excitement in his heroic endeavors.",
+    views: 3500000,
+  },
+  {
+    id: "8",
     title: "Boruto: Naruto Next Generations",
     author: "Masashi Kishimoto",
     slug: "boruto-naruto-next-generations",
@@ -129,19 +142,6 @@ export const trendingMangas: Manga[] = [
   //   description: "A gamer dives into the ultimate VRMMO, where every quest is a step closer to paradise.",
   //   views: 2000000,
   // },
-  {
-    id: "8",
-    title: "One Punch Man",
-    author: "ONE",
-    slug: "one-punch-man",
-    cover: "/anime-manga-cover-one-punch-man.jpg",
-    rating: 4.6,
-    chapters: 160,
-    status: "Locked",
-    genre: ["Action", "Comedy", "Superhero"],
-    description: "Saitama, a hero who can defeat any opponent with a single punch, seeks excitement in his heroic endeavors.",
-    views: 3500000,
-  },
 ]
 
 export const trendingMangasWithChapters: MangaWithChapters[] = trendingMangas.map((manga) => ({
