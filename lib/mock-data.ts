@@ -110,7 +110,7 @@ export const trendingMangas: Manga[] = [
     slug: "one-punch-man",
     cover: "/anime-manga-cover-one-punch-man.jpg",
     rating: 4.6,
-    chapters: 160,
+    chapters: 278,
     status: "Locked",
     genre: ["Action", "Comedy", "Superhero"],
     description: "Saitama, a hero who can defeat any opponent with a single punch, seeks excitement in his heroic endeavors.",
