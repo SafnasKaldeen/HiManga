@@ -1116,7 +1116,7 @@ export function MangaReader({
                       {nextChapter && nextChapter <= totalChapters && (
                         <Button
                           onClick={handleNextChapter}
-                          className="bg-cyan-600 hover:bg-cyan-700 text-white hover:text-cyan-400"
+                          className="bg-cyan-600 hover:bg-cyan-700 text-white hover:text-cyan-400 mb-10"
                         >
                           Continue to Chapter {nextChapter}
                         </Button>
