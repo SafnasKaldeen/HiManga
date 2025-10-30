@@ -512,14 +512,7 @@ export function MangaReader({
                   </Button>
 
                   <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
-                    <p className="text-xs font-medium">
-                      Ch {chapter}
-                      {totalPanelsToUse > 0 && (
-                        <span className="text-cyan-400 ml-1">
-                          ({totalPanelsToUse} panels)
-                        </span>
-                      )}
-                    </p>
+                    <p className="text-xs font-medium">Ch {chapter}</p>
                   </Card>
 
                   <Button
