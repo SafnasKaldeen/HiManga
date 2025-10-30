@@ -2,8 +2,6 @@
 // FILE: app/api/manga/image/route.ts
 // ==============================================
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { WATERMARK_CONFIG } from "@/lib/config";
 
 export async function GET(request: NextRequest) {
@@ -12,27 +10,31 @@ export async function GET(request: NextRequest) {
   const chapter = searchParams.get("chapter");
   const panel = searchParams.get("panel");
 
+  // Validate input
   if (!manga || !chapter || !panel) {
-    return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
-  }
-
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Missing required parameters" },
+      { status: 400 }
+    );
   }
 
   const chapterNum = parseInt(chapter);
   const panelNum = parseInt(panel);
 
   if (isNaN(chapterNum) || isNaN(panelNum) || chapterNum < 1 || panelNum < 1) {
-    return NextResponse.json({ error: "Invalid chapter or panel number" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid chapter or panel number" },
+      { status: 400 }
+    );
   }
 
+  // Generate Cloudinary URL (server-side only)
   const paddedChapter = String(chapterNum).padStart(3, "0");
   const paddedPanel = String(panelNum).padStart(3, "0");
   const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
   const imagePath = `manga/${manga}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
 
+  // Base transformations
   const baseTransformations = [
     "f_auto",
     "q_auto:good",
@@ -48,12 +50,17 @@ export async function GET(request: NextRequest) {
   // Add logo watermark
   if (WATERMARK_CONFIG.logo.enabled) {
     let logoPublicId = WATERMARK_CONFIG.logo.path;
+
     if (logoPublicId.startsWith("http")) {
       logoPublicId = logoPublicId
-        .replace(/^https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\//, "")
+        .replace(
+          /^https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\//,
+          ""
+        )
         .replace(/^v\d+\//, "")
         .replace(/\.[^.]+$/, "");
     }
+
     const formattedLogoId = logoPublicId.replace(/\//g, ":");
 
     overlays.push(
@@ -67,45 +74,56 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Add text watermark
+  // Add text watermark for specific manga
   const isHideWaterMark = manga === "one-piece" && chapterNum <= 700;
+
   if (isHideWaterMark) {
     const textContent = encodeURIComponent(WATERMARK_CONFIG.text.content);
     const fontStyle = `${WATERMARK_CONFIG.text.font}_${WATERMARK_CONFIG.text.size}_${WATERMARK_CONFIG.text.weight}`;
 
-    const textLayers = [
-      `l_text:${fontStyle}:${textContent}`,
-      `co_rgb:${WATERMARK_CONFIG.text.color}`,
-      `g_${WATERMARK_CONFIG.text.position}`,
-      `x_${WATERMARK_CONFIG.text.offsetX}`,
-      `y_${WATERMARK_CONFIG.text.offsetY}`,
-      `o_${WATERMARK_CONFIG.text.opacity}`,
-      "fl_layer_apply",
-    ];
-
     if (WATERMARK_CONFIG.text.background.enabled) {
-      textLayers.splice(2, 0,
+      overlays.push(
+        `l_text:${fontStyle}:${textContent}`,
+        `co_rgb:${WATERMARK_CONFIG.text.color}`,
         `b_rgb:${WATERMARK_CONFIG.text.background.color}`,
-        `bo_${WATERMARK_CONFIG.text.background.padding}px_solid_rgb:${WATERMARK_CONFIG.text.background.color}`
+        `bo_${WATERMARK_CONFIG.text.background.padding}px_solid_rgb:${WATERMARK_CONFIG.text.background.color}`,
+        `g_${WATERMARK_CONFIG.text.position}`,
+        `x_${WATERMARK_CONFIG.text.offsetX}`,
+        `y_${WATERMARK_CONFIG.text.offsetY}`,
+        `o_${WATERMARK_CONFIG.text.opacity}`,
+        "fl_layer_apply"
+      );
+    } else {
+      overlays.push(
+        `l_text:${fontStyle}:${textContent}`,
+        `co_rgb:${WATERMARK_CONFIG.text.color}`,
+        `g_${WATERMARK_CONFIG.text.position}`,
+        `x_${WATERMARK_CONFIG.text.offsetX}`,
+        `y_${WATERMARK_CONFIG.text.offsetY}`,
+        `o_${WATERMARK_CONFIG.text.opacity}`,
+        "fl_layer_apply"
       );
     }
-
-    overlays.push(...textLayers);
   }
 
   const allTransformations = [...baseTransformations, ...overlays].join(",");
   const imageUrl = `${baseUrl}/${allTransformations}/${imagePath}`;
 
   try {
+    // Fetch image from Cloudinary
     const imageResponse = await fetch(imageUrl, {
-      headers: { "User-Agent": "HiManga-Server/1.0" },
+      headers: {
+        "User-Agent": "HiManga-Server/1.0",
+      },
     });
 
     if (!imageResponse.ok) {
       return NextResponse.json({ error: "Image not found" }, { status: 404 });
     }
 
+    // Stream the image to client
     const imageBuffer = await imageResponse.arrayBuffer();
+
     return new NextResponse(imageBuffer, {
       headers: {
         "Content-Type": "image/jpeg",
@@ -115,6 +133,9 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error fetching image:", error);
-    return NextResponse.json({ error: "Failed to fetch image" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch image" },
+      { status: 500 }
+    );
   }
 }
