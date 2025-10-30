@@ -20,7 +20,6 @@ import {
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
 import { Header } from "./header";
-import { WATERMARK_CONFIG } from "@/lib/config";
 import { MobileCommentsOverlay } from "./mobile-comments-overlay";
 
 interface MangaReaderProps {
@@ -28,7 +27,7 @@ interface MangaReaderProps {
   mangaTitle: string;
   chapter: number;
   mangaSlug?: string;
-  totalPanels?: number; // Now optional - will be detected dynamically
+  totalPanels?: number;
   previousChapter: number | null;
   nextChapter: number | null;
   totalChapters?: number;
@@ -67,83 +66,13 @@ export function MangaReader({
 
   const isLockedChapter = chapter > totalChapters;
 
+  // UPDATED: Simple API route URL instead of direct Cloudinary
   const getOptimizedPanelUrl = (panelNumber: number) => {
     const paddedChapter = String(chapter).padStart(3, "0");
     const paddedPanel = String(panelNumber).padStart(3, "0");
-    const baseUrl = "https://res.cloudinary.com/dk9ywbxu1/image/upload";
-    const imagePath = `manga/${mangaSlug}/chapter-${paddedChapter}/panel-${paddedPanel}.jpg`;
 
-    const baseTransformations = [
-      "f_auto",
-      "q_auto:good",
-      "w_1200",
-      "c_limit",
-      "dpr_auto",
-      "fl_progressive",
-      "fl_lossy",
-    ];
-
-    const overlays = [];
-
-    if (WATERMARK_CONFIG.logo.enabled) {
-      let logoPublicId = WATERMARK_CONFIG.logo.path;
-
-      if (logoPublicId.startsWith("http")) {
-        logoPublicId = logoPublicId
-          .replace(
-            /^https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\//,
-            ""
-          )
-          .replace(/^v\d+\//, "")
-          .replace(/\.[^.]+$/, "");
-      }
-
-      const formattedLogoId = logoPublicId.replace(/\//g, ":");
-
-      overlays.push(
-        `l_${formattedLogoId}`,
-        `w_${WATERMARK_CONFIG.logo.width}`,
-        `o_${WATERMARK_CONFIG.logo.opacity}`,
-        `g_${WATERMARK_CONFIG.logo.position}`,
-        `x_${WATERMARK_CONFIG.logo.offsetX}`,
-        `y_${WATERMARK_CONFIG.logo.offsetY}`,
-        "fl_layer_apply"
-      );
-    }
-
-    const isHideWaterMark = mangaSlug === "one-piece" && Number(chapter) <= 700;
-
-    if (isHideWaterMark) {
-      const textContent = encodeURIComponent(WATERMARK_CONFIG.text.content);
-      const fontStyle = `${WATERMARK_CONFIG.text.font}_${WATERMARK_CONFIG.text.size}_${WATERMARK_CONFIG.text.weight}`;
-
-      if (WATERMARK_CONFIG.text.background.enabled) {
-        overlays.push(
-          `l_text:${fontStyle}:${textContent}`,
-          `co_rgb:${WATERMARK_CONFIG.text.color}`,
-          `b_rgb:${WATERMARK_CONFIG.text.background.color}`,
-          `bo_${WATERMARK_CONFIG.text.background.padding}px_solid_rgb:${WATERMARK_CONFIG.text.background.color}`,
-          `g_${WATERMARK_CONFIG.text.position}`,
-          `x_${WATERMARK_CONFIG.text.offsetX}`,
-          `y_${WATERMARK_CONFIG.text.offsetY}`,
-          `o_${WATERMARK_CONFIG.text.opacity}`,
-          "fl_layer_apply"
-        );
-      } else {
-        overlays.push(
-          `l_text:${fontStyle}:${textContent}`,
-          `co_rgb:${WATERMARK_CONFIG.text.color}`,
-          `g_${WATERMARK_CONFIG.text.position}`,
-          `x_${WATERMARK_CONFIG.text.offsetX}`,
-          `y_${WATERMARK_CONFIG.text.offsetY}`,
-          `o_${WATERMARK_CONFIG.text.opacity}`,
-          "fl_layer_apply"
-        );
-      }
-    }
-
-    const allTransformations = [...baseTransformations, ...overlays].join(",");
-    return `${baseUrl}/${allTransformations}/${imagePath}`;
+    // Use API route instead of direct Cloudinary URL
+    return `/api/manga/image?manga=${mangaSlug}&chapter=${paddedChapter}&panel=${paddedPanel}`;
   };
 
   // Dynamic panel detection
@@ -154,9 +83,8 @@ export function MangaReader({
     setDetectionError(null);
 
     try {
-      // Binary search to find the last available panel
       let left = 1;
-      let right = 200; // Maximum expected panels
+      let right = 200;
       let lastValidPanel = 0;
 
       const checkPanelExists = async (panelNum: number): Promise<boolean> => {
@@ -183,7 +111,6 @@ export function MangaReader({
         });
       };
 
-      // Binary search
       while (left <= right) {
         const mid = Math.floor((left + right) / 2);
         const exists = await checkPanelExists(mid);
@@ -197,7 +124,6 @@ export function MangaReader({
       }
 
       if (lastValidPanel === 0) {
-        // No panels found, try sequential check from 1
         let panelNum = 1;
         let consecutiveFails = 0;
 
@@ -215,7 +141,6 @@ export function MangaReader({
 
       if (lastValidPanel > 0) {
         setDetectedTotalPanels(lastValidPanel);
-        // Load initial panels
         const initialPanels = Array.from(
           { length: Math.min(10, lastValidPanel) },
           (_, i) => i + 1
@@ -227,7 +152,6 @@ export function MangaReader({
     } catch (error) {
       console.error("Panel detection error:", error);
       setDetectionError("Failed to detect panels. Using fallback.");
-      // Fallback to showing first few panels
       setDetectedTotalPanels(23);
       setDisplayedPanels([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     } finally {
@@ -235,7 +159,6 @@ export function MangaReader({
     }
   }, [chapter, mangaSlug, isLockedChapter]);
 
-  // Run detection on mount if totalPanels not provided
   useEffect(() => {
     if (!providedTotalPanels && !isLockedChapter) {
       detectTotalPanels();
@@ -593,7 +516,6 @@ export function MangaReader({
             </div>
           )}
 
-          {/* Advanced Controls content - keeping existing implementation */}
           {showAdvancedControls && !isFullscreen && (
             <>
               <div
