@@ -15,16 +15,12 @@ import {
   Lock,
   Settings,
   RotateCcw,
-  MessageCircle,
-  Send,
-  Heart,
-  Reply,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
 import { Header } from "./header";
 import { WATERMARK_CONFIG } from "@/lib/config";
-import { mockComments } from "@/lib/mock-comments";
 import { MobileCommentsOverlay } from "./mobile-comments-overlay";
 
 interface MangaReaderProps {
@@ -32,7 +28,7 @@ interface MangaReaderProps {
   mangaTitle: string;
   chapter: number;
   mangaSlug?: string;
-  totalPanels: number;
+  totalPanels?: number; // Now optional - will be detected dynamically
   previousChapter: number | null;
   nextChapter: number | null;
   totalChapters?: number;
@@ -43,7 +39,7 @@ export function MangaReader({
   mangaTitle,
   mangaSlug,
   chapter,
-  totalPanels,
+  totalPanels: providedTotalPanels,
   previousChapter,
   nextChapter,
   totalChapters = 1200,
@@ -52,10 +48,12 @@ export function MangaReader({
   const [showControls, setShowControls] = useState(true);
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-  const [displayedPanels, setDisplayedPanels] = useState<number[]>([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23,
-  ]);
+  const [displayedPanels, setDisplayedPanels] = useState<number[]>([]);
+  const [detectedTotalPanels, setDetectedTotalPanels] = useState<number | null>(
+    providedTotalPanels || null
+  );
+  const [isDetecting, setIsDetecting] = useState(!providedTotalPanels);
+  const [detectionError, setDetectionError] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -148,6 +146,108 @@ export function MangaReader({
     return `${baseUrl}/${allTransformations}/${imagePath}`;
   };
 
+  // Dynamic panel detection
+  const detectTotalPanels = useCallback(async () => {
+    if (isLockedChapter) return;
+
+    setIsDetecting(true);
+    setDetectionError(null);
+
+    try {
+      // Binary search to find the last available panel
+      let left = 1;
+      let right = 200; // Maximum expected panels
+      let lastValidPanel = 0;
+
+      const checkPanelExists = async (panelNum: number): Promise<boolean> => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          const url = getOptimizedPanelUrl(panelNum);
+
+          const timeout = setTimeout(() => {
+            img.src = "";
+            resolve(false);
+          }, 5000);
+
+          img.onload = () => {
+            clearTimeout(timeout);
+            resolve(true);
+          };
+
+          img.onerror = () => {
+            clearTimeout(timeout);
+            resolve(false);
+          };
+
+          img.src = url;
+        });
+      };
+
+      // Binary search
+      while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        const exists = await checkPanelExists(mid);
+
+        if (exists) {
+          lastValidPanel = mid;
+          left = mid + 1;
+        } else {
+          right = mid - 1;
+        }
+      }
+
+      if (lastValidPanel === 0) {
+        // No panels found, try sequential check from 1
+        let panelNum = 1;
+        let consecutiveFails = 0;
+
+        while (consecutiveFails < 3 && panelNum <= 50) {
+          const exists = await checkPanelExists(panelNum);
+          if (exists) {
+            lastValidPanel = panelNum;
+            consecutiveFails = 0;
+          } else {
+            consecutiveFails++;
+          }
+          panelNum++;
+        }
+      }
+
+      if (lastValidPanel > 0) {
+        setDetectedTotalPanels(lastValidPanel);
+        // Load initial panels
+        const initialPanels = Array.from(
+          { length: Math.min(10, lastValidPanel) },
+          (_, i) => i + 1
+        );
+        setDisplayedPanels(initialPanels);
+      } else {
+        setDetectionError("No panels found. Please check the chapter.");
+      }
+    } catch (error) {
+      console.error("Panel detection error:", error);
+      setDetectionError("Failed to detect panels. Using fallback.");
+      // Fallback to showing first few panels
+      setDetectedTotalPanels(23);
+      setDisplayedPanels([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    } finally {
+      setIsDetecting(false);
+    }
+  }, [chapter, mangaSlug, isLockedChapter]);
+
+  // Run detection on mount if totalPanels not provided
+  useEffect(() => {
+    if (!providedTotalPanels && !isLockedChapter) {
+      detectTotalPanels();
+    } else if (providedTotalPanels) {
+      const initialPanels = Array.from(
+        { length: Math.min(15, providedTotalPanels) },
+        (_, i) => i + 1
+      );
+      setDisplayedPanels(initialPanels);
+    }
+  }, [detectTotalPanels, providedTotalPanels, isLockedChapter]);
+
   useEffect(() => {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 1024;
@@ -159,8 +259,14 @@ export function MangaReader({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const totalPanelsToUse = detectedTotalPanels || providedTotalPanels || 0;
+
   const loadMorePanels = useCallback(() => {
-    if (isLoading || displayedPanels.length >= totalPanels || isLockedChapter)
+    if (
+      isLoading ||
+      displayedPanels.length >= totalPanelsToUse ||
+      isLockedChapter
+    )
       return;
 
     setIsLoading(true);
@@ -169,7 +275,11 @@ export function MangaReader({
       const nextPanels = [];
       const batchSize = 5;
 
-      for (let i = 1; i <= batchSize && currentLength + i <= totalPanels; i++) {
+      for (
+        let i = 1;
+        i <= batchSize && currentLength + i <= totalPanelsToUse;
+        i++
+      ) {
         nextPanels.push(currentLength + i);
       }
 
@@ -178,10 +288,10 @@ export function MangaReader({
       }
       setIsLoading(false);
     }, 200);
-  }, [displayedPanels.length, totalPanels, isLoading, isLockedChapter]);
+  }, [displayedPanels.length, totalPanelsToUse, isLoading, isLockedChapter]);
 
   useEffect(() => {
-    if (isLockedChapter) return;
+    if (isLockedChapter || isDetecting) return;
 
     const handleScroll = () => {
       const container = scrollContainerRef.current;
@@ -195,7 +305,7 @@ export function MangaReader({
       if (
         scrolledToBottom &&
         !isLoading &&
-        displayedPanels.length < totalPanels
+        displayedPanels.length < totalPanelsToUse
       ) {
         loadMorePanels();
       }
@@ -211,8 +321,9 @@ export function MangaReader({
     loadMorePanels,
     isLoading,
     displayedPanels.length,
-    totalPanels,
+    totalPanelsToUse,
     isLockedChapter,
+    isDetecting,
   ]);
 
   const smoothScroll = (direction: "up" | "down") => {
@@ -376,6 +487,7 @@ export function MangaReader({
               <Menu className="w-4 h-4" />
             </Button>
           )}
+
           {showControls && !isFullscreen && (
             <div className="bg-gradient-to-r from-slate-900/80 to-slate-900/60 backdrop-blur-xl border-t border-cyan-500/20 p-4 flex-shrink-0 transition-all duration-300 relative z-40">
               <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -400,7 +512,14 @@ export function MangaReader({
                   </Button>
 
                   <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
-                    <p className="text-xs font-medium">Ch {chapter}</p>
+                    <p className="text-xs font-medium">
+                      Ch {chapter}
+                      {totalPanelsToUse > 0 && (
+                        <span className="text-cyan-400 ml-1">
+                          ({totalPanelsToUse} panels)
+                        </span>
+                      )}
+                    </p>
                   </Card>
 
                   <Button
@@ -481,7 +600,7 @@ export function MangaReader({
             </div>
           )}
 
-          {/* Advanced Controls Overlay - Non-Fullscreen */}
+          {/* Advanced Controls content - keeping existing implementation */}
           {showAdvancedControls && !isFullscreen && (
             <>
               <div
@@ -536,13 +655,6 @@ export function MangaReader({
                         value={brightness}
                         onChange={(e) => setBrightness(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            ((brightness - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) ${
-                            ((brightness - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
 
@@ -562,13 +674,6 @@ export function MangaReader({
                         value={contrast}
                         onChange={(e) => setContrast(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            ((contrast - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) ${
-                            ((contrast - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
 
@@ -588,13 +693,6 @@ export function MangaReader({
                         value={saturation}
                         onChange={(e) => setSaturation(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            (saturation / 200) * 100
-                          }%, rgb(51, 65, 85) ${
-                            (saturation / 200) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
 
@@ -614,13 +712,6 @@ export function MangaReader({
                         value={panelWidth}
                         onChange={(e) => setPanelWidth(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            ((panelWidth - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) ${
-                            ((panelWidth - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
 
@@ -640,13 +731,6 @@ export function MangaReader({
                         value={scrollSpeed}
                         onChange={(e) => setScrollSpeed(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            ((scrollSpeed - 25) / 75) * 100
-                          }%, rgb(51, 65, 85) ${
-                            ((scrollSpeed - 25) / 75) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
                   </div>
@@ -677,7 +761,14 @@ export function MangaReader({
                     </Button>
 
                     <Card className="px-3 py-2 text-center bg-gradient-to-r from-slate-800/50 to-slate-800/30 border-cyan-500/20 text-slate-200">
-                      <p className="text-xs font-medium">Ch {chapter}</p>
+                      <p className="text-xs font-medium">
+                        Ch {chapter}
+                        {totalPanelsToUse > 0 && (
+                          <span className="text-cyan-400 ml-1">
+                            ({totalPanelsToUse})
+                          </span>
+                        )}
+                      </p>
                     </Card>
 
                     <Button
@@ -805,13 +896,6 @@ export function MangaReader({
                         value={brightness}
                         onChange={(e) => setBrightness(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            ((brightness - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) ${
-                            ((brightness - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
 
@@ -831,13 +915,6 @@ export function MangaReader({
                         value={contrast}
                         onChange={(e) => setContrast(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            ((contrast - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) ${
-                            ((contrast - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
 
@@ -857,13 +934,6 @@ export function MangaReader({
                         value={saturation}
                         onChange={(e) => setSaturation(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            (saturation / 200) * 100
-                          }%, rgb(51, 65, 85) ${
-                            (saturation / 200) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
 
@@ -883,13 +953,6 @@ export function MangaReader({
                         value={panelWidth}
                         onChange={(e) => setPanelWidth(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            ((panelWidth - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) ${
-                            ((panelWidth - 50) / 100) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
 
@@ -909,13 +972,6 @@ export function MangaReader({
                         value={scrollSpeed}
                         onChange={(e) => setScrollSpeed(Number(e.target.value))}
                         className="w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer accent-pink-500 hover:accent-pink-400 transition-all"
-                        style={{
-                          background: `linear-gradient(to right, rgb(236, 72, 153) 0%, rgb(236, 72, 153) ${
-                            ((scrollSpeed - 25) / 75) * 100
-                          }%, rgb(51, 65, 85) ${
-                            ((scrollSpeed - 25) / 75) * 100
-                          }%, rgb(51, 65, 85) 100%)`,
-                        }}
                       />
                     </div>
                   </div>
@@ -924,7 +980,7 @@ export function MangaReader({
             </>
           )}
 
-          {/* Minimal Comments Button - Centered */}
+          {/* Comments Button */}
           <button
             onClick={() => setIsCommentsOpen(true)}
             className="absolute bottom-[2.5px] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-1 bg-slate-800/90 border border-slate-700/50 hover:bg-slate-800 hover:border-cyan-400/40 text-slate-100 px-3 py-2 rounded-lg transition-all duration-200 group min-w-[60px]"
@@ -965,6 +1021,46 @@ export function MangaReader({
               }
             `}</style>
 
+            {/* Detection Loading State */}
+            {isDetecting && (
+              <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                <div className="relative">
+                  <Loader2 className="w-16 h-16 text-cyan-500 animate-spin" />
+                  <div className="absolute inset-0 blur-xl bg-cyan-500/20 rounded-full"></div>
+                </div>
+                <div className="text-center space-y-2">
+                  <h2 className="text-xl font-bold text-slate-200">
+                    Detecting Panels...
+                  </h2>
+                  <p className="text-slate-400">
+                    Automatically finding all available manga panels
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    This may take a few moments
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Detection Error */}
+            {detectionError && !isDetecting && (
+              <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[40vh] space-y-4">
+                <AlertCircle className="w-12 h-12 text-yellow-500" />
+                <div className="text-center space-y-2">
+                  <h2 className="text-lg font-bold text-slate-200">
+                    Detection Issue
+                  </h2>
+                  <p className="text-slate-400">{detectionError}</p>
+                  <Button
+                    onClick={detectTotalPanels}
+                    className="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
+                  >
+                    Retry Detection
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {isLockedChapter ? (
               <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[60vh] space-y-6">
                 <div className="relative">
@@ -992,61 +1088,64 @@ export function MangaReader({
                 </Button>
               </div>
             ) : (
-              <div
-                className="w-full space-y-0 transition-all duration-300"
-                style={{ maxWidth: `${(panelWidth / 100) * 64}rem` }}
-              >
-                {displayedPanels.map((panelNumber) => (
-                  <div
-                    key={panelNumber}
-                    className="relative group overflow-hidden shadow-2xl border border-cyan-500/20 hover:border-cyan-400 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
-                  >
-                    <img
-                      src={getOptimizedPanelUrl(panelNumber)}
-                      alt={`Panel ${panelNumber}`}
-                      className="w-full h-auto"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg";
-                      }}
-                    />
-                    <div className="absolute bottom-2 right-2 bg-slate-900/80 backdrop-blur px-2 py-1 rounded text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                      Panel {panelNumber} / {totalPanels}
-                    </div>
-                  </div>
-                ))}
-
-                {isLoading && (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
-                  </div>
-                )}
-
-                {displayedPanels.length >= totalPanels && (
-                  <div className="text-center py-8 space-y-4">
-                    <p className="text-slate-400 text-sm">End of chapter</p>
-                    {nextChapter && nextChapter <= totalChapters && (
-                      <Button
-                        onClick={handleNextChapter}
-                        className="bg-cyan-600 hover:bg-cyan-700 text-white hover:text-cyan-400"
-                      >
-                        Continue to Chapter {nextChapter}
-                      </Button>
-                    )}
-                    {nextChapter && nextChapter > totalChapters && (
-                      <div className="space-y-2">
-                        <Button
-                          disabled
-                          className="bg-slate-700 text-slate-400 cursor-not-allowed"
-                        >
-                          <Lock className="w-4 h-4 mr-2" />
-                          Chapter {nextChapter} - Not Released Yet
-                        </Button>
+              !isDetecting &&
+              displayedPanels.length > 0 && (
+                <div
+                  className="w-full space-y-0 transition-all duration-300"
+                  style={{ maxWidth: `${(panelWidth / 100) * 64}rem` }}
+                >
+                  {displayedPanels.map((panelNumber) => (
+                    <div
+                      key={panelNumber}
+                      className="relative group overflow-hidden shadow-2xl border border-cyan-500/20 hover:border-cyan-400 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                    >
+                      <img
+                        src={getOptimizedPanelUrl(panelNumber)}
+                        alt={`Panel ${panelNumber}`}
+                        className="w-full h-auto"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.src = "/placeholder.svg";
+                        }}
+                      />
+                      <div className="absolute bottom-2 right-2 bg-slate-900/80 backdrop-blur px-2 py-1 rounded text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                        Panel {panelNumber} / {totalPanelsToUse}
                       </div>
-                    )}
-                  </div>
-                )}
-              </div>
+                    </div>
+                  ))}
+
+                  {isLoading && (
+                    <div className="flex justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+                    </div>
+                  )}
+
+                  {displayedPanels.length >= totalPanelsToUse && (
+                    <div className="text-center py-8 space-y-4">
+                      <p className="text-slate-400 text-sm">End of chapter</p>
+                      {nextChapter && nextChapter <= totalChapters && (
+                        <Button
+                          onClick={handleNextChapter}
+                          className="bg-cyan-600 hover:bg-cyan-700 text-white hover:text-cyan-400"
+                        >
+                          Continue to Chapter {nextChapter}
+                        </Button>
+                      )}
+                      {nextChapter && nextChapter > totalChapters && (
+                        <div className="space-y-2">
+                          <Button
+                            disabled
+                            className="bg-slate-700 text-slate-400 cursor-not-allowed"
+                          >
+                            <Lock className="w-4 h-4 mr-2" />
+                            Chapter {nextChapter} - Not Released Yet
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
             )}
           </div>
         </div>

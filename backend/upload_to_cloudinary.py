@@ -48,6 +48,17 @@ def show_menu():
 
 
 # ============================================
+# HELPER FUNCTION: NORMALIZE EXTENSIONS
+# ============================================
+
+def normalize_extension(path):
+    """Normalize file extensions (treat jpg and jpeg as the same)"""
+    if path.endswith('.jpeg'):
+        return path[:-5] + '.jpg'
+    return path
+
+
+# ============================================
 # OPTION 7: AUTO-UPLOAD MISSING FILES
 # ============================================
 
@@ -72,7 +83,7 @@ def auto_upload_missing():
     # Step 1: Scan local files
     print("\n🔍 Scanning local files...")
     image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.tiff'}
-    local_files_map = {}  # Maps cloudinary_path -> local_file_path
+    local_files_map = {}  # Maps normalized cloudinary_path -> local_file_path
     
     for root, dirs, files in os.walk(local_folder):
         for file in files:
@@ -86,7 +97,9 @@ def auto_upload_missing():
                 else:
                     cloudinary_path = relative_path.replace('\\', '/')
                 
-                local_files_map[cloudinary_path] = full_path
+                # Normalize the path
+                normalized_path = normalize_extension(cloudinary_path)
+                local_files_map[normalized_path] = full_path
     
     print(f"✅ Found {len(local_files_map)} local images")
     
@@ -355,8 +368,11 @@ def upload_images():
         # Normalize path separators
         public_id = public_id.replace('\\', '/')
         
-        # For checking existing, we need the version with extension
+        # For checking existing, we need the version with extension (normalized)
         file_ext = os.path.splitext(relative_path)[1].lower().lstrip('.')
+        # Normalize jpeg to jpg
+        if file_ext == 'jpeg':
+            file_ext = 'jpg'
         public_id_with_ext = f"{public_id}.{file_ext}"
         
         # Skip if exists
@@ -603,7 +619,7 @@ def compare_local_cloudinary():
     
     print("\n🔍 Scanning local files...")
     
-    # Get local files WITH extension
+    # Get local files WITH extension (normalized)
     image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.tiff'}
     local_files = set()
     
@@ -617,7 +633,8 @@ def compare_local_cloudinary():
                     public_id = f"{cloudinary_base}/{relative_path}".replace('\\', '/')
                 else:
                     public_id = relative_path.replace('\\', '/')
-                local_files.add(public_id)
+                # Normalize the extension (jpeg -> jpg)
+                local_files.add(normalize_extension(public_id))
     
     print(f"✅ Found {len(local_files)} local images")
     
@@ -739,7 +756,7 @@ def get_all_resources_recursive(folder_path=""):
 
 
 def get_all_public_ids_with_extension(folder_path=""):
-    """Get set of all public_ids in Cloudinary WITH file extensions"""
+    """Get set of all public_ids in Cloudinary WITH file extensions (normalized)"""
     resources = get_all_resources_recursive(folder_path)
     public_ids = set()
     
@@ -749,9 +766,13 @@ def get_all_public_ids_with_extension(folder_path=""):
         # but NOT the extension - we need to add it back
         file_format = r.get('format', '')
         if file_format:
-            public_ids.add(f"{public_id}.{file_format}")
+            # Normalize jpeg to jpg for consistent comparison
+            if file_format.lower() == 'jpeg':
+                file_format = 'jpg'
+            full_path = f"{public_id}.{file_format}"
+            public_ids.add(normalize_extension(full_path))
         else:
-            public_ids.add(public_id)
+            public_ids.add(normalize_extension(public_id))
     
     return public_ids
 

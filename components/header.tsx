@@ -78,8 +78,12 @@ export function Header() {
 
           {/* Right Section */}
           <div className="flex items-center gap-3 md:gap-5">
-            {/* Notifications */}
-            <NotificationsPanel />
+            {/* Notifications - Only show when user is logged in */}
+            {user && (
+              <div className="hidden md:block">
+                <NotificationsPanel />
+              </div>
+            )}
 
             {/* Auth Buttons */}
             {user ? (
