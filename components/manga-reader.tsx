@@ -1023,13 +1023,10 @@ export function MangaReader({
                 </div>
                 <div className="text-center space-y-2">
                   <h2 className="text-xl font-bold text-slate-200">
-                    Detecting Panels...
+                    Fetching Panels...
                   </h2>
-                  <p className="text-slate-400">
-                    Automatically finding all available manga panels
-                  </p>
                   <p className="text-sm text-slate-500">
-                    This may take a few moments
+                    This may take a few seconds
                   </p>
                 </div>
               </div>
