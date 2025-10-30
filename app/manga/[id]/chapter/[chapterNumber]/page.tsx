@@ -50,6 +50,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
           mangaTitle={manga.title}
           mangaSlug={manga.slug}
           chapter={chapterNum}
+          totalPanels={60}
           pages={pages}
           previousChapter={previousChapter}
           nextChapter={nextChapter}
