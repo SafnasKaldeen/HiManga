@@ -4,7 +4,7 @@
 import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Zap, User, LogOut, Bell } from "lucide-react";
+import { Zap, User, LogOut } from "lucide-react";
 import NotificationsPanel from "@/components/notifications-panel";
 import { useState } from "react";
 import Image from "next/image";
@@ -44,7 +44,15 @@ export function Header() {
     <header className="border-b border-white/10 bg-[#0a0a1a]/80 backdrop-blur-xl sticky top-0 z-50">
       <div className="w-full px-4 md:px-8 lg:px-10 py-3">
         <div className="flex items-center justify-between">
-          <Bell className="w-7 h-7 text-white" />
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-black text-xl group"
+          >
+            <Image src="/logo.png" alt="HiManga Logo" width={50} height={50} />
+            <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+              HiManga
+            </span>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">

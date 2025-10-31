@@ -139,12 +139,7 @@ export default function NotificationsPanel() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/50">
-                            <Image
-                              src="/logo.png"
-                              alt="HiManga Logo"
-                              width={40}
-                              height={40}
-                            />
+                            <Bell className="w-7 h-7 text-white" />
                           </div>
                           <div>
                             <h2 className="text-xl sm:text-3xl font-black tracking-wider text-white uppercase system-font">
