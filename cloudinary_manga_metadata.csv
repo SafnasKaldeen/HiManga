@@ -1,0 +1,5 @@
+manga_name,manga_slug,chapter_number,panel_count,expected_count,status,timestamp,error,cloudinary_folder
+Dandadan,dandadan,1,65,65,success,2025-10-31T14:09:41.363757,,manga/dandadan/chapter-001
+Dandadan,dandadan,2,52,52,success,2025-10-31T14:12:00.984481,,manga/dandadan/chapter-002
+Dandadan,dandadan,3,40,40,success,2025-10-31T14:13:56.501996,,manga/dandadan/chapter-003
+Dandadan,dandadan,4,20,20,success,2025-10-31T14:14:46.898993,,manga/dandadan/chapter-004
