@@ -137,7 +137,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-spy-x-family.jpg",
     rating: 4.8,
     chapters: 80,
-    status: "Locked",
+    status: "ongoing",
     genre: ["Action", "Comedy", "Slice of Life"],
     description: "A spy on a mission forms a fake family with an assassin and a telepathic child.",
     views: 2000000,
@@ -193,7 +193,20 @@ export const trendingMangas: Manga[] = [
     genre: ["Action", "Comedy", "Slice of Life"],
     description: "A former assassin is forced to take on a new life as a high school student, where he must navigate the challenges of adolescence.",
     views: 1500000,
-  }
+  },
+  // {
+  //   id: "14",
+  //   title: "Muscle - Joseon",
+  //   author: "Unknown",
+  //   slug: "muscle-joseon",
+  //   cover: "/anime-manga-cover-muscle-joseon.jpg",
+  //   rating: 4.5,
+  //   chapters: 100,
+  //   status: "Locked",
+  //   genre: ["Action", "Sports", "Drama"],
+  //   description: "In a world where strength is everything, a young boy dreams of becoming the strongest fighter.",
+  //   views: 1200000,
+  // }
 ]
 
 export const trendingMangasWithChapters: MangaWithChapters[] = trendingMangas.map((manga) => ({
