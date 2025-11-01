@@ -29,116 +29,116 @@ Dandadan,dandadan,27,22,22,success,2025-10-31T14:35:26.790012,,manga/dandadan/ch
 Dandadan,dandadan,28,19,19,success,2025-10-31T14:36:31.788876,,manga/dandadan/chapter-028
 Dandadan,dandadan,29,19,19,success,2025-10-31T14:39:37.858920,,manga/dandadan/chapter-029
 Dandadan,dandadan,30,18,18,success,2025-10-31T14:40:30.777564,,manga/dandadan/chapter-030
-Dandadan,dandadan,31,20,21,partial,2025-10-31T14:42:34.281985,Uploaded 20/21 panels,manga/dandadan/chapter-031
-Dandadan,dandadan,32,18,19,partial,2025-10-31T14:43:42.381263,Uploaded 18/19 panels,manga/dandadan/chapter-032
-Dandadan,dandadan,33,0,0,failed,2025-10-31T14:43:54.485294,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-033
-Dandadan,dandadan,34,0,0,failed,2025-10-31T14:44:06.578759,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-034
-Dandadan,dandadan,35,0,0,failed,2025-10-31T14:44:19.142062,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-035
-Dandadan,dandadan,36,0,0,failed,2025-10-31T14:44:31.240475,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-036
-Dandadan,dandadan,37,0,0,failed,2025-10-31T14:44:43.312843,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-037
-Dandadan,dandadan,38,0,0,failed,2025-10-31T14:44:55.390774,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-038
-Dandadan,dandadan,39,0,0,failed,2025-10-31T14:45:09.648492,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-039
-Dandadan,dandadan,40,0,0,failed,2025-10-31T14:45:21.730565,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-040
-Dandadan,dandadan,41,0,0,failed,2025-10-31T14:45:33.879809,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-041
-Dandadan,dandadan,42,0,0,failed,2025-10-31T14:45:45.961826,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-042
-Dandadan,dandadan,43,0,0,failed,2025-10-31T14:45:58.038295,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-043
-Dandadan,dandadan,44,0,0,failed,2025-10-31T14:46:11.440897,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-044
-Dandadan,dandadan,45,0,0,failed,2025-10-31T14:46:23.539320,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-045
-Dandadan,dandadan,46,0,0,failed,2025-10-31T14:46:35.624299,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-046
-Dandadan,dandadan,47,0,0,failed,2025-10-31T14:46:47.717157,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-047
-Dandadan,dandadan,48,0,0,failed,2025-10-31T14:47:19.435459,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-048
-Dandadan,dandadan,49,0,0,failed,2025-10-31T14:47:31.532536,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-049
-Dandadan,dandadan,50,0,0,failed,2025-10-31T14:47:43.628069,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-050
-Dandadan,dandadan,51,0,0,failed,2025-10-31T14:47:55.708252,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-051
-Dandadan,dandadan,52,0,0,failed,2025-10-31T14:48:07.780954,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-052
-Dandadan,dandadan,53,0,0,failed,2025-10-31T14:48:19.879663,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-053
-Dandadan,dandadan,54,0,0,failed,2025-10-31T14:48:35.603506,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-054
-Dandadan,dandadan,55,0,0,failed,2025-10-31T14:48:47.694286,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-055
-Dandadan,dandadan,56,0,0,failed,2025-10-31T14:49:04.366540,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-056
-Dandadan,dandadan,57,0,0,failed,2025-10-31T14:49:16.444628,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-057
-Dandadan,dandadan,58,0,0,failed,2025-10-31T14:49:38.585468,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-058
-Dandadan,dandadan,59,0,0,failed,2025-10-31T14:49:53.346463,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-059
-Dandadan,dandadan,60,0,0,failed,2025-10-31T14:50:15.551093,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-060
-Dandadan,dandadan,61,0,0,failed,2025-10-31T14:50:37.088036,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-061
-Dandadan,dandadan,62,0,0,failed,2025-10-31T14:51:02.768318,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-062
-Dandadan,dandadan,63,0,0,failed,2025-10-31T14:51:21.204019,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-063
-Dandadan,dandadan,64,0,0,failed,2025-10-31T14:51:33.291892,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-064
-Dandadan,dandadan,65,0,0,failed,2025-10-31T14:51:58.384920,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-065
-Dandadan,dandadan,66,0,0,failed,2025-10-31T14:52:10.466187,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-066
-Dandadan,dandadan,67,0,0,failed,2025-10-31T14:52:50.816033,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-067
-Dandadan,dandadan,68,0,0,failed,2025-10-31T14:53:19.574837,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-068
-Dandadan,dandadan,69,0,0,failed,2025-10-31T14:53:37.627091,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-069
-Dandadan,dandadan,70,0,0,failed,2025-10-31T14:53:49.740514,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-070
-Dandadan,dandadan,71,0,0,failed,2025-10-31T14:54:01.825808,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-071
-Dandadan,dandadan,72,0,0,failed,2025-10-31T14:54:15.707042,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-072
-Dandadan,dandadan,73,0,0,failed,2025-10-31T14:54:53.626630,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-073
-Dandadan,dandadan,74,0,0,failed,2025-10-31T14:55:10.513567,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-074
-Dandadan,dandadan,75,0,0,failed,2025-10-31T14:55:22.587830,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-075
-Dandadan,dandadan,76,0,0,failed,2025-10-31T14:55:45.656148,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-076
-Dandadan,dandadan,77,0,0,failed,2025-10-31T14:55:57.744871,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-077
-Dandadan,dandadan,78,0,0,failed,2025-10-31T14:56:09.819632,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-078
-Dandadan,dandadan,79,0,0,failed,2025-10-31T14:56:21.957617,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-079
-Dandadan,dandadan,80,0,0,failed,2025-10-31T14:56:34.047174,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-080
-Dandadan,dandadan,81,0,0,failed,2025-10-31T14:56:46.110209,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-081
-Dandadan,dandadan,82,0,0,failed,2025-10-31T14:56:58.202916,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-082
-Dandadan,dandadan,83,0,0,failed,2025-10-31T14:57:10.289311,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-083
-Dandadan,dandadan,84,0,0,failed,2025-10-31T14:57:27.148353,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-084
-Dandadan,dandadan,85,0,0,failed,2025-10-31T14:57:39.257669,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-085
-Dandadan,dandadan,86,0,0,failed,2025-10-31T14:57:51.371126,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-086
-Dandadan,dandadan,87,0,0,failed,2025-10-31T14:58:14.945948,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-087
-Dandadan,dandadan,88,0,0,failed,2025-10-31T14:58:55.179561,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-088
-Dandadan,dandadan,89,0,0,failed,2025-10-31T14:59:19.088293,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-089
-Dandadan,dandadan,90,0,0,failed,2025-10-31T14:59:33.521605,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-090
-Dandadan,dandadan,91,0,0,failed,2025-10-31T14:59:45.586386,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-091
-Dandadan,dandadan,92,0,0,failed,2025-10-31T14:59:57.689476,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-092
-Dandadan,dandadan,93,0,0,failed,2025-10-31T15:00:09.786813,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-093
-Dandadan,dandadan,94,0,0,failed,2025-10-31T15:00:26.172930,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-094
-Dandadan,dandadan,95,0,0,failed,2025-10-31T15:00:48.330257,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-095
-Dandadan,dandadan,96,0,0,failed,2025-10-31T15:01:09.809728,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-096
-Dandadan,dandadan,97,0,0,failed,2025-10-31T15:01:21.906084,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-097
-Dandadan,dandadan,98,0,0,failed,2025-10-31T15:01:34.015334,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-098
-Dandadan,dandadan,99,0,0,failed,2025-10-31T15:01:51.968710,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-099
-Dandadan,dandadan,100,0,0,failed,2025-10-31T15:02:11.322378,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-100
-Dandadan,dandadan,101,0,0,failed,2025-10-31T15:02:27.170303,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-101
-Dandadan,dandadan,102,0,0,failed,2025-10-31T15:02:39.281676,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-102
-Dandadan,dandadan,103,0,0,failed,2025-10-31T15:02:52.211248,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-103
-Dandadan,dandadan,104,0,0,failed,2025-10-31T15:03:08.489022,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-104
-Dandadan,dandadan,105,0,0,failed,2025-10-31T15:03:28.649362,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-105
-Dandadan,dandadan,106,0,0,failed,2025-10-31T15:03:45.867946,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-106
-Dandadan,dandadan,107,0,0,failed,2025-10-31T15:03:58.003335,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-107
-Dandadan,dandadan,108,0,0,failed,2025-10-31T15:04:20.410218,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-108
-Dandadan,dandadan,109,0,0,failed,2025-10-31T15:04:47.808904,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-109
-Dandadan,dandadan,110,0,0,failed,2025-10-31T15:05:02.055322,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-110
-Dandadan,dandadan,111,0,0,failed,2025-10-31T15:05:20.293355,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-111
-Dandadan,dandadan,112,0,0,failed,2025-10-31T15:05:37.605468,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-112
-Dandadan,dandadan,113,0,0,failed,2025-10-31T15:05:52.880243,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-113
-Dandadan,dandadan,114,0,0,failed,2025-10-31T15:06:08.514832,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-114
-Dandadan,dandadan,115,0,0,failed,2025-10-31T15:06:30.394647,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-115
-Dandadan,dandadan,116,0,0,failed,2025-10-31T15:06:46.246781,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-116
-Dandadan,dandadan,117,0,0,failed,2025-10-31T15:07:11.563965,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-117
-Dandadan,dandadan,118,0,0,failed,2025-10-31T15:07:43.639940,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-118
-Dandadan,dandadan,119,0,0,failed,2025-10-31T15:08:01.238031,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-119
-Dandadan,dandadan,120,0,0,failed,2025-10-31T15:08:13.345843,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-120
-Dandadan,dandadan,121,0,0,failed,2025-10-31T15:08:25.440941,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-121
-Dandadan,dandadan,122,0,0,failed,2025-10-31T15:08:43.069190,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-122
-Dandadan,dandadan,123,0,0,failed,2025-10-31T15:09:04.194883,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-123
-Dandadan,dandadan,124,0,0,failed,2025-10-31T15:09:27.965437,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-124
-Dandadan,dandadan,125,0,0,failed,2025-10-31T15:09:51.006597,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-125
-Dandadan,dandadan,126,0,0,failed,2025-10-31T15:10:15.777660,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-126
-Dandadan,dandadan,127,0,0,failed,2025-10-31T15:10:30.944641,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-127
-Dandadan,dandadan,128,0,0,failed,2025-10-31T15:10:54.847051,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-128
-Dandadan,dandadan,129,0,0,failed,2025-10-31T15:11:16.549955,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-129
-Dandadan,dandadan,130,0,0,failed,2025-10-31T15:11:42.207539,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-130
-Dandadan,dandadan,131,0,0,failed,2025-10-31T15:11:56.604786,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-131
-Dandadan,dandadan,132,0,0,failed,2025-10-31T15:12:13.967665,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-132
-Dandadan,dandadan,133,0,0,failed,2025-10-31T15:12:34.976499,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-133
-Dandadan,dandadan,134,0,0,failed,2025-10-31T15:12:47.107300,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-134
-Dandadan,dandadan,135,0,0,failed,2025-10-31T15:13:03.200572,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-135
-Dandadan,dandadan,136,0,0,failed,2025-10-31T15:13:29.631896,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-136
-Dandadan,dandadan,137,0,0,failed,2025-10-31T15:13:41.715593,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-137
-Dandadan,dandadan,138,0,0,failed,2025-10-31T15:13:59.023190,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-138
-Dandadan,dandadan,139,0,0,failed,2025-10-31T15:14:11.103272,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-139
-Dandadan,dandadan,140,0,0,failed,2025-10-31T15:14:23.199063,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-140
+Dandadan,dandadan,31,21,21,success,2025-11-01T16:32:53.632894,,manga/dandadan/chapter-031
+Dandadan,dandadan,32,19,19,success,2025-11-01T16:33:58.781050,,manga/dandadan/chapter-032
+Dandadan,dandadan,33,20,20,success,2025-11-01T16:35:59.086877,,manga/dandadan/chapter-033
+Dandadan,dandadan,34,19,19,success,2025-11-01T16:37:11.567963,,manga/dandadan/chapter-034
+Dandadan,dandadan,35,19,19,success,2025-11-01T16:38:33.331774,,manga/dandadan/chapter-035
+Dandadan,dandadan,36,19,19,success,2025-11-01T16:40:10.974811,,manga/dandadan/chapter-036
+Dandadan,dandadan,37,17,17,success,2025-11-01T16:41:41.016339,,manga/dandadan/chapter-037
+Dandadan,dandadan,38,20,20,success,2025-11-01T16:43:15.353526,,manga/dandadan/chapter-038
+Dandadan,dandadan,39,19,19,success,2025-11-01T16:44:40.772606,,manga/dandadan/chapter-039
+Dandadan,dandadan,40,25,25,success,2025-11-01T16:46:23.462204,,manga/dandadan/chapter-040
+Dandadan,dandadan,41,16,16,success,2025-11-01T16:47:43.353433,,manga/dandadan/chapter-041
+Dandadan,dandadan,42,19,19,success,2025-11-01T16:48:43.221077,,manga/dandadan/chapter-042
+Dandadan,dandadan,43,19,20,partial,2025-11-01T16:51:03.768640,Uploaded 19/20 panels,manga/dandadan/chapter-043
+Dandadan,dandadan,44,19,19,success,2025-11-01T16:52:26.182681,,manga/dandadan/chapter-044
+Dandadan,dandadan,45,19,19,success,2025-11-01T16:53:50.918627,,manga/dandadan/chapter-045
+Dandadan,dandadan,46,19,19,success,2025-11-01T16:55:00.242985,,manga/dandadan/chapter-046
+Dandadan,dandadan,47,21,21,success,2025-11-01T16:55:56.582385,,manga/dandadan/chapter-047
+Dandadan,dandadan,48,19,19,success,2025-11-01T16:56:51.240291,,manga/dandadan/chapter-048
+Dandadan,dandadan,49,17,17,success,2025-11-01T16:58:04.539293,,manga/dandadan/chapter-049
+Dandadan,dandadan,50,20,20,success,2025-11-01T16:58:51.828136,,manga/dandadan/chapter-050
+Dandadan,dandadan,51,19,19,success,2025-11-01T16:59:47.049887,,manga/dandadan/chapter-051
+Dandadan,dandadan,52,19,19,success,2025-11-01T17:00:48.699151,,manga/dandadan/chapter-052
+Dandadan,dandadan,53,20,20,success,2025-11-01T17:01:49.260753,,manga/dandadan/chapter-053
+Dandadan,dandadan,54,19,19,success,2025-11-01T17:02:48.841389,,manga/dandadan/chapter-054
+Dandadan,dandadan,55,20,20,success,2025-11-01T17:04:04.027920,,manga/dandadan/chapter-055
+Dandadan,dandadan,56,21,21,success,2025-11-01T17:05:28.753125,,manga/dandadan/chapter-056
+Dandadan,dandadan,57,19,19,success,2025-11-01T17:06:42.383402,,manga/dandadan/chapter-057
+Dandadan,dandadan,58,19,19,success,2025-11-01T17:07:50.049058,,manga/dandadan/chapter-058
+Dandadan,dandadan,59,19,19,success,2025-11-01T17:08:50.051482,,manga/dandadan/chapter-059
+Dandadan,dandadan,60,19,19,success,2025-11-01T17:10:09.871907,,manga/dandadan/chapter-060
+Dandadan,dandadan,61,21,21,success,2025-11-01T17:11:09.645212,,manga/dandadan/chapter-061
+Dandadan,dandadan,62,18,18,success,2025-11-01T17:12:40.918490,,manga/dandadan/chapter-062
+Dandadan,dandadan,63,19,19,success,2025-11-01T17:13:35.519720,,manga/dandadan/chapter-063
+Dandadan,dandadan,64,20,20,success,2025-11-01T17:15:07.531455,,manga/dandadan/chapter-064
+Dandadan,dandadan,65,19,19,success,2025-11-01T17:16:23.149135,,manga/dandadan/chapter-065
+Dandadan,dandadan,66,20,20,success,2025-11-01T17:17:22.723169,,manga/dandadan/chapter-066
+Dandadan,dandadan,67,19,19,success,2025-11-01T17:18:30.800974,,manga/dandadan/chapter-067
+Dandadan,dandadan,68,16,16,success,2025-11-01T17:19:51.223656,,manga/dandadan/chapter-068
+Dandadan,dandadan,69,19,19,success,2025-11-01T17:20:46.869670,,manga/dandadan/chapter-069
+Dandadan,dandadan,70,20,20,success,2025-11-01T17:22:13.474368,,manga/dandadan/chapter-070
+Dandadan,dandadan,71,19,19,success,2025-11-01T17:23:10.183317,,manga/dandadan/chapter-071
+Dandadan,dandadan,72,20,20,success,2025-11-01T17:24:17.799027,,manga/dandadan/chapter-072
+Dandadan,dandadan,73,18,18,success,2025-11-01T17:25:22.996516,,manga/dandadan/chapter-073
+Dandadan,dandadan,74,18,18,success,2025-11-01T17:26:25.057271,,manga/dandadan/chapter-074
+Dandadan,dandadan,75,18,18,success,2025-11-01T17:27:39.377817,,manga/dandadan/chapter-075
+Dandadan,dandadan,76,19,19,success,2025-11-01T17:28:49.510693,,manga/dandadan/chapter-076
+Dandadan,dandadan,77,19,19,success,2025-11-01T17:30:09.775696,,manga/dandadan/chapter-077
+Dandadan,dandadan,78,19,19,success,2025-11-01T17:31:31.856053,,manga/dandadan/chapter-078
+Dandadan,dandadan,79,24,24,success,2025-11-01T17:33:07.051292,,manga/dandadan/chapter-079
+Dandadan,dandadan,80,20,20,success,2025-11-01T17:34:23.047068,,manga/dandadan/chapter-080
+Dandadan,dandadan,81,18,18,success,2025-11-01T17:35:52.678322,,manga/dandadan/chapter-081
+Dandadan,dandadan,82,17,17,success,2025-11-01T17:37:08.204834,,manga/dandadan/chapter-082
+Dandadan,dandadan,83,18,18,success,2025-11-01T17:38:29.583137,,manga/dandadan/chapter-083
+Dandadan,dandadan,84,18,18,success,2025-11-01T17:39:34.817784,,manga/dandadan/chapter-084
+Dandadan,dandadan,85,17,17,success,2025-11-01T17:40:46.622802,,manga/dandadan/chapter-085
+Dandadan,dandadan,86,19,19,success,2025-11-01T17:42:10.567552,,manga/dandadan/chapter-086
+Dandadan,dandadan,87,18,18,success,2025-11-01T17:43:21.165494,,manga/dandadan/chapter-087
+Dandadan,dandadan,88,19,19,success,2025-11-01T17:44:37.200693,,manga/dandadan/chapter-088
+Dandadan,dandadan,89,21,21,success,2025-11-01T17:45:57.694197,,manga/dandadan/chapter-089
+Dandadan,dandadan,90,19,19,success,2025-11-01T17:47:28.078041,,manga/dandadan/chapter-090
+Dandadan,dandadan,91,17,17,success,2025-11-01T17:48:36.257459,,manga/dandadan/chapter-091
+Dandadan,dandadan,92,20,20,success,2025-11-01T17:49:50.235213,,manga/dandadan/chapter-092
+Dandadan,dandadan,93,18,18,success,2025-11-01T17:51:02.146587,,manga/dandadan/chapter-093
+Dandadan,dandadan,94,19,19,success,2025-11-01T17:52:11.787434,,manga/dandadan/chapter-094
+Dandadan,dandadan,95,19,19,success,2025-11-01T17:53:29.640460,,manga/dandadan/chapter-095
+Dandadan,dandadan,96,19,19,success,2025-11-01T17:54:46.103295,,manga/dandadan/chapter-096
+Dandadan,dandadan,97,18,18,success,2025-11-01T17:56:14.762241,,manga/dandadan/chapter-097
+Dandadan,dandadan,98,20,20,success,2025-11-01T17:57:42.527302,,manga/dandadan/chapter-098
+Dandadan,dandadan,99,20,20,success,2025-11-01T17:59:09.223868,,manga/dandadan/chapter-099
+Dandadan,dandadan,100,19,19,success,2025-11-01T18:00:31.633998,,manga/dandadan/chapter-100
+Dandadan,dandadan,101,22,22,success,2025-11-01T18:01:39.577101,,manga/dandadan/chapter-101
+Dandadan,dandadan,102,20,20,success,2025-11-01T18:03:14.979162,,manga/dandadan/chapter-102
+Dandadan,dandadan,103,19,19,success,2025-11-01T18:05:12.920477,,manga/dandadan/chapter-103
+Dandadan,dandadan,104,20,20,success,2025-11-01T18:07:02.141729,,manga/dandadan/chapter-104
+Dandadan,dandadan,105,21,21,success,2025-11-01T18:08:49.554071,,manga/dandadan/chapter-105
+Dandadan,dandadan,106,22,22,success,2025-11-01T18:10:29.777229,,manga/dandadan/chapter-106
+Dandadan,dandadan,107,18,18,success,2025-11-01T18:12:05.293986,,manga/dandadan/chapter-107
+Dandadan,dandadan,108,20,20,success,2025-11-01T18:14:00.462592,,manga/dandadan/chapter-108
+Dandadan,dandadan,109,19,19,success,2025-11-01T18:15:16.118744,,manga/dandadan/chapter-109
+Dandadan,dandadan,110,18,18,success,2025-11-01T18:16:33.330517,,manga/dandadan/chapter-110
+Dandadan,dandadan,111,19,19,success,2025-11-01T18:18:19.184510,,manga/dandadan/chapter-111
+Dandadan,dandadan,112,17,17,success,2025-11-01T18:19:33.777500,,manga/dandadan/chapter-112
+Dandadan,dandadan,113,19,19,success,2025-11-01T18:20:59.706741,,manga/dandadan/chapter-113
+Dandadan,dandadan,114,18,18,success,2025-11-01T18:22:16.921269,,manga/dandadan/chapter-114
+Dandadan,dandadan,115,16,16,success,2025-11-01T18:23:18.951581,,manga/dandadan/chapter-115
+Dandadan,dandadan,116,22,22,success,2025-11-01T18:25:17.575895,,manga/dandadan/chapter-116
+Dandadan,dandadan,117,17,17,success,2025-11-01T18:26:39.322519,,manga/dandadan/chapter-117
+Dandadan,dandadan,118,17,17,success,2025-11-01T18:28:02.665542,,manga/dandadan/chapter-118
+Dandadan,dandadan,119,18,18,success,2025-11-01T18:29:41.566819,,manga/dandadan/chapter-119
+Dandadan,dandadan,120,21,21,success,2025-11-01T18:30:49.116012,,manga/dandadan/chapter-120
+Dandadan,dandadan,121,19,19,success,2025-11-01T18:32:15.003376,,manga/dandadan/chapter-121
+Dandadan,dandadan,122,19,19,success,2025-11-01T18:33:11.083662,,manga/dandadan/chapter-122
+Dandadan,dandadan,123,19,19,success,2025-11-01T18:34:12.630603,,manga/dandadan/chapter-123
+Dandadan,dandadan,124,21,21,success,2025-11-01T18:36:20.237973,,manga/dandadan/chapter-124
+Dandadan,dandadan,125,17,17,success,2025-11-01T18:37:34.930440,,manga/dandadan/chapter-125
+Dandadan,dandadan,126,19,19,success,2025-11-01T18:39:01.885835,,manga/dandadan/chapter-126
+Dandadan,dandadan,127,16,16,success,2025-11-01T18:40:06.149303,,manga/dandadan/chapter-127
+Dandadan,dandadan,128,21,21,success,2025-11-01T18:42:46.863633,,manga/dandadan/chapter-128
+Dandadan,dandadan,129,18,18,success,2025-11-01T18:43:45.393415,,manga/dandadan/chapter-129
+Dandadan,dandadan,130,19,19,success,2025-11-01T18:45:01.715260,,manga/dandadan/chapter-130
+Dandadan,dandadan,131,19,19,success,2025-11-01T18:46:22.634164,,manga/dandadan/chapter-131
+Dandadan,dandadan,132,18,18,success,2025-11-01T18:47:42.122439,,manga/dandadan/chapter-132
+Dandadan,dandadan,133,19,19,success,2025-11-01T18:49:13.131477,,manga/dandadan/chapter-133
+Dandadan,dandadan,134,19,19,success,2025-11-01T18:50:14.913015,,manga/dandadan/chapter-134
+Dandadan,dandadan,135,17,17,success,2025-11-01T18:51:29.477135,,manga/dandadan/chapter-135
+Dandadan,dandadan,136,17,17,success,2025-11-01T18:52:43.516663,,manga/dandadan/chapter-136
+Dandadan,dandadan,137,18,18,success,2025-11-01T18:53:53.782780,,manga/dandadan/chapter-137
+Dandadan,dandadan,138,18,18,success,2025-11-01T18:55:09.587404,,manga/dandadan/chapter-138
+Dandadan,dandadan,139,17,18,partial,2025-11-01T18:57:23.180261,Uploaded 17/18 panels,manga/dandadan/chapter-139
+Dandadan,dandadan,140,19,19,success,2025-11-01T18:58:41.399262,,manga/dandadan/chapter-140
 Dandadan,dandadan,141,0,0,failed,2025-10-31T15:14:41.586368,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-141
 Dandadan,dandadan,142,0,0,failed,2025-10-31T15:14:59.552915,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-142
 Dandadan,dandadan,143,0,0,failed,2025-10-31T15:15:12.026308,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-143

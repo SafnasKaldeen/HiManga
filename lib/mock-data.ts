@@ -123,7 +123,7 @@ export const trendingMangas: Manga[] = [
     slug: "dandadan",
     cover: "/anime-manga-cover-dandadan.jpg",
     rating: 4.7,
-    chapters: 80,
+    chapters: 215,
     status: "ongoing",
     genre: ["Action", "Comedy", "Supernatural"],
     description: "A high school girl and a boy with a crush on her get caught up in a battle between aliens and supernatural beings.",
