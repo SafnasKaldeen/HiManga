@@ -139,7 +139,7 @@ export default function TrendingPage() {
         {/* Manga Grid */}
         {displayedMangas.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
               {displayedMangas.map((manga) => (
                 <AnimeCard key={manga.id} manga={manga} />
               ))}
