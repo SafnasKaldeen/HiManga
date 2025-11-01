@@ -10,7 +10,7 @@ import { useState } from "react";
 export function TrendingSection() {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   const genres = ["All", "Action", "Fantasy", "Sci-Fi", "Romance", "Mystery"];
 
@@ -23,7 +23,7 @@ export function TrendingSection() {
   const visibleMangas = filteredMangas.slice(0, visibleCount);
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + 8);
+    setVisibleCount((prev) => prev + 10);
   };
 
   return (
@@ -76,7 +76,7 @@ export function TrendingSection() {
                 key={genre}
                 onClick={() => {
                   setSelectedGenre(genre === "All" ? null : genre);
-                  setVisibleCount(8); // Reset visible count on filter change
+                  setVisibleCount(10); // Reset visible count on filter change
                 }}
                 className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all ${
                   (genre === "All" && selectedGenre === null) ||
@@ -171,7 +171,7 @@ export function TrendingSection() {
                   onClick={() => {
                     setSelectedGenre(genre === "All" ? null : genre);
                     setShowFilterMenu(false);
-                    setVisibleCount(8); // Reset visible count on filter change
+                    setVisibleCount(10); // Reset visible count on filter change
                   }}
                   className={`w-full px-5 py-3.5 text-left font-bold transition-all rounded-xl mb-1 ${
                     (genre === "All" && selectedGenre === null) ||
