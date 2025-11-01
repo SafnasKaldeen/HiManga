@@ -41,7 +41,7 @@ Dandadan,dandadan,39,19,19,success,2025-11-01T16:44:40.772606,,manga/dandadan/ch
 Dandadan,dandadan,40,25,25,success,2025-11-01T16:46:23.462204,,manga/dandadan/chapter-040
 Dandadan,dandadan,41,16,16,success,2025-11-01T16:47:43.353433,,manga/dandadan/chapter-041
 Dandadan,dandadan,42,19,19,success,2025-11-01T16:48:43.221077,,manga/dandadan/chapter-042
-Dandadan,dandadan,43,19,20,partial,2025-11-01T16:51:03.768640,Uploaded 19/20 panels,manga/dandadan/chapter-043
+Dandadan,dandadan,43,20,20,success,2025-11-01T22:02:30.465581,,manga/dandadan/chapter-043
 Dandadan,dandadan,44,19,19,success,2025-11-01T16:52:26.182681,,manga/dandadan/chapter-044
 Dandadan,dandadan,45,19,19,success,2025-11-01T16:53:50.918627,,manga/dandadan/chapter-045
 Dandadan,dandadan,46,19,19,success,2025-11-01T16:55:00.242985,,manga/dandadan/chapter-046
@@ -137,7 +137,7 @@ Dandadan,dandadan,135,17,17,success,2025-11-01T18:51:29.477135,,manga/dandadan/c
 Dandadan,dandadan,136,17,17,success,2025-11-01T18:52:43.516663,,manga/dandadan/chapter-136
 Dandadan,dandadan,137,18,18,success,2025-11-01T18:53:53.782780,,manga/dandadan/chapter-137
 Dandadan,dandadan,138,18,18,success,2025-11-01T18:55:09.587404,,manga/dandadan/chapter-138
-Dandadan,dandadan,139,17,18,partial,2025-11-01T18:57:23.180261,Uploaded 17/18 panels,manga/dandadan/chapter-139
+Dandadan,dandadan,139,18,18,success,2025-11-01T22:03:43.080715,,manga/dandadan/chapter-139
 Dandadan,dandadan,140,19,19,success,2025-11-01T18:58:41.399262,,manga/dandadan/chapter-140
 Dandadan,dandadan,141,17,17,success,2025-11-01T18:59:56.809803,,manga/dandadan/chapter-141
 Dandadan,dandadan,142,19,19,success,2025-11-01T19:01:07.476969,,manga/dandadan/chapter-142
@@ -168,16 +168,49 @@ Dandadan,dandadan,166,19,19,success,2025-11-01T19:40:10.696995,,manga/dandadan/c
 Dandadan,dandadan,167,19,19,success,2025-11-01T19:41:41.189460,,manga/dandadan/chapter-167
 Dandadan,dandadan,168,19,19,success,2025-11-01T19:43:19.247016,,manga/dandadan/chapter-168
 Dandadan,dandadan,169,19,19,success,2025-11-01T19:44:17.356609,,manga/dandadan/chapter-169
-Dandadan,dandadan,170,0,0,failed,2025-10-31T16:07:13.107551,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-170
-Dandadan,dandadan,171,0,19,failed,2025-10-31T16:14:43.394496,All uploads failed,manga/dandadan/chapter-171
-Dandadan,dandadan,172,0,0,failed,2025-10-31T16:14:55.484002,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-172
-Dandadan,dandadan,173,0,0,failed,2025-10-31T16:15:13.566559,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-173
-Dandadan,dandadan,174,0,0,failed,2025-10-31T16:15:49.412314,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-174
-Dandadan,dandadan,175,0,0,failed,2025-10-31T16:16:18.040284,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-175
-Dandadan,dandadan,176,0,0,failed,2025-10-31T16:16:32.298769,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-176
-Dandadan,dandadan,177,12,21,partial,2025-10-31T16:24:33.437243,Uploaded 12/21 panels,manga/dandadan/chapter-177
+Dandadan,dandadan,170,20,20,success,2025-11-01T19:45:51.690871,,manga/dandadan/chapter-170
+Dandadan,dandadan,171,19,19,success,2025-11-01T19:47:36.488597,,manga/dandadan/chapter-171
+Dandadan,dandadan,172,19,19,success,2025-11-01T19:49:14.252176,,manga/dandadan/chapter-172
+Dandadan,dandadan,173,19,19,success,2025-11-01T19:50:38.842638,,manga/dandadan/chapter-173
+Dandadan,dandadan,174,19,19,success,2025-11-01T19:52:14.146539,,manga/dandadan/chapter-174
+Dandadan,dandadan,175,19,19,success,2025-11-01T19:53:37.662209,,manga/dandadan/chapter-175
+Dandadan,dandadan,176,19,19,success,2025-11-01T19:54:47.601842,,manga/dandadan/chapter-176
+Dandadan,dandadan,177,21,21,success,2025-11-01T19:55:57.019144,,manga/dandadan/chapter-177
 Dandadan,dandadan,178,23,23,success,2025-10-31T16:26:11.625843,,manga/dandadan/chapter-178
 Dandadan,dandadan,179,19,19,success,2025-10-31T16:27:14.023138,,manga/dandadan/chapter-179
 Dandadan,dandadan,180,20,20,success,2025-10-31T16:28:23.647476,,manga/dandadan/chapter-180
 Dandadan,dandadan,181,19,19,success,2025-10-31T16:29:55.495273,,manga/dandadan/chapter-181
 Dandadan,dandadan,182,20,20,success,2025-10-31T16:31:41.353186,,manga/dandadan/chapter-182
+Dandadan,dandadan,183,19,19,success,2025-11-01T20:04:30.073128,,manga/dandadan/chapter-183
+Dandadan,dandadan,184,20,20,success,2025-11-01T20:06:08.683471,,manga/dandadan/chapter-184
+Dandadan,dandadan,185,20,20,success,2025-11-01T20:07:39.464371,,manga/dandadan/chapter-185
+Dandadan,dandadan,186,25,25,success,2025-11-01T20:10:40.770405,,manga/dandadan/chapter-186
+Dandadan,dandadan,187,23,23,success,2025-11-01T20:13:52.081210,,manga/dandadan/chapter-187
+Dandadan,dandadan,188,18,18,success,2025-11-01T20:16:00.425157,,manga/dandadan/chapter-188
+Dandadan,dandadan,189,19,19,success,2025-11-01T20:17:42.624091,,manga/dandadan/chapter-189
+Dandadan,dandadan,190,19,19,success,2025-11-01T20:19:16.762056,,manga/dandadan/chapter-190
+Dandadan,dandadan,191,19,19,success,2025-11-01T20:21:02.131082,,manga/dandadan/chapter-191
+Dandadan,dandadan,192,19,19,success,2025-11-01T20:22:11.636426,,manga/dandadan/chapter-192
+Dandadan,dandadan,193,19,19,success,2025-11-01T20:23:18.805317,,manga/dandadan/chapter-193
+Dandadan,dandadan,194,21,21,success,2025-11-01T20:25:21.181324,,manga/dandadan/chapter-194
+Dandadan,dandadan,195,20,20,success,2025-11-01T20:27:06.674669,,manga/dandadan/chapter-195
+Dandadan,dandadan,196,19,19,success,2025-11-01T20:29:25.514692,,manga/dandadan/chapter-196
+Dandadan,dandadan,197,21,21,success,2025-11-01T20:31:48.048232,,manga/dandadan/chapter-197
+Dandadan,dandadan,198,25,25,success,2025-11-01T20:35:10.220505,,manga/dandadan/chapter-198
+Dandadan,dandadan,199,23,23,success,2025-11-01T20:37:23.057443,,manga/dandadan/chapter-199
+Dandadan,dandadan,200,19,19,success,2025-11-01T20:38:42.567108,,manga/dandadan/chapter-200
+Dandadan,dandadan,201,19,19,success,2025-11-01T20:40:29.962557,,manga/dandadan/chapter-201
+Dandadan,dandadan,202,19,19,success,2025-11-01T20:42:25.491946,,manga/dandadan/chapter-202
+Dandadan,dandadan,203,22,22,success,2025-11-01T20:44:41.560179,,manga/dandadan/chapter-203
+Dandadan,dandadan,204,19,19,success,2025-11-01T20:46:55.562420,,manga/dandadan/chapter-204
+Dandadan,dandadan,205,19,19,success,2025-11-01T20:48:50.205866,,manga/dandadan/chapter-205
+Dandadan,dandadan,206,19,19,success,2025-11-01T20:50:42.039374,,manga/dandadan/chapter-206
+Dandadan,dandadan,207,19,19,success,2025-11-01T20:52:33.749176,,manga/dandadan/chapter-207
+Dandadan,dandadan,208,19,19,success,2025-11-01T20:55:08.988707,,manga/dandadan/chapter-208
+Dandadan,dandadan,209,22,22,success,2025-11-01T20:56:52.721794,,manga/dandadan/chapter-209
+Dandadan,dandadan,210,19,19,success,2025-11-01T20:58:23.736683,,manga/dandadan/chapter-210
+Dandadan,dandadan,211,19,19,success,2025-11-01T20:59:49.291702,,manga/dandadan/chapter-211
+Dandadan,dandadan,212,20,20,success,2025-11-01T21:01:03.466055,,manga/dandadan/chapter-212
+Dandadan,dandadan,213,20,20,success,2025-11-01T21:02:17.055980,,manga/dandadan/chapter-213
+Dandadan,dandadan,214,20,20,success,2025-11-01T21:03:39.729144,,manga/dandadan/chapter-214
+Dandadan,dandadan,215,21,21,success,2025-11-01T21:05:25.328549,,manga/dandadan/chapter-215

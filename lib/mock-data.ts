@@ -206,6 +206,19 @@ export const trendingMangas: Manga[] = [
   //   genre: ["Action", "Sports", "Drama"],
   //   description: "In a world where strength is everything, a young boy dreams of becoming the strongest fighter.",
   //   views: 1200000,
+  // },
+  // {
+  //   id: "14",
+  //   title: "Blue Lock",
+  //   author: "Muneyuki Kaneshiro",
+  //   slug: "blue-lock",
+  //   cover: "/anime-manga-cover-blue-lock.jpg",
+  //   rating: 4.6,
+  //   chapters: 100,
+  //   status: "Locked",
+  //   genre: ["Action", "Sports", "Drama"],
+  //   description: "A high-stakes soccer competition is held to find the best striker in Japan.",
+  //   views: 1500000,
   // }
 ]
 
