@@ -34,7 +34,7 @@ export function AnimeCard({ manga }: AnimeCardProps) {
     <div
       onMouseEnter={() => !isLocked && setShowRating(true)}
       onMouseLeave={() => !isLocked && setShowRating(false)}
-      className={`h-full w-full max-w-[240px] mx-auto transition-all duration-500 ${
+      className={`h-full w-full transition-all duration-500 ${
         isLocked ? "cursor-not-allowed" : "cursor-pointer hover:scale-[1.03]"
       }`}
     >
