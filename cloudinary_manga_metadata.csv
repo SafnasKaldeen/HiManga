@@ -139,7 +139,7 @@ Dandadan,dandadan,137,18,18,success,2025-11-01T18:53:53.782780,,manga/dandadan/c
 Dandadan,dandadan,138,18,18,success,2025-11-01T18:55:09.587404,,manga/dandadan/chapter-138
 Dandadan,dandadan,139,17,18,partial,2025-11-01T18:57:23.180261,Uploaded 17/18 panels,manga/dandadan/chapter-139
 Dandadan,dandadan,140,19,19,success,2025-11-01T18:58:41.399262,,manga/dandadan/chapter-140
-Dandadan,dandadan,141,0,0,failed,2025-10-31T15:14:41.586368,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-141
+Dandadan,dandadan,141,17,17,success,2025-11-01T18:59:56.809803,,manga/dandadan/chapter-141
 Dandadan,dandadan,142,0,0,failed,2025-10-31T15:14:59.552915,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-142
 Dandadan,dandadan,143,0,0,failed,2025-10-31T15:15:12.026308,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out. (read timeout=10)",manga/dandadan/chapter-143
 Dandadan,dandadan,144,0,0,failed,2025-10-31T15:15:31.174657,"HTTPSConnectionPool(host='www.mangaread.org', port=443): Read timed out.",manga/dandadan/chapter-144
