@@ -359,9 +359,9 @@ export function MangaReader({
 
   return (
     <div className="h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden">
-      <div className="lg:hidden">
-        <Header />
-      </div>
+      {/* <div className="lg:hidden"> */}
+      <Header />
+      {/* </div> */}
       <div className="flex flex-1 relative overflow-hidden">
         {sidebarOpen && !isFullscreen && (
           <div
