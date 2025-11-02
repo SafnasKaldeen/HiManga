@@ -144,6 +144,19 @@ export const trendingMangas: Manga[] = [
   },
   {
     id: "10",
+    title: "Attack on Titan",
+    slug: "attack-on-titan",
+    author: "Hajime Isayama",
+    cover: "/anime-manga-cover-attack-on-titan.jpg",
+    rating: 4.9,
+    chapters: 139,
+    status: "completed",
+    genre: ["Action", "Drama", "Fantasy"],
+    description: "In a world besieged by giant humanoid Titans, humanity's last hope lies within massive walled cities.",
+    views: 6000000,
+  },
+  {
+    id: "11",
     title: "Chainsaw Man",
     author: "Tatsuki Fujimoto",
     slug: "chainsaw-man",
@@ -156,7 +169,7 @@ export const trendingMangas: Manga[] = [
     views: 3000000,
   },
   {
-    id: "11",
+    id: "12",
     title: "Boruto: Naruto Next Generations",
     author: "Masashi Kishimoto",
     slug: "boruto-naruto-next-generations",
@@ -169,7 +182,7 @@ export const trendingMangas: Manga[] = [
     views: 1800000,
   },
   {
-    id: "12",
+    id: "13",
     title: "Shangri-La Frontier",
     author: "Yuki Yamamoto",
     slug: "shangri-la-frontier",
@@ -182,7 +195,7 @@ export const trendingMangas: Manga[] = [
     views: 2000000,
   },
   {
-    id: "13",
+    id: "14",
     title: "Sakamoto Days",
     author: "Yuto Suzuki",
     slug: "sakamoto-days",
@@ -195,7 +208,7 @@ export const trendingMangas: Manga[] = [
     views: 1500000,
   },
   {
-    id: "14",
+    id: "15",
     title: "Muscle - Joseon",
     author: "Unknown",
     slug: "muscle-joseon",
@@ -208,7 +221,7 @@ export const trendingMangas: Manga[] = [
     views: 1200000,
   },
   {
-    id: "14",
+    id: "16",
     title: "Blue Lock",
     author: "Muneyuki Kaneshiro",
     slug: "blue-lock",
@@ -220,19 +233,7 @@ export const trendingMangas: Manga[] = [
     description: "A high-stakes soccer competition is held to find the best striker in Japan.",
     views: 1500000,
   },
-  {
-    id: "15",
-    title: "Attack on Titan",
-    slug: "attack-on-titan",
-    author: "Hajime Isayama",
-    cover: "/anime-manga-cover-attack-on-titan.jpg",
-    rating: 4.9,
-    chapters: 139,
-    status: "completed",
-    genre: ["Action", "Drama", "Fantasy"],
-    description: "In a world besieged by giant humanoid Titans, humanity's last hope lies within massive walled cities.",
-    views: 6000000,
-  }
+  
 ]
 
 export const trendingMangasWithChapters: MangaWithChapters[] = trendingMangas.map((manga) => ({
