@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { use, useState, useRef } from "react";
 import { trendingMangas } from "@/lib/mock-data";
 import { MangaDetailsHero } from "@/components/manga-details-hero";
 import { HorizontalMangaCard } from "@/components/horizontal-manga-card";
@@ -9,17 +9,18 @@ import { Footer } from "@/components/footer";
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface MangaDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
+  const { id } = use(params);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
-  const manga = trendingMangas.find((m) => m.id === params.id);
+  const manga = trendingMangas.find((m) => m.id === id);
 
   if (!manga) {
     return null;

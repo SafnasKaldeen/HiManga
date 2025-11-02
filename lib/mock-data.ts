@@ -219,6 +219,19 @@ export const trendingMangas: Manga[] = [
     genre: ["Action", "Sports", "Drama"],
     description: "A high-stakes soccer competition is held to find the best striker in Japan.",
     views: 1500000,
+  },
+  {
+    id: "15",
+    title: "Attack on Titan",
+    slug: "attack-on-titan",
+    author: "Hajime Isayama",
+    cover: "/anime-manga-cover-attack-on-titan.jpg",
+    rating: 4.9,
+    chapters: 139,
+    status: "completed",
+    genre: ["Action", "Drama", "Fantasy"],
+    description: "In a world besieged by giant humanoid Titans, humanity's last hope lies within massive walled cities.",
+    views: 6000000,
   }
 ]
 

@@ -7,9 +7,9 @@ const mangaList = [
     name: "One Piece",
   },
   {
-    slug: "naruto",
-    url: "https://www.mangaread.org/manga/naruto/",
-    name: "Naruto",
+    slug: "attack-on-titan",
+    url: "https://www.mangaread.org/manga/attack-on-titan/",
+    name: "Attack on Titan",
   },
   {
     slug: "spy-x-family",

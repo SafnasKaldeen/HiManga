@@ -207,7 +207,7 @@ export function HeroSection() {
               </Button>
               <Button
                 variant="outline"
-                className="border-2 border-white/40 text-white hover:bg-white/10 font-bold px-8 py-6 text-base rounded-full transition-all bg-white/5 backdrop-blur-sm hover:border-white/60"
+                className="border-2 border-white/40 text-white hover:text-pink-500/80 font-bold px-8 py-6 text-base rounded-full transition-all bg-white/5 backdrop-blur-sm hover:border-white/60"
               >
                 <Info className="w-5 h-5 mr-2" />
                 Detail
