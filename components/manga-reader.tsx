@@ -452,27 +452,6 @@ export function MangaReader({
                   </Button>
                 </div>
 
-                <nav className="hidden lg:flex items-center gap-8">
-                  <Link
-                    href="/"
-                    className="text-white/70 hover:text-pink-500 transition font-semibold"
-                  >
-                    Home
-                  </Link>
-                  <Link
-                    href="/library"
-                    className="text-white/70 hover:text-pink-500 transition font-semibold"
-                  >
-                    Library
-                  </Link>
-                  <Link
-                    href="/trending"
-                    className="text-white/70 hover:text-pink-500 transition font-semibold"
-                  >
-                    Trending
-                  </Link>
-                </nav>
-
                 <div className="flex items-center gap-1">
                   <Button
                     variant="outline"

@@ -141,9 +141,20 @@ export function ChaptersSidebar({
   };
 
   return (
-    <div className="h-full w-full bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl flex flex-col">
-      {/* Sticky Header Section - No scrolling */}
-      <div className="flex-shrink-0 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
+    <div
+      className="w-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden"
+      style={{
+        height: "calc(100dvh - 80px)",
+        maxHeight: "100dvh",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
+    >
+      {/* Fixed Header Section */}
+      <div className="flex-shrink-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
         <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
           Chapters
         </h2>
@@ -207,13 +218,13 @@ export function ChaptersSidebar({
         )}
       </div>
 
-      {/* Scrollable Chapters List ONLY - Custom Scrollbar Applied Here */}
+      {/* Scrollable Chapters List */}
       <div
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto p-3 space-y-2"
         style={{
           scrollbarWidth: "thin",
-          scrollbarColor: "rgba(6, 182, 212, 0.4) transparent",
+          scrollbarColor: "#475569 transparent",
         }}
       >
         {chaptersList.length > 0 ? (
@@ -304,28 +315,31 @@ export function ChaptersSidebar({
         )}
       </div>
 
-      <style jsx>{`
-        /* Custom Webkit Scrollbar - ONLY for the chapters container */
-        div[ref] {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(6, 182, 212, 0.4) transparent;
+      <style jsx global>{`
+        /* Prevent entire page from shifting when keyboard appears */
+        html,
+        body {
+          overflow: hidden;
+          height: 100%;
+          position: fixed;
+          width: 100%;
         }
 
-        div::-webkit-scrollbar {
-          width: 6px;
+        div[style*="scrollbarWidth"]::-webkit-scrollbar {
+          width: 8px;
         }
 
-        div::-webkit-scrollbar-track {
+        div[style*="scrollbarWidth"]::-webkit-scrollbar-track {
           background: transparent;
         }
 
-        div::-webkit-scrollbar-thumb {
-          background: rgba(6, 182, 212, 0.4);
-          border-radius: 3px;
+        div[style*="scrollbarWidth"]::-webkit-scrollbar-thumb {
+          background: #475569;
+          border-radius: 4px;
         }
 
-        div::-webkit-scrollbar-thumb:hover {
-          background: rgba(6, 182, 212, 0.6);
+        div[style*="scrollbarWidth"]::-webkit-scrollbar-thumb:hover {
+          background: #64748b;
         }
 
         /* Prevent iOS zoom on input focus */
