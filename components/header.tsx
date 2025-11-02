@@ -74,27 +74,29 @@ export function Header() {
 
   return (
     <header className="border-b border-white/10 bg-[#0a0a1a]/80 backdrop-blur-xl sticky top-0 z-50">
-      <div className="w-full px-4 md:px-8 lg:px-10 py-3">
-        <div className="flex items-center justify-between">
+      <div className="w-full px-3 sm:px-4 md:px-8 lg:px-10 py-2.5 sm:py-3">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2 font-black text-xl group z-50"
+            className="flex items-center gap-1.5 sm:gap-2 font-black text-xl group z-50"
           >
-            <Image
-              src="/logo.png"
-              alt="HiManga Logo"
-              width={50}
-              height={50}
-              className="w-10 h-10 md:w-12 md:h-12"
-            />
-            <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent text-lg md:text-xl">
+            <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0">
+              <Image
+                src="/logo.png"
+                alt="HiManga Logo"
+                width={48}
+                height={48}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent text-base sm:text-lg md:text-xl">
               HiManga
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+          {/* Desktop Navigation - Only on large screens (1024px+) */}
+          <nav className="hidden xl:flex items-center gap-6 2xl:gap-8">
             <Link
               href="/"
               className="flex items-center gap-2 text-white/70 hover:text-pink-500 transition-colors duration-300 font-semibold group"
@@ -151,8 +153,8 @@ export function Header() {
             {/* Notifications */}
             {user && <NotificationsPanel />}
 
-            {/* Desktop Auth Section */}
-            <div className="hidden md:flex items-center gap-3">
+            {/* Desktop Auth Section - Only on extra large screens */}
+            <div className="hidden xl:flex items-center gap-3">
               {user ? (
                 <>
                   <Link href="/profile" className="group">
@@ -201,40 +203,40 @@ export function Header() {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile/Tablet Menu Button - Shows on all devices below 1280px */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden text-white hover:text-pink-500 transition-colors duration-300 p-2 z-50"
+              className="xl:hidden text-white hover:text-pink-500 transition-colors duration-300 p-1.5 sm:p-2 z-50 hover:bg-white/5 rounded-lg"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile/Tablet Menu Overlay - Shows up to 1280px */}
       {isMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 xl:hidden"
           onClick={() => setIsMenuOpen(false)}
         />
       )}
 
-      {/* Mobile Menu */}
+      {/* Mobile/Tablet Menu Drawer - Shows up to 1280px */}
       <div
-        className={`fixed top-[73px] right-0 w-full sm:w-80 h-[calc(100vh-73px)] bg-[#0a0a1a]/95 backdrop-blur-xl border-l border-white/10 transform transition-transform duration-300 ease-in-out z-40 md:hidden ${
+        className={`fixed top-[73px] right-0 w-full sm:w-96 md:w-[400px] h-[calc(100vh-73px)] bg-[#0a0a1a]/95 backdrop-blur-xl border-l border-white/10 transform transition-transform duration-300 ease-in-out z-40 xl:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
-          {/* User Section - Mobile */}
+          {/* User Section - Mobile/Tablet */}
           {user && (
-            <div className="border-b border-white/10 p-6">
+            <div className="border-b border-white/10 p-4 sm:p-6">
               <Link
                 href="/profile"
                 className="flex items-center gap-4 group"
@@ -257,8 +259,8 @@ export function Header() {
             </div>
           )}
 
-          {/* Navigation Links - Mobile */}
-          <nav className="flex-1 overflow-y-auto p-6 space-y-2">
+          {/* Navigation Links - Mobile/Tablet */}
+          <nav className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2">
             <Link
               href="/"
               className="flex items-center gap-4 text-white/70 hover:text-pink-500 hover:bg-white/5 transition-all duration-300 font-semibold px-4 py-3 rounded-xl"
@@ -302,7 +304,7 @@ export function Header() {
               </Link>
             )}
 
-            {/* Share Button - Mobile */}
+            {/* Share Button - Mobile/Tablet */}
             <button
               onClick={() => {
                 handleShare();
@@ -315,8 +317,8 @@ export function Header() {
             </button>
           </nav>
 
-          {/* Auth Buttons - Mobile */}
-          <div className="border-t border-white/10 p-6 space-y-3">
+          {/* Auth Buttons - Mobile/Tablet */}
+          <div className="border-t border-white/10 p-4 sm:p-6 space-y-3">
             {user ? (
               <button
                 onClick={handleLogout}
