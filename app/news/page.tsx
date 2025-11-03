@@ -511,11 +511,11 @@ export default function AnimeNewsHub() {
                         </h3>
                       </a>
 
-                      {item.excerpt && (
+                      {/* {item.excerpt && (
                         <p className="text-slate-400 text-sm leading-relaxed line-clamp-2">
                           {item.excerpt}
                         </p>
-                      )}
+                      )} */}
 
                       <a
                         href={item.url}
