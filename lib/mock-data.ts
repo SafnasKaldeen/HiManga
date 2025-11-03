@@ -136,7 +136,7 @@ export const trendingMangas: Manga[] = [
     slug: "spy-x-family",
     cover: "/anime-manga-cover-spy-x-family.jpg",
     rating: 4.8,
-    chapters: 35,
+    chapters: 139,
     status: "ongoing",
     genre: ["Action", "Comedy", "Slice of Life"],
     description: "A spy on a mission forms a fake family with an assassin and a telepathic child.",

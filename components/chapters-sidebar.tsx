@@ -142,9 +142,8 @@ export function ChaptersSidebar({
 
   return (
     <div
-      className="w-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden"
+      className="w-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden h-100dvh lg:h-full lg:relative lg:border-l lg:border-slate-700/50"
       style={{
-        height: "calc(100dvh - 80px)",
         maxHeight: "100dvh",
         position: "fixed",
         top: 0,
