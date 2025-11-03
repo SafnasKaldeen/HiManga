@@ -11,7 +11,7 @@ import {
   Zap,
 } from "lucide-react";
 import Img from "next/image";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 
 const NEWS_CATEGORIES = [
   {
