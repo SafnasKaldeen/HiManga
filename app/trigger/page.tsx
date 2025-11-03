@@ -2,9 +2,9 @@ import MangaScrapeButton from "@/components/MangaScrapeButton";
 
 const mangaList = [
   {
-    slug: "one-piece",
-    url: "https://www.mangaread.org/manga/one-piece/",
-    name: "One Piece",
+    slug: "chainsaw-man",
+    url: "https://www.mangaread.org/manga/chainsaw-man/",
+    name: "Chainsaw Man",
   },
   {
     slug: "attack-on-titan",

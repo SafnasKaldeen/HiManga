@@ -1,405 +1,588 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  Newspaper,
-  Calendar,
-  Filter,
-  Sparkles,
-  ArrowRight,
   Loader2,
-  CheckCircle2,
+  RefreshCw,
+  ExternalLink,
+  Clock,
+  TrendingUp,
+  AlertCircle,
+  Zap,
 } from "lucide-react";
-import Link from "next/link";
+import Img from "next/image";
+import { Header } from "@/components/Header";
 
-const FEATURED_MANGA = [
-  { id: 21, name: "One Piece", color: "from-orange-500 to-red-600" },
-  { id: 20, name: "Naruto", color: "from-orange-400 to-yellow-500" },
-  { id: 48561, name: "Jujutsu Kaisen", color: "from-indigo-500 to-purple-600" },
-  { id: 16498, name: "Attack on Titan", color: "from-red-600 to-gray-800" },
-  { id: 11061, name: "Hunter x Hunter", color: "from-green-500 to-blue-600" },
+const NEWS_CATEGORIES = [
   {
-    id: 5114,
-    name: "Fullmetal Alchemist",
-    color: "from-yellow-600 to-red-700",
+    id: "anime",
+    name: "Anime",
+    color: "from-blue-500 to-cyan-400",
+    icon: "🎬",
+    feeds: [
+      "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%2Fsearch%3Fq%3Danime%2Bnews%26hl%3Den-US%26gl%3DUS%26ceid%3DUS%3Aen",
+    ],
+  },
+  {
+    id: "manga",
+    name: "Manga",
+    color: "from-purple-500 to-pink-400",
+    icon: "📖",
+    feeds: [
+      "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%2Fsearch%3Fq%3Dmanga%2Bnews%26hl%3Den-US%26gl%3DUS%26ceid%3DUS%3Aen",
+    ],
   },
 ];
 
-interface NewsItem {
-  mal_id: number;
-  url: string;
-  title: string;
-  date: string;
-  author_username: string;
-  author_url: string;
-  images: {
-    jpg: {
-      image_url: string;
-    };
-  };
-  excerpt: string;
-  manga_name?: string;
-  manga_id?: number;
-}
+const PLACEHOLDER_IMAGES = [
+  "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=400&h=300&fit=crop",
+];
 
-export default function MultiMangaNewsAggregator() {
-  const [selectedManga, setSelectedManga] = useState<number[]>([
-    FEATURED_MANGA[0].id,
-  ]);
-  const [news, setNews] = useState<NewsItem[]>([]);
+export default function AnimeNewsHub() {
+  const [selectedCategory, setSelectedCategory] = useState("anime");
+  const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<"date" | "manga">("date");
-  const [showAllManga, setShowAllManga] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observerRef = useRef();
 
   useEffect(() => {
-    if (selectedManga.length > 0) {
-      fetchAggregatedNews(selectedManga);
-    }
-  }, [selectedManga]);
+    setNews([]);
+    setPage(1);
+    setHasMore(true);
+    fetchNews(true);
+  }, [selectedCategory]);
 
-  const fetchAggregatedNews = async (mangaIds: number[]) => {
-    setLoading(true);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+          loadMoreNews();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore, news]);
+
+  const fetchNews = async (initial = false) => {
+    if (initial) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
     setError(null);
 
     try {
-      const allNews: NewsItem[] = [];
+      const category = NEWS_CATEGORIES.find(
+        (cat) => cat.id === selectedCategory
+      );
+      const feedUrl = category.feeds[0];
 
-      // Fetch news for each selected manga with rate limiting
-      for (let i = 0; i < mangaIds.length; i++) {
-        const mangaId = mangaIds[i];
-        const manga = FEATURED_MANGA.find((m) => m.id === mangaId);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        // Respect rate limit: 3 requests per second
-        if (i > 0) {
-          await new Promise((resolve) => setTimeout(resolve, 350));
-        }
+      const response = await fetch(feedUrl, {
+        signal: controller.signal,
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
 
-        try {
-          const response = await fetch(
-            `https://api.jikan.moe/v4/anime/${mangaId}/news` // Changed from manga to anime
-          );
+      clearTimeout(timeoutId);
 
-          if (response.ok) {
-            const data = await response.json();
-            const newsWithManga = (data.data || []).map((item: NewsItem) => ({
-              ...item,
-              manga_name: manga?.name,
-              manga_id: mangaId,
-            }));
-            allNews.push(...newsWithManga);
+      if (!response.ok) {
+        throw new Error("Failed to fetch news");
+      }
+
+      const data = await response.json();
+
+      if (data.status !== "ok" || !data.items || data.items.length === 0) {
+        loadDemoData(initial);
+        return;
+      }
+
+      const parsedNews = data.items
+        .map((item, index) => {
+          const titleParts = item.title.split(" - ");
+          const cleanTitle =
+            titleParts.length > 1
+              ? titleParts.slice(0, -1).join(" - ")
+              : item.title;
+          const source =
+            titleParts.length > 1
+              ? titleParts[titleParts.length - 1]
+              : "News Source";
+
+          let thumbnail = null;
+          if (item.enclosure?.link) {
+            thumbnail = item.enclosure.link;
+          } else if (
+            item.thumbnail &&
+            !item.thumbnail.includes("gstatic.com")
+          ) {
+            thumbnail = item.thumbnail;
+          } else {
+            const imgFromDesc = extractImageFromDescription(item.description);
+            if (imgFromDesc && !imgFromDesc.includes("gstatic.com")) {
+              thumbnail = imgFromDesc;
+            }
           }
-        } catch (err) {
-          console.error(`Failed to fetch news for ${manga?.name}:`, err);
+
+          if (!thumbnail) {
+            thumbnail = PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length];
+          }
+
+          return {
+            id: item.guid || item.link,
+            title: cleanTitle,
+            url: item.link,
+            excerpt: stripHtml(item.description || "").substring(0, 200),
+            source: source,
+            date: item.pubDate,
+            timestamp: new Date(item.pubDate).getTime(),
+            category: selectedCategory,
+            thumbnail: thumbnail,
+            priority: getPriority(index),
+          };
+        })
+        .sort((a, b) => b.timestamp - a.timestamp);
+
+      if (initial) {
+        setNews(parsedNews);
+        setHasMore(false);
+      } else {
+        setNews((prev) => {
+          const existingIds = new Set(prev.map((item) => item.id));
+          const newItems = parsedNews.filter(
+            (item) => !existingIds.has(item.id)
+          );
+          const combined = [...prev, ...newItems];
+          return combined.sort((a, b) => b.timestamp - a.timestamp);
+        });
+
+        if (parsedNews.length === 0) {
+          setHasMore(false);
         }
       }
 
-      // Sort by date (newest first) and limit to 50 most recent items
-      const sortedNews = allNews
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 50);
-
-      setNews(sortedNews);
+      setLastUpdated(new Date());
+      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setNews([]);
+      console.error("Fetch error:", err);
+      loadDemoData(initial);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
-  const toggleMangaSelection = (mangaId: number) => {
-    setSelectedManga((prev) => {
-      if (prev.includes(mangaId)) {
-        // Don't allow deselecting if it's the last one
-        if (prev.length === 1) return prev;
-        return prev.filter((id) => id !== mangaId);
-      } else {
-        return [...prev, mangaId];
-      }
-    });
+  const loadMoreNews = () => {
+    if (news.length >= 50) {
+      setHasMore(false);
+      return;
+    }
+    setPage((p) => p + 1);
+    fetchNews(false);
   };
 
-  const selectAllManga = () => {
-    setSelectedManga(FEATURED_MANGA.map((m) => m.id));
+  const loadDemoData = (initial) => {
+    const demoNews = [
+      {
+        id: `demo-1-${Date.now()}`,
+        title: "Solo Leveling Season 2 Announces Epic Return Date",
+        url: "https://news.google.com/search?q=anime",
+        excerpt:
+          "The highly anticipated second season of Solo Leveling has been confirmed with a release date. Fans worldwide prepare for Sung Jin-Woo's next adventure...",
+        source: "Anime Herald",
+        date: new Date().toISOString(),
+        category: selectedCategory,
+        thumbnail: PLACEHOLDER_IMAGES[0],
+        priority: 1,
+      },
+      {
+        id: `demo-2-${Date.now()}`,
+        title: "Chainsaw Man Part 2 Manga Breaks Records",
+        url: "https://news.google.com/search?q=manga",
+        excerpt:
+          "The continuation of Chainsaw Man in manga form shatters previous sales records, cementing its place as one of the most popular series...",
+        source: "Manga Plus",
+        date: new Date(Date.now() - 3600000).toISOString(),
+        category: selectedCategory,
+        thumbnail: PLACEHOLDER_IMAGES[1],
+        priority: 1,
+      },
+      {
+        id: `demo-3-${Date.now()}`,
+        title: "Attack on Titan Final Exhibition Reveals New Artwork",
+        url: "https://news.google.com/search?q=anime",
+        excerpt:
+          "Special exhibition features never-before-seen concept art and behind-the-scenes materials from the epic finale...",
+        source: "Crunchyroll News",
+        date: new Date(Date.now() - 7200000).toISOString(),
+        category: selectedCategory,
+        thumbnail: PLACEHOLDER_IMAGES[2],
+        priority: 2,
+      },
+      {
+        id: `demo-4-${Date.now()}`,
+        title: "Demon Slayer Movie Surpasses Box Office Expectations",
+        url: "https://news.google.com/search?q=anime",
+        excerpt:
+          "The latest theatrical release continues to dominate global box offices, breaking records in multiple territories...",
+        source: "Anime News Network",
+        date: new Date(Date.now() - 10800000).toISOString(),
+        category: selectedCategory,
+        thumbnail: PLACEHOLDER_IMAGES[3],
+        priority: 2,
+      },
+      {
+        id: `demo-5-${Date.now()}`,
+        title: "One Piece Manga Reaches Historic Milestone",
+        url: "https://news.google.com/search?q=manga",
+        excerpt:
+          "Eiichiro Oda's legendary series achieves an unprecedented milestone in manga publishing history...",
+        source: "Shonen Jump",
+        date: new Date(Date.now() - 14400000).toISOString(),
+        category: selectedCategory,
+        thumbnail: PLACEHOLDER_IMAGES[4],
+        priority: 1,
+      },
+    ];
+
+    if (initial) {
+      setNews(demoNews);
+    } else {
+      setNews((prev) => [
+        ...prev,
+        ...demoNews.map((item, i) => ({ ...item, id: `${item.id}-${i}` })),
+      ]);
+    }
+    setError("Demo Mode: Showing sample articles");
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-
-    if (diffHours < 1) return "Just now";
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffHours < 48) return "Yesterday";
-
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
-    });
+  const getPriority = (index) => {
+    if (index < 3) return 1;
+    if (index < 8) return 2;
+    if (index < 15) return 3;
+    return 4;
   };
 
-  const displayedNews =
-    sortBy === "date"
-      ? news
-      : [...news].sort((a, b) =>
-          (a.manga_name || "").localeCompare(b.manga_name || "")
-        );
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 1:
+        return "from-yellow-500 to-orange-400";
+      case 2:
+        return "from-blue-500 to-cyan-400";
+      case 3:
+        return "from-purple-500 to-pink-400";
+      case 4:
+        return "from-green-500 to-emerald-400";
+      default:
+        return "from-slate-500 to-slate-400";
+    }
+  };
+
+  const stripHtml = (html) => {
+    if (!html) return "";
+    const tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
+
+  const extractImageFromDescription = (description) => {
+    if (!description) return null;
+    const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
+    return imgMatch ? imgMatch[1] : null;
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "Recent";
+    try {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffHours / 24);
+
+      if (diffHours < 1) return "Just now";
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays === 1) return "Yesterday";
+      if (diffDays < 7) return `${diffDays} days ago`;
+
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+    } catch {
+      return "Recent";
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a1a] via-[#1a0a2e] to-[#0a0a1a]">
-      {/* Animated Background */}
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <Header />
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div
+          className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8 md:py-12">
-        {/* Hero Section */}
-        <div className="text-center mb-8 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded-full">
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="text-purple-300 text-sm font-semibold">
-              Aggregated News Feed
-            </span>
-          </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-xl animate-pulse" />
+          <div className="relative bg-gradient-to-b from-slate-900/95 to-black/95 border-2 border-blue-500/30 p-6">
+            <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-blue-400/50" />
+            <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-blue-400/50" />
+            <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-blue-400/50" />
+            <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-blue-400/50" />
 
-          <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-            Multi-Manga News
-          </h1>
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30">
+                <Zap className="w-4 h-4 text-blue-400" />
+                <span className="text-blue-300 text-xs font-bold tracking-wider">
+                  LIVE FEED
+                </span>
+              </div>
 
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Track news from multiple manga series in one unified feed
-          </p>
-        </div>
-
-        {/* Manga Selector */}
-        <div className="mb-6 space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-purple-400" />
-              <span className="text-slate-300 font-semibold text-sm">
-                Selected: {selectedManga.length} manga
-              </span>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShowAllManga(!showAllManga)}
-                className="px-4 py-2 bg-slate-800/50 hover:bg-slate-800 text-slate-300 rounded-lg text-sm font-medium transition-all border border-slate-700/50"
+              <h1
+                className="text-4xl md:text-6xl font-black text-white tracking-wider"
+                style={{
+                  fontFamily: 'Impact, "Arial Black", sans-serif',
+                  textShadow: "0 0 20px rgba(59, 130, 246, 0.5)",
+                }}
               >
-                {showAllManga ? "Hide" : "Show"} All
-              </button>
+                ANIME NEWS HUB
+              </h1>
 
-              <button
-                onClick={selectAllManga}
-                className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg text-sm font-medium transition-all border border-purple-500/30"
-              >
-                Select All
-              </button>
-            </div>
-          </div>
+              <p className="text-blue-300 text-sm font-bold tracking-wide">
+                Latest Updates & Breaking Stories
+              </p>
 
-          {/* Manga Grid */}
-          {showAllManga && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {FEATURED_MANGA.map((manga) => {
-                const isSelected = selectedManga.includes(manga.id);
-                return (
-                  <button
-                    key={manga.id}
-                    onClick={() => toggleMangaSelection(manga.id)}
-                    className={`relative px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                      isSelected
-                        ? `bg-gradient-to-r ${manga.color} text-white shadow-lg scale-105`
-                        : "bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50"
-                    }`}
-                  >
-                    {manga.name}
-                    {isSelected && (
-                      <CheckCircle2 className="absolute top-2 right-2 w-4 h-4" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Quick Selected Pills */}
-          {!showAllManga && (
-            <div className="flex flex-wrap gap-2">
-              {FEATURED_MANGA.filter((m) => selectedManga.includes(m.id)).map(
-                (manga) => (
-                  <button
-                    key={manga.id}
-                    onClick={() => toggleMangaSelection(manga.id)}
-                    className={`px-4 py-2 rounded-xl font-semibold text-sm bg-gradient-to-r ${manga.color} text-white shadow-lg hover:scale-105 transition-all`}
-                  >
-                    {manga.name}
-                    <span className="ml-2">×</span>
-                  </button>
-                )
+              {lastUpdated && (
+                <div className="flex items-center justify-center gap-2 text-slate-500 text-xs font-bold tracking-wide">
+                  <Clock className="w-4 h-4" />
+                  <span>Last Updated: {lastUpdated.toLocaleTimeString()}</span>
+                </div>
               )}
             </div>
-          )}
-        </div>
-
-        {/* Sort Options */}
-        <div className="flex justify-end mb-6">
-          <div className="inline-flex bg-slate-800/50 rounded-lg p-1 border border-slate-700/50">
-            <button
-              onClick={() => setSortBy("date")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                sortBy === "date"
-                  ? "bg-purple-500 text-white"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              By Date
-            </button>
-            <button
-              onClick={() => setSortBy("manga")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                sortBy === "manga"
-                  ? "bg-purple-500 text-white"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              By Manga
-            </button>
           </div>
         </div>
 
-        {/* Loading State */}
-        {loading && (
+        <div className="flex gap-4 mb-8">
+          {NEWS_CATEGORIES.map((category) => {
+            const isSelected = selectedCategory === category.id;
+            return (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                disabled={loading}
+                className={`relative flex-1 py-4 px-6 transition-all duration-300 font-black tracking-wider text-sm ${
+                  isSelected
+                    ? `bg-gradient-to-r ${category.color} text-white border-2 border-white/50 shadow-lg scale-105`
+                    : "bg-slate-800/50 text-slate-400 border-2 border-blue-500/20 hover:border-blue-500/40"
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-2xl">{category.icon}</span>
+                  <span>{category.name}</span>
+                </div>
+                {isSelected && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-xs font-black shadow-lg animate-pulse">
+                    ✓
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* <div className="mb-6">
+          <button
+            onClick={() => {
+              setNews([]);
+              setPage(1);
+              setHasMore(true);
+              fetchNews(true);
+            }}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-black tracking-wider shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
+            <span>{loading ? "Loading..." : "Refresh Feed"}</span>
+          </button>
+        </div> */}
+
+        {error && (
+          <div className="mb-6 p-4 bg-blue-500/10 border-2 border-blue-500/30">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
+              <p className="text-blue-300 font-bold text-sm tracking-wide">
+                {error}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {loading && news.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 text-purple-400 animate-spin" />
-            <p className="text-slate-400 mt-4 font-medium">
-              Loading news from {selectedManga.length} manga...
+            <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
+            <p className="text-blue-300 font-black tracking-wider">
+              Loading Feed...
             </p>
           </div>
         )}
 
-        {/* Error State */}
-        {error && (
-          <div className="text-center py-20">
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-red-500/10 border border-red-500/30 rounded-xl">
-              <span className="text-red-400 font-semibold">{error}</span>
-            </div>
-          </div>
-        )}
-
-        {/* News Grid */}
-        {!loading && !error && displayedNews.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedNews.map((item, index) => (
-              <a
-                key={`${item.mal_id}-${index}`}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative bg-slate-900/50 border border-slate-800/50 rounded-2xl overflow-hidden hover:border-purple-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 hover:-translate-y-1"
+        {news.length > 0 && (
+          <div className="space-y-4">
+            {news.map((item, index) => (
+              <div
+                key={item.id}
+                className="relative group transition-all duration-300"
+                style={{
+                  animation: "slideIn 0.4s ease-out forwards",
+                  animationDelay: `${(index % 10) * 0.05}s`,
+                  opacity: 0,
+                }}
               >
-                {/* Image */}
-                {item.images?.jpg?.image_url && (
-                  <div className="relative h-48 overflow-hidden bg-slate-800">
-                    <img
-                      src={item.images.jpg.image_url}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
 
-                    {/* Manga Badge */}
-                    {item.manga_name && (
-                      <div className="absolute top-3 left-3 px-3 py-1 bg-purple-500/90 backdrop-blur-sm rounded-full">
-                        <span className="text-white text-xs font-bold">
-                          {item.manga_name}
+                <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
+                  {/* <div className="absolute -left-3 -top-3 w-10 h-10 z-10">
+                    <div
+                      className={`w-full h-full bg-gradient-to-br ${getPriorityColor(
+                        item.priority
+                      )} rounded-full flex items-center justify-center font-black text-white text-sm shadow-lg border-2 border-white/50`}
+                    >
+                      {item.priority}
+                    </div>
+                  </div> */}
+
+                  <div className="flex gap-4 p-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-32 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
+                        <Img
+                          src={"/news_thumbnail_" + (index % 10) + ".png"}
+                          alt={item.title}
+                          className="w-full h-full object-cover aspect-[16/9]"
+                          width={128}
+                          height={72}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex-1 space-y-2 ml-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold tracking-wide">
+                          {item.source}
+                        </span>
+                        <span className="text-slate-500 text-xs font-bold tracking-wide flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {formatDate(item.date)}
                         </span>
                       </div>
-                    )}
 
-                    {/* Time Badge */}
-                    <div className="absolute top-3 right-3 px-3 py-1 bg-slate-900/90 backdrop-blur-sm rounded-full">
-                      <span className="text-slate-300 text-xs font-medium">
-                        {formatDate(item.date)}
-                      </span>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <h3
+                          className="font-light text-white text-lg leading-tight group-hover:text-blue-400 transition-colors tracking-wide"
+                          style={{
+                            fontFamily: 'Impact, "Arial Black", sans-serif',
+                          }}
+                        >
+                          {item.title}
+                        </h3>
+                      </a>
+
+                      {item.excerpt && (
+                        <p className="text-slate-400 text-sm leading-relaxed line-clamp-2">
+                          {item.excerpt}
+                        </p>
+                      )}
+
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-400/50 text-blue-300 hover:text-blue-200 transition-all duration-300 font-bold text-xs tracking-wide"
+                      >
+                        <span>Read More</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
                     </div>
                   </div>
-                )}
 
-                {/* Content */}
-                <div className="p-5 space-y-3">
-                  <h3 className="font-bold text-white line-clamp-2 group-hover:text-purple-400 transition-colors leading-tight">
-                    {item.title}
-                  </h3>
-
-                  {item.excerpt && (
-                    <p className="text-slate-400 text-sm line-clamp-3 leading-relaxed">
-                      {item.excerpt}
-                    </p>
-                  )}
-
-                  {/* Meta */}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-800/50">
-                    {item.author_username && (
-                      <div className="text-slate-500 text-xs">
-                        by {item.author_username}
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-1 text-purple-400 text-xs font-semibold ml-auto">
-                      <span>Read</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
+                  <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-400" />
                 </div>
-
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-              </a>
+              </div>
             ))}
           </div>
         )}
 
-        {/* No News */}
-        {!loading && !error && displayedNews.length === 0 && (
-          <div className="text-center py-20">
-            <Newspaper className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-400 text-lg font-medium">
-              No news available
-            </p>
-            <p className="text-slate-500 text-sm mt-2">
-              Select manga series to see their latest news
-            </p>
+        {hasMore && news.length > 0 && (
+          <div ref={observerRef} className="py-8 text-center">
+            {loadingMore && (
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                <p className="text-blue-300 font-bold tracking-wide text-sm">
+                  Loading More Stories...
+                </p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Stats Footer */}
-        {!loading && displayedNews.length > 0 && (
-          <div className="mt-8 text-center">
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl">
-              <Newspaper className="w-4 h-4 text-purple-400" />
-              <span className="text-slate-300 font-medium">
-                Showing {displayedNews.length} articles from{" "}
-                {selectedManga.length} manga series
-              </span>
+        {!hasMore && news.length > 0 && (
+          <div className="py-8 text-center">
+            <div className="inline-block p-4 bg-slate-800/50 border-2 border-blue-500/30">
+              <p className="text-blue-300 font-black tracking-wider text-sm">
+                End of Feed
+              </p>
             </div>
           </div>
         )}
 
-        {/* Back to Home */}
-        <div className="text-center mt-12">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
-          >
-            <span>Back to Home</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+        {news.length > 0 && (
+          <div className="mt-8 text-center">
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-800/50 border-2 border-blue-500/30">
+              <TrendingUp className="w-5 h-5 text-blue-400" />
+              <span className="text-blue-300 font-bold tracking-wide text-sm">
+                {news.length} Stories
+              </span>
+            </div>
+          </div>
+        )}
       </div>
+
+      <style>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }

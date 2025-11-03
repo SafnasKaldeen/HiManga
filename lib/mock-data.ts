@@ -163,7 +163,7 @@ export const trendingMangas: Manga[] = [
     cover: "/anime-manga-cover-chainsaw-man.jpg",
     rating: 4.7,
     chapters: 97,
-    status: "Locked",
+    status: "ongoing",
     genre: ["Action", "Horror", "Supernatural"],
     description: "Denji, a young man with a debt to pay, merges with his pet devil, Chainsaw, to become a devil hunter.",
     views: 3000000,
