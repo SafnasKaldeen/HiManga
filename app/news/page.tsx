@@ -13,12 +13,16 @@ import {
 import Link from "next/link";
 
 const FEATURED_MANGA = [
-  { id: 121496, name: "Solo Leveling", color: "from-purple-500 to-blue-600" },
-  { id: 13, name: "One Piece", color: "from-orange-500 to-red-600" },
-  { id: 2, name: "Berserk", color: "from-gray-700 to-black" },
-  { id: 44347, name: "Jujutsu Kaisen", color: "from-indigo-500 to-purple-600" },
-  { id: 116778, name: "Chainsaw Man", color: "from-red-500 to-yellow-600" },
-  { id: 11, name: "Naruto", color: "from-orange-400 to-yellow-500" },
+  { id: 21, name: "One Piece", color: "from-orange-500 to-red-600" },
+  { id: 20, name: "Naruto", color: "from-orange-400 to-yellow-500" },
+  { id: 48561, name: "Jujutsu Kaisen", color: "from-indigo-500 to-purple-600" },
+  { id: 16498, name: "Attack on Titan", color: "from-red-600 to-gray-800" },
+  { id: 11061, name: "Hunter x Hunter", color: "from-green-500 to-blue-600" },
+  {
+    id: 5114,
+    name: "Fullmetal Alchemist",
+    color: "from-yellow-600 to-red-700",
+  },
 ];
 
 interface NewsItem {
@@ -73,7 +77,7 @@ export default function MultiMangaNewsAggregator() {
 
         try {
           const response = await fetch(
-            `https://api.jikan.moe/v4/manga/${mangaId}/news`
+            `https://api.jikan.moe/v4/anime/${mangaId}/news` // Changed from manga to anime
           );
 
           if (response.ok) {
