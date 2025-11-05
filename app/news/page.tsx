@@ -502,7 +502,7 @@ export default function AnimeNewsHub() {
                         className="block"
                       >
                         <h3
-                          className="font-light text-white text-lg leading-tight group-hover:text-blue-400 transition-colors tracking-wide"
+                          className="font-extralight text-white text-lg leading-tight group-hover:text-blue-400 transition-colors tracking-wide"
                           style={{
                             fontFamily: 'Impact, "Arial Black", sans-serif',
                           }}
@@ -510,12 +510,6 @@ export default function AnimeNewsHub() {
                           {item.title}
                         </h3>
                       </a>
-
-                      {/* {item.excerpt && (
-                        <p className="text-slate-400 text-sm leading-relaxed line-clamp-2">
-                          {item.excerpt}
-                        </p>
-                      )} */}
 
                       <a
                         href={item.url}
