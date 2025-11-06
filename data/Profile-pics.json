@@ -303,276 +303,276 @@
     "name": "All Might",
     "anime": "My Hero Academia",
     "gender": "Male",
-    "image": "/Profile_pic/53.png"
+    "image": "/Profile_pic/51.png"
   },
   {
     "name": "Edward Elric",
     "anime": "Fullmetal Alchemist",
     "gender": "Male",
-    "image": "/Profile_pic/54.png"
+    "image": "/Profile_pic/52.png"
   },
   {
     "name": "Alphonse Elric",
     "anime": "Fullmetal Alchemist",
     "gender": "Male",
-    "image": "/Profile_pic/55.png"
+    "image": "/Profile_pic/53.png"
   },
   {
     "name": "Roy Mustang",
     "anime": "Fullmetal Alchemist",
     "gender": "Male",
-    "image": "/Profile_pic/56.png"
+    "image": "/Profile_pic/54.png"
   },
   {
     "name": "Winry Rockbell",
     "anime": "Fullmetal Alchemist",
     "gender": "Female",
-    "image": "/Profile_pic/57.png"
+    "image": "/Profile_pic/55.png"
   },
   {
-    "name": "Scar",
+    "name": "King Bradley",
     "anime": "Fullmetal Alchemist",
     "gender": "Male",
-    "image": "/Profile_pic/58.png"
+    "image": "/Profile_pic/56.png"
   },
   {
     "name": "Gon Freecss",
     "anime": "Hunter x Hunter",
     "gender": "Male",
-    "image": "/Profile_pic/59.png"
+    "image": "/Profile_pic/57.png"
   },
   {
     "name": "Killua Zoldyck",
     "anime": "Hunter x Hunter",
     "gender": "Male",
-    "image": "/Profile_pic/60.png"
+    "image": "/Profile_pic/58.png"
   },
   {
     "name": "Kurapika",
     "anime": "Hunter x Hunter",
     "gender": "Male",
-    "image": "/Profile_pic/61.png"
+    "image": "/Profile_pic/59.png"
   },
   {
     "name": "Hisoka",
     "anime": "Hunter x Hunter",
     "gender": "Male",
-    "image": "/Profile_pic/62.png"
+    "image": "/Profile_pic/60.png"
   },
   {
     "name": "Chrollo Lucilfer",
     "anime": "Hunter x Hunter",
     "gender": "Male",
-    "image": "/Profile_pic/63.png"
+    "image": "/Profile_pic/61.png"
   },
   {
     "name": "Natsu Dragneel",
     "anime": "Fairy Tail",
     "gender": "Male",
-    "image": "/Profile_pic/64.png"
+    "image": "/Profile_pic/62.png"
   },
   {
     "name": "Lucy Heartfilia",
     "anime": "Fairy Tail",
     "gender": "Female",
-    "image": "/Profile_pic/65.png"
+    "image": "/Profile_pic/63.png"
   },
   {
     "name": "Erza Scarlet",
     "anime": "Fairy Tail",
     "gender": "Female",
-    "image": "/Profile_pic/66.png"
+    "image": "/Profile_pic/64.png"
   },
   {
     "name": "Gray Fullbuster",
     "anime": "Fairy Tail",
     "gender": "Male",
-    "image": "/Profile_pic/67.png"
+    "image": "/Profile_pic/65.png"
   },
   {
     "name": "Wendy Marvell",
     "anime": "Fairy Tail",
     "gender": "Female",
-    "image": "/Profile_pic/68.png"
+    "image": "/Profile_pic/66.png"
   },
   {
     "name": "Sailor Moon",
     "anime": "Sailor Moon",
     "gender": "Female",
-    "image": "/Profile_pic/69.png"
+    "image": "/Profile_pic/67.png"
   },
   {
     "name": "Sailor Mars",
     "anime": "Sailor Moon",
     "gender": "Female",
-    "image": "/Profile_pic/70.png"
+    "image": "/Profile_pic/68.png"
   },
   {
     "name": "Sailor Mercury",
     "anime": "Sailor Moon",
     "gender": "Female",
-    "image": "/Profile_pic/71.png"
+    "image": "/Profile_pic/69.png"
   },
   {
     "name": "Sailor Venus",
     "anime": "Sailor Moon",
     "gender": "Female",
-    "image": "/Profile_pic/72.png"
+    "image": "/Profile_pic/70.png"
   },
   {
     "name": "Tuxedo Mask",
     "anime": "Sailor Moon",
     "gender": "Male",
-    "image": "/Profile_pic/73.png"
+    "image": "/Profile_pic/71.png"
   },
   {
     "name": "Ash Ketchum",
     "anime": "Pokemon",
     "gender": "Male",
-    "image": "/Profile_pic/74.png"
+    "image": "/Profile_pic/72.png"
   },
   {
     "name": "Pikachu",
     "anime": "Pokemon",
     "gender": "Unknown",
-    "image": "/Profile_pic/75.png"
+    "image": "/Profile_pic/73.png"
   },
   {
     "name": "Misty",
     "anime": "Pokemon",
     "gender": "Female",
-    "image": "/Profile_pic/76.png"
+    "image": "/Profile_pic/74.png"
   },
   {
     "name": "Brock",
     "anime": "Pokemon",
     "gender": "Male",
-    "image": "/Profile_pic/77.png"
+    "image": "/Profile_pic/75.png"
   },
   {
     "name": "Jessie",
     "anime": "Pokemon",
     "gender": "Female",
-    "image": "/Profile_pic/78.png"
+    "image": "/Profile_pic/76.png"
   },
   {
     "name": "Kirito",
     "anime": "Sword Art Online",
     "gender": "Male",
-    "image": "/Profile_pic/79.png"
+    "image": "/Profile_pic/77.png"
   },
   {
     "name": "Asuna Yuuki",
     "anime": "Sword Art Online",
     "gender": "Female",
-    "image": "/Profile_pic/80.png"
+    "image": "/Profile_pic/78.png"
   },
   {
     "name": "Sinon",
     "anime": "Sword Art Online",
     "gender": "Female",
-    "image": "/Profile_pic/81.png"
+    "image": "/Profile_pic/79.png"
   },
   {
     "name": "Yui",
     "anime": "Sword Art Online",
     "gender": "Female",
-    "image": "/Profile_pic/82.png"
+    "image": "/Profile_pic/80.png"
   },
   {
     "name": "Eugeo",
     "anime": "Sword Art Online",
     "gender": "Male",
-    "image": "/Profile_pic/83.png"
+    "image": "/Profile_pic/81.png"
   },
   {
     "name": "Shinra Kusakabe",
     "anime": "Fire Force",
     "gender": "Male",
-    "image": "/Profile_pic/84.png"
+    "image": "/Profile_pic/82.png"
   },
   {
     "name": "Arthur Boyle",
     "anime": "Fire Force",
     "gender": "Male",
-    "image": "/Profile_pic/85.png"
+    "image": "/Profile_pic/83.png"
   },
   {
     "name": "Maki Oze",
     "anime": "Fire Force",
     "gender": "Female",
-    "image": "/Profile_pic/86.png"
+    "image": "/Profile_pic/84.png"
   },
   {
     "name": "Tamaki Kotatsu",
     "anime": "Fire Force",
     "gender": "Female",
-    "image": "/Profile_pic/87.png"
+    "image": "/Profile_pic/85.png"
   },
   {
     "name": "Benimaru Shinmon",
     "anime": "Fire Force",
     "gender": "Male",
-    "image": "/Profile_pic/88.png"
+    "image": "/Profile_pic/86.png"
   },
   {
     "name": "Meliodas",
     "anime": "Seven Deadly Sins",
     "gender": "Male",
-    "image": "/Profile_pic/89.png"
+    "image": "/Profile_pic/87.png"
   },
   {
     "name": "Elizabeth Liones",
     "anime": "Seven Deadly Sins",
     "gender": "Female",
-    "image": "/Profile_pic/90.png"
+    "image": "/Profile_pic/98.png"
   },
   {
     "name": "Ban",
     "anime": "Seven Deadly Sins",
     "gender": "Male",
-    "image": "/Profile_pic/91.png"
+    "image": "/Profile_pic/89.png"
   },
   {
     "name": "Diane",
     "anime": "Seven Deadly Sins",
     "gender": "Female",
-    "image": "/Profile_pic/92.png"
+    "image": "/Profile_pic/90.png"
   },
   {
     "name": "Gowther",
     "anime": "Seven Deadly Sins",
     "gender": "Male",
-    "image": "/Profile_pic/93.png"
+    "image": "/Profile_pic/91.png"
   },
   {
     "name": "Asta",
     "anime": "Black Clover",
     "gender": "Male",
-    "image": "/Profile_pic/94.png"
+    "image": "/Profile_pic/92.png"
   },
   {
     "name": "Yuno",
     "anime": "Black Clover",
     "gender": "Male",
-    "image": "/Profile_pic/95.png"
+    "image": "/Profile_pic/93.png"
   },
   {
     "name": "Noelle Silva",
     "anime": "Black Clover",
     "gender": "Female",
-    "image": "/Profile_pic/96.png"
+    "image": "/Profile_pic/94.png"
   },
   {
     "name": "Luck Voltia",
     "anime": "Black Clover",
     "gender": "Male",
-    "image": "/Profile_pic/97.png"
+    "image": "/Profile_pic/95.png"
   },
   {
     "name": "Magna Swing",
     "anime": "Black Clover",
     "gender": "Male",
-    "image": "/Profile_pic/98.png"
+    "image": "/Profile_pic/96.png"
   }
 ]
