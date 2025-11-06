@@ -21,6 +21,9 @@ import {
   BookOpen,
 } from "lucide-react";
 
+// Import anime characters data
+import animeCharacters from "@/data/Profile-pics.json";
+
 export default function ProfilePage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
@@ -53,11 +56,25 @@ export default function ProfilePage() {
     }
   }, [user, isLoading, router]);
 
-  // Generate 1000 preset avatars using various avatar services
+  // Generate avatars with anime characters
   const generateAvatars = () => {
     const avatars = [];
+
+    // Add anime characters first
+    animeCharacters.forEach((character, index) => {
+      avatars.push({
+        id: avatars.length,
+        url: character.image,
+        category: "Anime",
+        name: character.name,
+        anime: character.anime,
+        gender: character.gender,
+      });
+    });
+
+    // Add other preset avatars
     const categories = [
-      { name: "Anime", service: "adventurer", count: 200 },
+      { name: "Adventurer", service: "adventurer", count: 200 },
       { name: "Pixel", service: "pixel-art", count: 200 },
       { name: "Bottts", service: "bottts", count: 200 },
       { name: "Avataaars", service: "avataaars", count: 200 },
@@ -84,15 +101,17 @@ export default function ProfilePage() {
   const filteredAvatars = allAvatars.filter((avatar) => {
     const matchesCategory =
       categoryFilter === "all" || avatar.category === categoryFilter;
-    const matchesSearch = avatar.seed
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      avatar.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      avatar.anime?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      avatar.seed?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   const categories = [
     "all",
     "Anime",
+    "Adventurer",
     "Pixel",
     "Bottts",
     "Avataaars",
@@ -325,7 +344,7 @@ export default function ProfilePage() {
                   Choose Your Avatar
                 </h3>
                 <p className="text-sm text-slate-400 mt-1">
-                  Select from 1000+ preset avatars
+                  Select from 1000+ preset avatars including anime characters
                 </p>
               </div>
               <button
@@ -343,7 +362,7 @@ export default function ProfilePage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search avatars..."
+                  placeholder="Search avatars by name or anime..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-pink-500/50"
@@ -382,17 +401,28 @@ export default function ProfilePage() {
                       setSelectedAvatar(avatar.id);
                       setShowAvatarSelector(false);
                     }}
-                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${
+                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 group relative ${
                       selectedAvatar === avatar.id
                         ? "border-pink-500 shadow-lg shadow-pink-500/50 scale-105"
                         : "border-slate-700 hover:border-pink-500/50"
                     }`}
+                    title={avatar.name || `Avatar ${avatar.id}`}
                   >
                     <img
                       src={avatar.url}
-                      alt={`Avatar ${avatar.id}`}
+                      alt={avatar.name || `Avatar ${avatar.id}`}
                       className="w-full h-full object-cover bg-slate-800"
                     />
+                    {avatar.name && (
+                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
+                        <p className="text-white text-xs font-semibold truncate w-full">
+                          {avatar.name}
+                        </p>
+                        <p className="text-slate-400 text-[10px] truncate w-full">
+                          {avatar.anime}
+                        </p>
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>

@@ -1,0 +1,590 @@
+[
+  {
+    "name": "Goku",
+    "anime": "Dragon Ball",
+    "gender": "Male",
+    "image": "/Profile_pic/1.png"
+  },
+  {
+    "name": "Vegeta",
+    "anime": "Dragon Ball",
+    "gender": "Male",
+    "image": "/Profile_pic/2.png"
+  },
+  {
+    "name": "Gohan",
+    "anime": "Dragon Ball",
+    "gender": "Male",
+    "image": "/Profile_pic/3.png"
+  },
+  {
+    "name": "Frieza",
+    "anime": "Dragon Ball",
+    "gender": "Male",
+    "image": "/Profile_pic/4.png"
+  },
+  {
+    "name": "Bulma",
+    "anime": "Dragon Ball",
+    "gender": "Female",
+    "image": "/Profile_pic/5.png"
+  },
+  {
+    "name": "Naruto Uzumaki",
+    "anime": "Naruto",
+    "gender": "Male",
+    "image": "/Profile_pic/6.png"
+  },
+  {
+    "name": "Sasuke Uchiha",
+    "anime": "Naruto",
+    "gender": "Male",
+    "image": "/Profile_pic/7.png"
+  },
+  {
+    "name": "Kakashi Hatake",
+    "anime": "Naruto",
+    "gender": "Male",
+    "image": "/Profile_pic/8.png"
+  },
+  {
+    "name": "Hinata Hyuga",
+    "anime": "Naruto",
+    "gender": "Female",
+    "image": "/Profile_pic/9.png"
+  },
+  {
+    "name": "Madara Uchiha",
+    "anime": "Naruto",
+    "gender": "Male",
+    "image": "/Profile_pic/10.png"
+  },
+  {
+    "name": "Monkey D. Luffy",
+    "anime": "One Piece",
+    "gender": "Male",
+    "image": "/Profile_pic/11.png"
+  },
+  {
+    "name": "Roronoa Zoro",
+    "anime": "One Piece",
+    "gender": "Male",
+    "image": "/Profile_pic/12.png"
+  },
+  {
+    "name": "Nami",
+    "anime": "One Piece",
+    "gender": "Female",
+    "image": "/Profile_pic/13.png"
+  },
+  {
+    "name": "Sanji",
+    "anime": "One Piece",
+    "gender": "Male",
+    "image": "/Profile_pic/14.png"
+  },
+  {
+    "name": "Tony Tony Chopper",
+    "anime": "One Piece",
+    "gender": "Male",
+    "image": "/Profile_pic/15.png"
+  },
+  {
+    "name": "Ichigo Kurosaki",
+    "anime": "Bleach",
+    "gender": "Male",
+    "image": "/Profile_pic/16.png"
+  },
+  {
+    "name": "Rukia Kuchiki",
+    "anime": "Bleach",
+    "gender": "Female",
+    "image": "/Profile_pic/17.png"
+  },
+  {
+    "name": "Orihime Inoue",
+    "anime": "Bleach",
+    "gender": "Female",
+    "image": "/Profile_pic/18.png"
+  },
+  {
+    "name": "Aizen Sousuke",
+    "anime": "Bleach",
+    "gender": "Male",
+    "image": "/Profile_pic/19.png"
+  },
+  {
+    "name": "Kenpachi Zaraki",
+    "anime": "Bleach",
+    "gender": "Male",
+    "image": "/Profile_pic/20.png"
+  },
+  {
+    "name": "Eren Yeager",
+    "anime": "Attack on Titan",
+    "gender": "Male",
+    "image": "/Profile_pic/21.png"
+  },
+  {
+    "name": "Mikasa Ackerman",
+    "anime": "Attack on Titan",
+    "gender": "Female",
+    "image": "/Profile_pic/22.png"
+  },
+  {
+    "name": "Armin Arlert",
+    "anime": "Attack on Titan",
+    "gender": "Male",
+    "image": "/Profile_pic/23.png"
+  },
+  {
+    "name": "Levi Ackerman",
+    "anime": "Attack on Titan",
+    "gender": "Male",
+    "image": "/Profile_pic/24.png"
+  },
+  {
+    "name": "Erwin Smith",
+    "anime": "Attack on Titan",
+    "gender": "Male",
+    "image": "/Profile_pic/25.png"
+  },
+  {
+    "name": "Tanjiro Kamado",
+    "anime": "Demon Slayer",
+    "gender": "Male",
+    "image": "/Profile_pic/26.png"
+  },
+  {
+    "name": "Nezuko Kamado",
+    "anime": "Demon Slayer",
+    "gender": "Female",
+    "image": "/Profile_pic/27.png"
+  },
+  {
+    "name": "Zenitsu Agatsuma",
+    "anime": "Demon Slayer",
+    "gender": "Male",
+    "image": "/Profile_pic/28.png"
+  },
+  {
+    "name": "Inosuke Hashibira",
+    "anime": "Demon Slayer",
+    "gender": "Male",
+    "image": "/Profile_pic/29.png"
+  },
+  {
+    "name": "Rengoku Kyo",
+    "anime": "Demon Slayer",
+    "gender": "Male",
+    "image": "/Profile_pic/30.png"
+  },
+  {
+    "name": "Kanao Tsuyuri",
+    "anime": "Demon Slayer",
+    "gender": "Female",
+    "image": "/Profile_pic/31.png"
+  },
+  {
+    "name": "Yuji Itadori",
+    "anime": "Jujutsu Kaisen",
+    "gender": "Male",
+    "image": "/Profile_pic/32.png"
+  },
+  {
+    "name": "Satoru Gojo",
+    "anime": "Jujutsu Kaisen",
+    "gender": "Male",
+    "image": "/Profile_pic/33.png"
+  },
+  {
+    "name": "Toji Fushiguro",
+    "anime": "Jujutsu Kaisen",
+    "gender": "Male",
+    "image": "/Profile_pic/34.png"
+  },
+  {
+    "name": "Nobara Kugisaki",
+    "anime": "Jujutsu Kaisen",
+    "gender": "Female",
+    "image": "/Profile_pic/35.png"
+  },
+  {
+    "name": "Sukuna",
+    "anime": "Jujutsu Kaisen",
+    "gender": "Male",
+    "image": "/Profile_pic/36.png"
+  },
+  {
+    "name": "Nobara Kugisaki",
+    "anime": "Jujutsu Kaisen",
+    "gender": "Female",
+    "image": "/Profile_pic/37.png"
+  },
+  {
+    "name": "Sukuna",
+    "anime": "Jujutsu Kaisen",
+    "gender": "Male",
+    "image": "/Profile_pic/38.png"
+  },
+  {
+    "name": "Light Yagami",
+    "anime": "Death Note",
+    "gender": "Male",
+    "image": "/Profile_pic/39.png"
+  },
+  {
+    "name": "L",
+    "anime": "Death Note",
+    "gender": "Male",
+    "image": "/Profile_pic/40.png"
+  },
+  {
+    "name": "Misa Amane",
+    "anime": "Death Note",
+    "gender": "Female",
+    "image": "/Profile_pic/41.png"
+  },
+  {
+    "name": "Near",
+    "anime": "Death Note",
+    "gender": "Male",
+    "image": "/Profile_pic/42.png"
+  },
+  {
+    "name": "Ryuk",
+    "anime": "Death Note",
+    "gender": "Male",
+    "image": "/Profile_pic/43.png"
+  },
+  {
+    "name": "Saitama",
+    "anime": "One Punch Man",
+    "gender": "Male",
+    "image": "/Profile_pic/44.png"
+  },
+  {
+    "name": "Genos",
+    "anime": "One Punch Man",
+    "gender": "Male",
+    "image": "/Profile_pic/45.png"
+  },
+  {
+    "name": "Tatsumaki",
+    "anime": "One Punch Man",
+    "gender": "Female",
+    "image": "/Profile_pic/46.png"
+  },
+  {
+    "name": "King",
+    "anime": "One Punch Man",
+    "gender": "Male",
+    "image": "/Profile_pic/47.png"
+  },
+  {
+    "name": "Fubuki",
+    "anime": "One Punch Man",
+    "gender": "Female",
+    "image": "/Profile_pic/48.png"
+  },
+  {
+    "name": "Izuku Midoriya",
+    "anime": "My Hero Academia",
+    "gender": "Male",
+    "image": "/Profile_pic/49.png"
+  },
+  {
+    "name": "Katsuki Bakugo",
+    "anime": "My Hero Academia",
+    "gender": "Male",
+    "image": "/Profile_pic/50.png"
+  },
+  {
+    "name": "Shoto Todoroki",
+    "anime": "My Hero Academia",
+    "gender": "Male",
+    "image": "/Profile_pic/51.png"
+  },
+  {
+    "name": "Ochaco Uraraka",
+    "anime": "My Hero Academia",
+    "gender": "Female",
+    "image": "/Profile_pic/52.png"
+  },
+  {
+    "name": "All Might",
+    "anime": "My Hero Academia",
+    "gender": "Male",
+    "image": "/Profile_pic/53.png"
+  },
+  {
+    "name": "Edward Elric",
+    "anime": "Fullmetal Alchemist",
+    "gender": "Male",
+    "image": "/Profile_pic/54.png"
+  },
+  {
+    "name": "Alphonse Elric",
+    "anime": "Fullmetal Alchemist",
+    "gender": "Male",
+    "image": "/Profile_pic/55.png"
+  },
+  {
+    "name": "Roy Mustang",
+    "anime": "Fullmetal Alchemist",
+    "gender": "Male",
+    "image": "/Profile_pic/56.png"
+  },
+  {
+    "name": "Winry Rockbell",
+    "anime": "Fullmetal Alchemist",
+    "gender": "Female",
+    "image": "/Profile_pic/57.png"
+  },
+  {
+    "name": "Scar",
+    "anime": "Fullmetal Alchemist",
+    "gender": "Male",
+    "image": "/Profile_pic/58.png"
+  },
+  {
+    "name": "Gon Freecss",
+    "anime": "Hunter x Hunter",
+    "gender": "Male",
+    "image": "/Profile_pic/59.png"
+  },
+  {
+    "name": "Killua Zoldyck",
+    "anime": "Hunter x Hunter",
+    "gender": "Male",
+    "image": "/Profile_pic/60.png"
+  },
+  {
+    "name": "Kurapika",
+    "anime": "Hunter x Hunter",
+    "gender": "Male",
+    "image": "/Profile_pic/61.png"
+  },
+  {
+    "name": "Hisoka",
+    "anime": "Hunter x Hunter",
+    "gender": "Male",
+    "image": "/Profile_pic/62.png"
+  },
+  {
+    "name": "Chrollo Lucilfer",
+    "anime": "Hunter x Hunter",
+    "gender": "Male",
+    "image": "/Profile_pic/63.png"
+  },
+  {
+    "name": "Natsu Dragneel",
+    "anime": "Fairy Tail",
+    "gender": "Male",
+    "image": "/Profile_pic/64.png"
+  },
+  {
+    "name": "Lucy Heartfilia",
+    "anime": "Fairy Tail",
+    "gender": "Female",
+    "image": "/Profile_pic/65.png"
+  },
+  {
+    "name": "Erza Scarlet",
+    "anime": "Fairy Tail",
+    "gender": "Female",
+    "image": "/Profile_pic/66.png"
+  },
+  {
+    "name": "Gray Fullbuster",
+    "anime": "Fairy Tail",
+    "gender": "Male",
+    "image": "/Profile_pic/67.png"
+  },
+  {
+    "name": "Wendy Marvell",
+    "anime": "Fairy Tail",
+    "gender": "Female",
+    "image": "/Profile_pic/68.png"
+  },
+  {
+    "name": "Sailor Moon",
+    "anime": "Sailor Moon",
+    "gender": "Female",
+    "image": "/Profile_pic/69.png"
+  },
+  {
+    "name": "Sailor Mars",
+    "anime": "Sailor Moon",
+    "gender": "Female",
+    "image": "/Profile_pic/70.png"
+  },
+  {
+    "name": "Sailor Mercury",
+    "anime": "Sailor Moon",
+    "gender": "Female",
+    "image": "/Profile_pic/71.png"
+  },
+  {
+    "name": "Sailor Venus",
+    "anime": "Sailor Moon",
+    "gender": "Female",
+    "image": "/Profile_pic/72.png"
+  },
+  {
+    "name": "Tuxedo Mask",
+    "anime": "Sailor Moon",
+    "gender": "Male",
+    "image": "/Profile_pic/73.png"
+  },
+  {
+    "name": "Ash Ketchum",
+    "anime": "Pokemon",
+    "gender": "Male",
+    "image": "/Profile_pic/74.png"
+  },
+  {
+    "name": "Pikachu",
+    "anime": "Pokemon",
+    "gender": "Unknown",
+    "image": "/Profile_pic/75.png"
+  },
+  {
+    "name": "Misty",
+    "anime": "Pokemon",
+    "gender": "Female",
+    "image": "/Profile_pic/76.png"
+  },
+  {
+    "name": "Brock",
+    "anime": "Pokemon",
+    "gender": "Male",
+    "image": "/Profile_pic/77.png"
+  },
+  {
+    "name": "Jessie",
+    "anime": "Pokemon",
+    "gender": "Female",
+    "image": "/Profile_pic/78.png"
+  },
+  {
+    "name": "Kirito",
+    "anime": "Sword Art Online",
+    "gender": "Male",
+    "image": "/Profile_pic/79.png"
+  },
+  {
+    "name": "Asuna Yuuki",
+    "anime": "Sword Art Online",
+    "gender": "Female",
+    "image": "/Profile_pic/80.png"
+  },
+  {
+    "name": "Sinon",
+    "anime": "Sword Art Online",
+    "gender": "Female",
+    "image": "/Profile_pic/81.png"
+  },
+  {
+    "name": "Yui",
+    "anime": "Sword Art Online",
+    "gender": "Female",
+    "image": "/Profile_pic/82.png"
+  },
+  {
+    "name": "Eugeo",
+    "anime": "Sword Art Online",
+    "gender": "Male",
+    "image": "/Profile_pic/83.png"
+  },
+  {
+    "name": "Shinra Kusakabe",
+    "anime": "Fire Force",
+    "gender": "Male",
+    "image": "/Profile_pic/84.png"
+  },
+  {
+    "name": "Arthur Boyle",
+    "anime": "Fire Force",
+    "gender": "Male",
+    "image": "/Profile_pic/85.png"
+  },
+  {
+    "name": "Maki Oze",
+    "anime": "Fire Force",
+    "gender": "Female",
+    "image": "/Profile_pic/86.png"
+  },
+  {
+    "name": "Tamaki Kotatsu",
+    "anime": "Fire Force",
+    "gender": "Female",
+    "image": "/Profile_pic/87.png"
+  },
+  {
+    "name": "Benimaru Shinmon",
+    "anime": "Fire Force",
+    "gender": "Male",
+    "image": "/Profile_pic/88.png"
+  },
+  {
+    "name": "Meliodas",
+    "anime": "Seven Deadly Sins",
+    "gender": "Male",
+    "image": "/Profile_pic/89.png"
+  },
+  {
+    "name": "Elizabeth Liones",
+    "anime": "Seven Deadly Sins",
+    "gender": "Female",
+    "image": "/Profile_pic/90.png"
+  },
+  {
+    "name": "Ban",
+    "anime": "Seven Deadly Sins",
+    "gender": "Male",
+    "image": "/Profile_pic/91.png"
+  },
+  {
+    "name": "Diane",
+    "anime": "Seven Deadly Sins",
+    "gender": "Female",
+    "image": "/Profile_pic/92.png"
+  },
+  {
+    "name": "Gowther",
+    "anime": "Seven Deadly Sins",
+    "gender": "Male",
+    "image": "/Profile_pic/93.png"
+  },
+  {
+    "name": "Asta",
+    "anime": "Black Clover",
+    "gender": "Male",
+    "image": "/Profile_pic/94.png"
+  },
+  {
+    "name": "Yuno",
+    "anime": "Black Clover",
+    "gender": "Male",
+    "image": "/Profile_pic/95.png"
+  },
+  {
+    "name": "Noelle Silva",
+    "anime": "Black Clover",
+    "gender": "Female",
+    "image": "/Profile_pic/96.png"
+  },
+  {
+    "name": "Luck Voltia",
+    "anime": "Black Clover",
+    "gender": "Male",
+    "image": "/Profile_pic/97.png"
+  },
+  {
+    "name": "Magna Swing",
+    "anime": "Black Clover",
+    "gender": "Male",
+    "image": "/Profile_pic/98.png"
+  }
+]

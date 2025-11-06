@@ -43,7 +43,7 @@ const PLACEHOLDER_IMAGES = [
 ];
 
 export default function AnimeNewsHub() {
-  const [selectedCategory, setSelectedCategory] = useState("anime");
+  const [selectedCategory, setSelectedCategory] = useState("manga");
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);

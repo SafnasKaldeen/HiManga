@@ -12,9 +12,9 @@ const mangaList = [
     name: "Attack on Titan",
   },
   {
-    slug: "spy-x-family",
-    url: "https://www.mangaread.org/manga/spy-x-family/",
-    name: "Spy x Family",
+    slug: "sakamoto-days",
+    url: "https://www.mangaread.org/manga/sakamoto-days/",
+    name: "Sakamoto Days",
   },
 ];
 
