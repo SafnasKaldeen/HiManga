@@ -415,8 +415,8 @@ export default function ProfilePage() {
                       src={avatar.url}
                       alt={avatar.name || `Avatar ${avatar.id}`}
                       className="w-full h-full object-cover bg-slate-800"
-                      width={96}
-                      height={96}
+                      width={64}
+                      height={64}
                     />
                     {avatar.name && (
                       <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
