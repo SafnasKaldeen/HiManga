@@ -216,94 +216,88 @@
     "image": "/Profile_pic/36.png"
   },
   {
-    "name": "Sukuna",
-    "anime": "Jujutsu Kaisen",
-    "gender": "Male",
-    "image": "/Profile_pic/38.png"
-  },
-  {
     "name": "Light Yagami",
     "anime": "Death Note",
     "gender": "Male",
-    "image": "/Profile_pic/39.png"
+    "image": "/Profile_pic/37.png"
   },
   {
     "name": "L",
     "anime": "Death Note",
     "gender": "Male",
-    "image": "/Profile_pic/40.png"
+    "image": "/Profile_pic/38.png"
   },
   {
     "name": "Misa Amane",
     "anime": "Death Note",
     "gender": "Female",
-    "image": "/Profile_pic/41.png"
+    "image": "/Profile_pic/39.png"
   },
   {
     "name": "Near",
     "anime": "Death Note",
     "gender": "Male",
-    "image": "/Profile_pic/42.png"
+    "image": "/Profile_pic/40.png"
   },
   {
     "name": "Ryuk",
     "anime": "Death Note",
     "gender": "Male",
-    "image": "/Profile_pic/43.png"
+    "image": "/Profile_pic/41.png"
   },
   {
     "name": "Saitama",
     "anime": "One Punch Man",
     "gender": "Male",
-    "image": "/Profile_pic/44.png"
+    "image": "/Profile_pic/42.png"
   },
   {
     "name": "Genos",
     "anime": "One Punch Man",
     "gender": "Male",
-    "image": "/Profile_pic/45.png"
+    "image": "/Profile_pic/43.png"
   },
   {
     "name": "Tatsumaki",
     "anime": "One Punch Man",
     "gender": "Female",
-    "image": "/Profile_pic/46.png"
+    "image": "/Profile_pic/44.png"
   },
   {
     "name": "King",
     "anime": "One Punch Man",
     "gender": "Male",
-    "image": "/Profile_pic/47.png"
+    "image": "/Profile_pic/45.png"
   },
   {
     "name": "Fubuki",
     "anime": "One Punch Man",
     "gender": "Female",
-    "image": "/Profile_pic/48.png"
+    "image": "/Profile_pic/46.png"
   },
   {
     "name": "Izuku Midoriya",
     "anime": "My Hero Academia",
     "gender": "Male",
-    "image": "/Profile_pic/49.png"
+    "image": "/Profile_pic/47.png"
   },
   {
     "name": "Katsuki Bakugo",
     "anime": "My Hero Academia",
     "gender": "Male",
-    "image": "/Profile_pic/50.png"
+    "image": "/Profile_pic/48.png"
   },
   {
     "name": "Shoto Todoroki",
     "anime": "My Hero Academia",
     "gender": "Male",
-    "image": "/Profile_pic/51.png"
+    "image": "/Profile_pic/49.png"
   },
   {
     "name": "Ochaco Uraraka",
     "anime": "My Hero Academia",
     "gender": "Female",
-    "image": "/Profile_pic/52.png"
+    "image": "/Profile_pic/50.png"
   },
   {
     "name": "All Might",
