@@ -20,6 +20,7 @@ import {
   Flame,
   BookOpen,
 } from "lucide-react";
+import Image from "next/image";
 
 // Import anime characters data
 import animeCharacters from "@/data/Profile-pics.json";
@@ -170,10 +171,12 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-pink-500/50 bg-slate-800">
-                    <img
+                    <Image
                       src={allAvatars[selectedAvatar]?.url}
                       alt={user.username}
                       className="w-full h-full object-cover"
+                      width={96}
+                      height={96}
                     />
                   </div>
                   <button
@@ -408,10 +411,12 @@ export default function ProfilePage() {
                     }`}
                     title={avatar.name || `Avatar ${avatar.id}`}
                   >
-                    <img
+                    <Image
                       src={avatar.url}
                       alt={avatar.name || `Avatar ${avatar.id}`}
                       className="w-full h-full object-cover bg-slate-800"
+                      width={96}
+                      height={96}
                     />
                     {avatar.name && (
                       <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
