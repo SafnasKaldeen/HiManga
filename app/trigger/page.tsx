@@ -2,14 +2,14 @@ import MangaScrapeButton from "@/components/MangaScrapeButton";
 
 const mangaList = [
   {
-    slug: "chainsaw-man",
-    url: "https://www.mangaread.org/manga/chainsaw-man/",
-    name: "Chainsaw Man",
+    slug: "blue-lock",
+    url: "https://www.mangaread.org/manga/blue-lock/",
+    name: "Blue Lock",
   },
   {
-    slug: "attack-on-titan",
-    url: "https://www.mangaread.org/manga/attack-on-titan/",
-    name: "Attack on Titan",
+    slug: "boruto",
+    url: "https://www.mangaread.org/manga/boruto/",
+    name: "Boruto - Naruto Next Generations",
   },
   {
     slug: "sakamoto-days",
