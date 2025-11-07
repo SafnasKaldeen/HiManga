@@ -70,7 +70,7 @@ export function Header() {
               />
             </div>
             <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent text-lg md:text-xl">
-              HiManga
+              H!Manga
             </span>
           </Link>
 
