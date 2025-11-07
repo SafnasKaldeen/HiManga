@@ -2,14 +2,14 @@ import MangaScrapeButton from "@/components/MangaScrapeButton";
 
 const mangaList = [
   {
-    slug: "blue-lock",
-    url: "https://www.mangaread.org/manga/blue-lock/",
-    name: "Blue Lock",
+    slug: "muscle-joseon",
+    url: "https://www.mangaread.org/manga/muscle-joseon/",
+    name: "Muscle - Joseon",
   },
   {
-    slug: "boruto",
-    url: "https://www.mangaread.org/manga/boruto/",
-    name: "Boruto - Naruto Next Generations",
+    slug: "shangri-la-frontier",
+    url: "https://www.mangaread.org/manga/shangri-la-frontier/",
+    name: "Shangri-La Frontier",
   },
   {
     slug: "sakamoto-days",
