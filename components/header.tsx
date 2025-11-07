@@ -25,8 +25,13 @@ export function Header() {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Load avatar from cookies
-  const { avatarId } = useAvatar(user?.avatarId || 0);
+  // Load avatar with proper server sync
+  // Default to 0 for new users (will show /0.png)
+  const { avatarId } = useAvatar({
+    serverAvatarId: user?.avatarId,
+    fallbackAvatarId: 0,
+  });
+
   const avatarUrl = getAvatarUrl(avatarId);
 
   const handleShare = async () => {
@@ -136,6 +141,7 @@ export function Header() {
                           fill
                           sizes="40px"
                           className="object-cover bg-slate-800 rounded-full"
+                          key={avatarId}
                         />
                         <div className="absolute inset-0 bg-gradient-to-br from-pink-500/0 to-purple-500/0 group-hover:from-pink-500/20 group-hover:to-purple-500/20 transition-all duration-300" />
                       </div>
@@ -221,6 +227,7 @@ export function Header() {
                     fill
                     sizes="56px"
                     className="object-cover bg-slate-800 rounded-full"
+                    key={avatarId}
                   />
                 </div>
                 <div>
