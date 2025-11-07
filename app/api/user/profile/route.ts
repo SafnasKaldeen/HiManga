@@ -10,11 +10,11 @@ export async function PUT(request: Request) {
     const accessToken = cookieStore.get('accessToken')?.value;
 
     // Debug logging
-    console.log('Cookies received:', { 
-      userId: userId ? 'present' : 'missing', 
-      accessToken: accessToken ? 'present' : 'missing',
-      allCookies: cookieStore.getAll().map(c => c.name)
-    });
+    // console.log('Cookies received:', { 
+    //   userId: userId ? 'present' : 'missing', 
+    //   accessToken: accessToken ? 'present' : 'missing',
+    //   allCookies: cookieStore.getAll().map(c => c.name)
+    // });
 
     if (!userId || !accessToken) {
       return NextResponse.json(
