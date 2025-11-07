@@ -473,12 +473,7 @@
     "gender": "Female",
     "image": "/Profile_pic/79.png"
   },
-  {
-    "name": "Yui",
-    "anime": "Sword Art Online",
-    "gender": "Female",
-    "image": "/Profile_pic/80.png"
-  },
+
   {
     "name": "Eugeo",
     "anime": "Sword Art Online",
@@ -486,93 +481,99 @@
     "image": "/Profile_pic/81.png"
   },
   {
-    "name": "Shinra Kusakabe",
-    "anime": "Fire Force",
-    "gender": "Male",
+    "name": "Yui",
+    "anime": "Sword Art Online",
+    "gender": "Female",
     "image": "/Profile_pic/82.png"
   },
   {
-    "name": "Arthur Boyle",
+    "name": "Shinra Kusakabe",
     "anime": "Fire Force",
     "gender": "Male",
     "image": "/Profile_pic/83.png"
   },
   {
-    "name": "Maki Oze",
+    "name": "Arthur Boyle",
     "anime": "Fire Force",
-    "gender": "Female",
+    "gender": "Male",
     "image": "/Profile_pic/84.png"
   },
   {
-    "name": "Tamaki Kotatsu",
+    "name": "Maki Oze",
     "anime": "Fire Force",
     "gender": "Female",
     "image": "/Profile_pic/85.png"
   },
   {
+    "name": "Tamaki Kotatsu",
+    "anime": "Fire Force",
+    "gender": "Female",
+    "image": "/Profile_pic/86.png"
+  },
+  {
     "name": "Benimaru Shinmon",
     "anime": "Fire Force",
     "gender": "Male",
-    "image": "/Profile_pic/86.png"
+    "image": "/Profile_pic/87.png"
   },
   {
     "name": "Meliodas",
     "anime": "Seven Deadly Sins",
     "gender": "Male",
-    "image": "/Profile_pic/87.png"
+    "image": "/Profile_pic/88.png"
   },
   {
     "name": "Elizabeth Liones",
     "anime": "Seven Deadly Sins",
     "gender": "Female",
-    "image": "/Profile_pic/88.png"
+    "image": "/Profile_pic/89.png"
   },
   {
     "name": "Ban",
     "anime": "Seven Deadly Sins",
     "gender": "Male",
-    "image": "/Profile_pic/89.png"
+    "image": "/Profile_pic/90.png"
   },
   {
     "name": "Diane",
     "anime": "Seven Deadly Sins",
     "gender": "Female",
-    "image": "/Profile_pic/90.png"
+    "image": "/Profile_pic/91.png"
   },
   {
     "name": "Gowther",
     "anime": "Seven Deadly Sins",
     "gender": "Male",
-    "image": "/Profile_pic/91.png"
+    "image": "/Profile_pic/92.png"
   },
   {
     "name": "Asta",
     "anime": "Black Clover",
     "gender": "Male",
-    "image": "/Profile_pic/92.png"
+    "image": "/Profile_pic/93.png"
   },
   {
     "name": "Yuno",
     "anime": "Black Clover",
     "gender": "Male",
-    "image": "/Profile_pic/93.png"
+    "image": "/Profile_pic/94.png"
   },
   {
     "name": "Noelle Silva",
     "anime": "Black Clover",
     "gender": "Female",
-    "image": "/Profile_pic/94.png"
+    "image": "/Profile_pic/95.png"
   },
   {
     "name": "Luck Voltia",
     "anime": "Black Clover",
     "gender": "Male",
-    "image": "/Profile_pic/95.png"
+    "image": "/Profile_pic/96.png"
   },
   {
     "name": "Magna Swing",
     "anime": "Black Clover",
     "gender": "Male",
-    "image": "/Profile_pic/96.png"
+    "image": "/Profile_pic/97.png"
   }
 ]
