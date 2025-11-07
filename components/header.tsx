@@ -125,7 +125,7 @@ export function Header() {
               <Newspaper className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               <span>News</span>
             </Link>
-            {user && (
+            {/* {user && (
               <Link
                 href="/rooms"
                 className="flex items-center gap-2 text-white/70 hover:text-pink-500 transition-colors duration-300 font-semibold group"
@@ -133,7 +133,7 @@ export function Header() {
                 <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                 <span>Rooms</span>
               </Link>
-            )}
+            )} */}
           </nav>
 
           {/* Right Section */}
@@ -293,7 +293,7 @@ export function Header() {
               <Newspaper className="w-5 h-5" />
               <span>News</span>
             </Link>
-            {user && (
+            {/* {user && (
               <Link
                 href="/rooms"
                 className="flex items-center gap-4 text-white/70 hover:text-pink-500 hover:bg-white/5 transition-all duration-300 font-semibold px-4 py-3 rounded-xl"
@@ -302,7 +302,7 @@ export function Header() {
                 <Users className="w-5 h-5" />
                 <span>Reading Rooms</span>
               </Link>
-            )}
+            )} */}
 
             {/* Share Button - Mobile/Tablet */}
             <button
