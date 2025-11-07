@@ -81,7 +81,7 @@ export function Header() {
             href="/"
             className="flex items-center gap-1.5 sm:gap-2 font-black text-xl group z-50"
           >
-            <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0">
+            <div className="relative w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
               <Image
                 src="/logo.png"
                 alt="HiManga Logo"
@@ -90,7 +90,7 @@ export function Header() {
                 className="w-full h-full object-contain"
               />
             </div>
-            <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent text-base sm:text-lg md:text-xl">
+            <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent text-lg md:text-xl">
               HiManga
             </span>
           </Link>
