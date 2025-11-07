@@ -1,26 +1,57 @@
 // hooks/useAvatar.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Cookies from 'js-cookie';
 
 const AVATAR_COOKIE_KEY = 'user_avatar_id';
-const COOKIE_EXPIRY_DAYS = 365; // 1 year
+const COOKIE_EXPIRY_DAYS = 365;
 const AVATAR_UPDATE_EVENT = 'avatarUpdated';
 
-export const useAvatar = (initialAvatarId: number) => {
-  const [avatarId, setAvatarId] = useState<number>(initialAvatarId);
+interface UseAvatarOptions {
+  serverAvatarId?: number; // Avatar ID from server (SSR)
+  fallbackAvatarId?: number; // Fallback if no server value
+}
+
+export const useAvatar = (options: UseAvatarOptions = {}) => {
+  const { serverAvatarId, fallbackAvatarId = 42 } = options;
+  
+  // Initialize with server value if available, otherwise use fallback
+  const [avatarId, setAvatarId] = useState<number>(() => {
+    // If we have a server-provided avatar, use it
+    if (serverAvatarId !== undefined) {
+      return serverAvatarId;
+    }
+    
+    // Otherwise, try to get from cookie (client-side only)
+    if (typeof window !== 'undefined') {
+      const savedAvatarId = Cookies.get(AVATAR_COOKIE_KEY);
+      if (savedAvatarId) {
+        const parsedId = parseInt(savedAvatarId, 10);
+        if (!isNaN(parsedId)) {
+          return parsedId;
+        }
+      }
+    }
+    
+    return fallbackAvatarId;
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load avatar from cookie on mount
+  // Sync with cookie on mount (only if no server avatar provided)
   useEffect(() => {
-    const savedAvatarId = Cookies.get(AVATAR_COOKIE_KEY);
+    if (serverAvatarId !== undefined) {
+      // We already have the correct value from server
+      return;
+    }
     
+    const savedAvatarId = Cookies.get(AVATAR_COOKIE_KEY);
     if (savedAvatarId) {
       const parsedId = parseInt(savedAvatarId, 10);
-      if (!isNaN(parsedId)) {
+      if (!isNaN(parsedId) && parsedId !== avatarId) {
         setAvatarId(parsedId);
       }
     }
-  }, []);
+  }, [serverAvatarId, avatarId]);
 
   // Listen for avatar updates from other components
   useEffect(() => {
@@ -35,14 +66,14 @@ export const useAvatar = (initialAvatarId: number) => {
     };
   }, []);
 
-  const updateAvatar = async (newAvatarId: number): Promise<boolean> => {
+  const updateAvatar = useCallback(async (newAvatarId: number): Promise<boolean> => {
     setIsLoading(true);
     try {
       // Save to backend API
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Important: includes cookies
+        credentials: 'include',
         body: JSON.stringify({ avatarId: newAvatarId }),
       });
 
@@ -72,7 +103,21 @@ export const useAvatar = (initialAvatarId: number) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   return { avatarId, isLoading, updateAvatar };
 };
+
+// Utility to get avatar from cookie (for Server Components)
+export function getAvatarIdFromCookie(): number | null {
+  if (typeof window === 'undefined') return null;
+  
+  const savedAvatarId = Cookies.get(AVATAR_COOKIE_KEY);
+  if (savedAvatarId) {
+    const parsedId = parseInt(savedAvatarId, 10);
+    if (!isNaN(parsedId)) {
+      return parsedId;
+    }
+  }
+  return null;
+}

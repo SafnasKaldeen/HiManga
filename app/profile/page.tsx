@@ -1,3 +1,4 @@
+// app/profile/page.tsx
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
@@ -21,6 +22,7 @@ import Image from "next/image";
 import { getAvatarUrl } from "@/lib/avatar-utils";
 import { useAvatar } from "@/hooks/useAvatar";
 import { AvatarSelector } from "@/components/avatar-selector";
+import Cookies from "js-cookie";
 
 interface UserStats {
   level: number;
@@ -30,6 +32,24 @@ interface UserStats {
   achievements: string[];
 }
 
+// Helper to get avatar from cookie
+function getInitialAvatarId(userAvatarId?: number): number {
+  // First, try user's saved avatar from auth
+  if (userAvatarId) return userAvatarId;
+
+  // Then try cookie
+  if (typeof window !== "undefined") {
+    const cookieAvatar = Cookies.get("user_avatar_id");
+    if (cookieAvatar) {
+      const parsed = parseInt(cookieAvatar, 10);
+      if (!isNaN(parsed)) return parsed;
+    }
+  }
+
+  // Default fallback
+  return 42;
+}
+
 export default function ProfilePage() {
   const { user, logout, isLoading: authLoading } = useAuth();
   const router = useRouter();
@@ -37,15 +57,19 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
 
-  // Get the saved avatar from cookies
-  const { avatarId: savedAvatarId, updateAvatar } = useAvatar(
-    user?.avatarId || 42
-  );
+  // Initialize avatar with user's saved value or cookie
+  const initialAvatarId = user ? getInitialAvatarId(user.avatarId) : 42;
+
+  // Use the updated hook with server avatar support
+  const { avatarId: savedAvatarId, updateAvatar } = useAvatar({
+    serverAvatarId: user?.avatarId,
+    fallbackAvatarId: initialAvatarId,
+  });
 
   // Local state for temporary avatar preview (not saved yet)
   const [tempAvatarId, setTempAvatarId] = useState<number>(savedAvatarId);
 
-  // Mock user stats - replace with real data from your backend
+  // Mock user stats
   const [userStats] = useState<UserStats>({
     level: 12,
     xp: 750,
@@ -80,9 +104,27 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     try {
-      // Save avatar if it changed
       const avatarChanged = tempAvatarId !== savedAvatarId;
+      const usernameChanged = username !== user.username;
 
+      // Prepare update data
+      const updateData: { username?: string; avatarId?: number } = {};
+      if (usernameChanged) updateData.username = username;
+      if (avatarChanged) updateData.avatarId = tempAvatarId;
+
+      // Save to backend
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save profile");
+      }
+
+      // Update avatar in cookie if changed
       if (avatarChanged) {
         const avatarSuccess = await updateAvatar(tempAvatarId);
         if (!avatarSuccess) {
@@ -90,25 +132,9 @@ export default function ProfilePage() {
         }
       }
 
-      // Save username to backend
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          ...(avatarChanged && { avatarId: tempAvatarId }),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save profile");
-      }
-
-      // Show success message (you can add a toast notification here)
       console.log("Profile saved successfully");
     } catch (error) {
       console.error("Error saving profile:", error);
-      // Show error message (you can add a toast notification here)
       // Revert temp avatar on error
       setTempAvatarId(savedAvatarId);
     } finally {
@@ -117,7 +143,6 @@ export default function ProfilePage() {
   };
 
   const handleAvatarSelect = (newAvatarId: number) => {
-    // Just update the temporary preview, don't save yet
     setTempAvatarId(newAvatarId);
     setShowAvatarSelector(false);
   };
@@ -143,7 +168,6 @@ export default function ProfilePage() {
     return null;
   }
 
-  // Check if there are unsaved changes
   const hasUnsavedChanges =
     tempAvatarId !== savedAvatarId || username !== user.username;
 
@@ -169,6 +193,7 @@ export default function ProfilePage() {
                       width={96}
                       height={96}
                       priority
+                      key={tempAvatarId} // Force re-render on avatar change
                     />
                   </div>
                   <button
