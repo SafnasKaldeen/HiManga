@@ -12,7 +12,7 @@ interface UseAvatarOptions {
 }
 
 export const useAvatar = (options: UseAvatarOptions = {}) => {
-  const { serverAvatarId, fallbackAvatarId = 42 } = options;
+  const { serverAvatarId, fallbackAvatarId = 0 } = options;
   
   const [avatarId, setAvatarId] = useState<number>(() => {
     // Initialize from cookie first

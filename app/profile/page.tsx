@@ -47,7 +47,7 @@ function getInitialAvatarId(userAvatarId?: number): number {
   }
 
   // Default fallback
-  return 42;
+  return 0;
 }
 
 export default function ProfilePage() {
