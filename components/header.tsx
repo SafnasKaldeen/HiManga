@@ -26,7 +26,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Load avatar from cookies
-  const { avatarId } = useAvatar(user?.avatarId || 42);
+  const { avatarId } = useAvatar(user?.avatarId || 0);
   const avatarUrl = getAvatarUrl(avatarId);
 
   const handleShare = async () => {

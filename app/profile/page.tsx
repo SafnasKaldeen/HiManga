@@ -58,7 +58,7 @@ export default function ProfilePage() {
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
 
   // Initialize avatar with user's saved value or cookie
-  const initialAvatarId = user ? getInitialAvatarId(user.avatarId) : 42;
+  const initialAvatarId = user ? getInitialAvatarId(user.avatarId) : 0;
 
   // Use the updated hook with server avatar support
   const { avatarId: savedAvatarId, updateAvatar } = useAvatar({
