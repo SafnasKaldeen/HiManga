@@ -74,7 +74,7 @@ export function Header() {
 
   return (
     <header className="border-b border-white/10 bg-[#0a0a1a]/80 backdrop-blur-xl sticky top-0 z-50">
-      <div className="w-full px-3 sm:px-4 md:px-8 lg:px-10 py-2.5 sm:py-3 min-h-[73px] flex items-center">
+      <div className="w-full px-3 sm:px-4 md:px-8 lg:px-10 py-2.5 sm:py-3 min-h-[70px] flex items-center">
         <div className="flex items-center justify-between gap-2 sm:gap-4 w-full">
           {/* Logo */}
           <Link
@@ -229,7 +229,7 @@ export function Header() {
 
       {/* Mobile/Tablet Menu Drawer - Shows up to 1280px */}
       <div
-        className={`fixed top-[73px] right-0 w-full sm:w-96 md:w-[400px] h-[calc(100vh-73px)] bg-[#0a0a1a]/95 backdrop-blur-xl border-l border-white/10 transform transition-transform duration-300 ease-in-out z-40 xl:hidden ${
+        className={`fixed top-[70px] right-0 w-full sm:w-96 md:w-[400px] h-[calc(100vh-70px)] bg-[#0a0a1a]/95 backdrop-blur-xl border-l border-white/10 transform transition-transform duration-300 ease-in-out z-40 xl:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
