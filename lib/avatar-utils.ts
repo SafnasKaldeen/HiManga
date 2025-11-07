@@ -61,7 +61,7 @@ export function getAllAvatars(): Avatar[] {
 export function getAvatarUrl(avatarId: number): string {
   const avatars = getAllAvatars();
   const avatar = avatars[avatarId];
-  return avatar ? avatar.url : avatars[42].url; // Fallback to default
+  return avatar ? avatar.url : avatars[0].url; // Fallback to default
 }
 
 export function getAvatar(avatarId: number): Avatar | undefined {

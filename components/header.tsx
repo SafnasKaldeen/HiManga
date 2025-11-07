@@ -32,7 +32,7 @@ export function Header() {
     fallbackAvatarId: 0,
   });
 
-  const avatarUrl = getAvatarUrl(avatarId);
+  const avatarUrl = getAvatarUrl(avatarId) || "/Profile_pic/0.png";
 
   const handleShare = async () => {
     if (navigator.share) {
