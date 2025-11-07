@@ -7,36 +7,46 @@ import { Footer } from "@/components/footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
-  User,
   LogOut,
   Mail,
   Calendar,
   Camera,
-  X,
-  Search,
   Award,
   Flame,
   BookOpen,
 } from "lucide-react";
 import Image from "next/image";
+import { getAvatarUrl } from "@/lib/avatar-utils";
+import { useAvatar } from "@/hooks/useAvatar";
+import { AvatarSelector } from "@/components/avatar-selector";
 
-// Import anime characters data
-import animeCharacters from "@/data/Profile-pics.json";
+interface UserStats {
+  level: number;
+  xp: number;
+  totalChaptersRead: number;
+  currentStreak: number;
+  achievements: string[];
+}
 
 export default function ProfilePage() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(42);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
 
-  // Mock user stats - replace with real data
-  const [userStats] = useState({
+  // Get the saved avatar from cookies
+  const { avatarId: savedAvatarId, updateAvatar } = useAvatar(
+    user?.avatarId || 42
+  );
+
+  // Local state for temporary avatar preview (not saved yet)
+  const [tempAvatarId, setTempAvatarId] = useState<number>(savedAvatarId);
+
+  // Mock user stats - replace with real data from your backend
+  const [userStats] = useState<UserStats>({
     level: 12,
     xp: 750,
     totalChaptersRead: 342,
@@ -44,98 +54,75 @@ export default function ProfilePage() {
     achievements: ["First Read", "Speed Reader", "Collector"],
   });
 
+  // Update temp avatar when saved avatar changes
   useEffect(() => {
-    if (!isLoading && !user) {
+    setTempAvatarId(savedAvatarId);
+  }, [savedAvatarId]);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
       router.push("/auth/login");
     }
     if (user) {
       setUsername(user.username);
-      // Load saved avatar from user data if available
-      if (user.avatarId) {
-        setSelectedAvatar(user.avatarId);
-      }
     }
-  }, [user, isLoading, router]);
-
-  // Generate avatars with anime characters
-  const generateAvatars = () => {
-    const avatars = [];
-
-    // Add anime characters first
-    animeCharacters.forEach((character, index) => {
-      avatars.push({
-        id: avatars.length,
-        url: character.image,
-        category: "Anime",
-        name: character.name,
-        anime: character.anime,
-        gender: character.gender,
-      });
-    });
-
-    // Add other preset avatars
-    const categories = [
-      { name: "Adventurer", service: "adventurer", count: 200 },
-      { name: "Pixel", service: "pixel-art", count: 200 },
-      { name: "Bottts", service: "bottts", count: 200 },
-      { name: "Avataaars", service: "avataaars", count: 200 },
-      { name: "Fun Emoji", service: "fun-emoji", count: 200 },
-    ];
-
-    categories.forEach((category) => {
-      for (let i = 0; i < category.count; i++) {
-        const seed = `${category.service}-${i}`;
-        avatars.push({
-          id: avatars.length,
-          url: `https://api.dicebear.com/7.x/${category.service}/svg?seed=${seed}`,
-          category: category.name,
-          seed: seed,
-        });
-      }
-    });
-
-    return avatars;
-  };
-
-  const allAvatars = generateAvatars();
-
-  const filteredAvatars = allAvatars.filter((avatar) => {
-    const matchesCategory =
-      categoryFilter === "all" || avatar.category === categoryFilter;
-    const matchesSearch =
-      avatar.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      avatar.anime?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      avatar.seed?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const categories = [
-    "all",
-    "Anime",
-    "Adventurer",
-    "Pixel",
-    "Bottts",
-    "Avataaars",
-    "Fun Emoji",
-  ];
+  }, [user, authLoading, router]);
 
   const xpProgress = (userStats.xp / 1000) * 100;
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     router.push("/");
-  };
+  }, [logout, router]);
 
   const handleSaveProfile = async () => {
+    if (!user) return;
+
     setIsSaving(true);
-    // TODO: Save username and selectedAvatar to backend
-    // await updateUserProfile({ username, avatarId: selectedAvatar })
-    setTimeout(() => {
+    try {
+      // Save avatar if it changed
+      const avatarChanged = tempAvatarId !== savedAvatarId;
+
+      if (avatarChanged) {
+        const avatarSuccess = await updateAvatar(tempAvatarId);
+        if (!avatarSuccess) {
+          throw new Error("Failed to update avatar");
+        }
+      }
+
+      // Save username to backend
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          ...(avatarChanged && { avatarId: tempAvatarId }),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save profile");
+      }
+
+      // Show success message (you can add a toast notification here)
+      console.log("Profile saved successfully");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      // Show error message (you can add a toast notification here)
+      // Revert temp avatar on error
+      setTempAvatarId(savedAvatarId);
+    } finally {
       setIsSaving(false);
-    }, 1000);
+    }
   };
 
-  if (isLoading) {
+  const handleAvatarSelect = (newAvatarId: number) => {
+    // Just update the temporary preview, don't save yet
+    setTempAvatarId(newAvatarId);
+    setShowAvatarSelector(false);
+  };
+
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0a0a1a] to-[#0f0f1f]">
         <Header />
@@ -156,6 +143,10 @@ export default function ProfilePage() {
     return null;
   }
 
+  // Check if there are unsaved changes
+  const hasUnsavedChanges =
+    tempAvatarId !== savedAvatarId || username !== user.username;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a1a] to-[#0f0f1f]">
       <Header />
@@ -172,19 +163,26 @@ export default function ProfilePage() {
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-pink-500/50 bg-slate-800">
                     <Image
-                      src={allAvatars[selectedAvatar]?.url}
+                      src={getAvatarUrl(tempAvatarId)}
                       alt={user.username}
                       className="w-full h-full object-cover"
                       width={96}
                       height={96}
+                      priority
                     />
                   </div>
                   <button
                     onClick={() => setShowAvatarSelector(true)}
                     className="absolute -bottom-1 -right-1 bg-gradient-to-r from-pink-500 to-purple-600 p-2.5 rounded-full border-2 border-slate-900 hover:scale-110 transition-transform shadow-lg"
+                    aria-label="Change avatar"
                   >
                     <Camera className="w-4 h-4 text-white" />
                   </button>
+                  {tempAvatarId !== savedAvatarId && (
+                    <div className="absolute -top-2 -right-2 bg-yellow-500 text-xs text-black font-bold px-2 py-1 rounded-full animate-pulse">
+                      Unsaved
+                    </div>
+                  )}
                 </div>
                 <div className="text-center sm:text-left">
                   <h2 className="text-2xl font-bold text-white">
@@ -201,10 +199,14 @@ export default function ProfilePage() {
 
               <div className="space-y-6 border-t border-white/10 pt-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white/80">
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-medium mb-2 text-white/80"
+                  >
                     Username
                   </label>
                   <Input
+                    id="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="bg-white/5 border-white/10 focus:border-pink-500/50 text-white"
@@ -212,11 +214,15 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2 flex items-center gap-2 text-white/80">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium mb-2 flex items-center gap-2 text-white/80"
+                  >
                     <Mail className="w-4 h-4" />
                     Email
                   </label>
                   <Input
+                    id="email"
                     value={user.email}
                     disabled
                     className="bg-white/5 border-white/10 text-white/60"
@@ -224,22 +230,35 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2 flex items-center gap-2 text-white/80">
+                  <label
+                    htmlFor="memberSince"
+                    className="block text-sm font-medium mb-2 flex items-center gap-2 text-white/80"
+                  >
                     <Calendar className="w-4 h-4" />
                     Member Since
                   </label>
                   <Input
+                    id="memberSince"
                     value={new Date(user.createdAt).toLocaleDateString()}
                     disabled
                     className="bg-white/5 border-white/10 text-white/60"
                   />
                 </div>
 
+                {hasUnsavedChanges && (
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+                    <p className="text-sm text-yellow-400 font-medium">
+                      ⚠️ You have unsaved changes. Click "Save Changes" to apply
+                      them.
+                    </p>
+                  </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <Button
                     onClick={handleSaveProfile}
-                    disabled={isSaving}
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold"
+                    disabled={isSaving || !hasUnsavedChanges}
+                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSaving ? "Saving..." : "Save Changes"}
                   </Button>
@@ -273,6 +292,10 @@ export default function ProfilePage() {
                     <div
                       className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-300"
                       style={{ width: `${xpProgress}%` }}
+                      role="progressbar"
+                      aria-valuenow={userStats.xp}
+                      aria-valuemin={0}
+                      aria-valuemax={1000}
                     />
                   </div>
                 </div>
@@ -331,109 +354,11 @@ export default function ProfilePage() {
 
       {/* Avatar Selector Modal */}
       {showAvatarSelector && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
-            onClick={() => setShowAvatarSelector(false)}
-          />
-
-          {/* Modal */}
-          <div className="fixed inset-4 md:inset-8 z-50 bg-gradient-to-br from-slate-900/95 to-slate-900/90 border border-pink-500/30 rounded-2xl overflow-hidden backdrop-blur-xl shadow-2xl shadow-pink-500/20 flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 bg-slate-900/50">
-              <div>
-                <h3 className="text-xl md:text-2xl font-bold text-white">
-                  Choose Your Avatar
-                </h3>
-                <p className="text-sm text-slate-400 mt-1">
-                  Select from 1000+ preset avatars including anime characters
-                </p>
-              </div>
-              <button
-                onClick={() => setShowAvatarSelector(false)}
-                className="p-2 hover:bg-white/10 rounded-full transition"
-              >
-                <X className="w-6 h-6 text-white/70" />
-              </button>
-            </div>
-
-            {/* Search and Filter */}
-            <div className="p-4 md:p-6 border-b border-white/10 space-y-4 bg-slate-900/30">
-              {/* Search Bar */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search avatars by name or anime..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-pink-500/50"
-                />
-              </div>
-
-              {/* Category Filter */}
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setCategoryFilter(category)}
-                    className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition-all ${
-                      categoryFilter === category
-                        ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30"
-                        : "bg-slate-800/50 border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white"
-                    }`}
-                  >
-                    {category === "all" ? "All" : category}
-                  </button>
-                ))}
-              </div>
-
-              <p className="text-xs text-slate-500">
-                Showing {filteredAvatars.length} avatars
-              </p>
-            </div>
-
-            {/* Avatar Grid */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-6">
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-                {filteredAvatars.map((avatar) => (
-                  <button
-                    key={avatar.id}
-                    onClick={() => {
-                      setSelectedAvatar(avatar.id);
-                      setShowAvatarSelector(false);
-                    }}
-                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 group relative ${
-                      selectedAvatar === avatar.id
-                        ? "border-pink-500 shadow-lg shadow-pink-500/50 scale-105"
-                        : "border-slate-700 hover:border-pink-500/50"
-                    }`}
-                    title={avatar.name || `Avatar ${avatar.id}`}
-                  >
-                    <Image
-                      src={avatar.url}
-                      alt={avatar.name || `Avatar ${avatar.id}`}
-                      className="w-full h-full object-cover bg-slate-800"
-                      width={64}
-                      height={64}
-                    />
-                    {avatar.name && (
-                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
-                        <p className="text-white text-xs font-semibold truncate w-full">
-                          {avatar.name}
-                        </p>
-                        <p className="text-slate-400 text-[10px] truncate w-full">
-                          {avatar.anime}
-                        </p>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </>
+        <AvatarSelector
+          currentAvatarId={tempAvatarId}
+          onSelect={handleAvatarSelect}
+          onClose={() => setShowAvatarSelector(false)}
+        />
       )}
     </div>
   );

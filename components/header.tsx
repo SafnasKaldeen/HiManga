@@ -1,4 +1,4 @@
-// ========== ENHANCED HEADER COMPONENT (FULLY RESPONSIVE) ==========
+// components/header.tsx
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
@@ -18,37 +18,16 @@ import {
 import NotificationsPanel from "@/components/notifications-panel";
 import { useState } from "react";
 import Image from "next/image";
+import { useAvatar } from "@/hooks/useAvatar";
+import { getAvatarUrl } from "@/lib/avatar-utils";
 
 export function Header() {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Generate avatar URL based on user's avatarId
-  const getAvatarUrl = (avatarId: number = 42) => {
-    const categories = [
-      { name: "Anime", service: "adventurer", count: 200 },
-      { name: "Pixel", service: "pixel-art", count: 200 },
-      { name: "Bottts", service: "bottts", count: 200 },
-      { name: "Avataaars", service: "avataaars", count: 200 },
-      { name: "Fun Emoji", service: "fun-emoji", count: 200 },
-    ];
-
-    let currentId = avatarId;
-    for (const category of categories) {
-      if (currentId < category.count) {
-        const seed = `${category.service}-${currentId}`;
-        return `https://api.dicebear.com/7.x/${category.service}/svg?seed=${seed}`;
-      }
-      currentId -= category.count;
-    }
-
-    // Fallback to default
-    return `https://api.dicebear.com/7.x/adventurer/svg?seed=default`;
-  };
-
-  const avatarUrl = user?.avatarId
-    ? getAvatarUrl(user.avatarId)
-    : getAvatarUrl(42);
+  // Load avatar from cookies
+  const { avatarId } = useAvatar(user?.avatarId || 42);
+  const avatarUrl = getAvatarUrl(avatarId);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -125,15 +104,6 @@ export function Header() {
               <Newspaper className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               <span>News</span>
             </Link>
-            {/* {user && (
-              <Link
-                href="/rooms"
-                className="flex items-center gap-2 text-white/70 hover:text-pink-500 transition-colors duration-300 font-semibold group"
-              >
-                <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                <span>Rooms</span>
-              </Link>
-            )} */}
           </nav>
 
           {/* Right Section */}
@@ -160,10 +130,12 @@ export function Header() {
                   <Link href="/profile" className="group">
                     <div className="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-white/5 transition-all duration-300">
                       <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-pink-500/40 group-hover:ring-pink-500 transition-all duration-300 flex-shrink-0 group-hover:scale-110">
-                        <img
+                        <Image
                           src={avatarUrl}
                           alt={user.username}
-                          className="w-full h-full object-cover bg-slate-800"
+                          fill
+                          sizes="40px"
+                          className="object-cover bg-slate-800 rounded-full"
                         />
                         <div className="absolute inset-0 bg-gradient-to-br from-pink-500/0 to-purple-500/0 group-hover:from-pink-500/20 group-hover:to-purple-500/20 transition-all duration-300" />
                       </div>
@@ -243,10 +215,12 @@ export function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <div className="relative w-14 h-14 rounded-full overflow-hidden ring-2 ring-pink-500/40 group-hover:ring-pink-500 transition-all duration-300 flex-shrink-0">
-                  <img
+                  <Image
                     src={avatarUrl}
                     alt={user.username}
-                    className="w-full h-full object-cover bg-slate-800"
+                    fill
+                    sizes="56px"
+                    className="object-cover bg-slate-800 rounded-full"
                   />
                 </div>
                 <div>
@@ -293,16 +267,6 @@ export function Header() {
               <Newspaper className="w-5 h-5" />
               <span>News</span>
             </Link>
-            {/* {user && (
-              <Link
-                href="/rooms"
-                className="flex items-center gap-4 text-white/70 hover:text-pink-500 hover:bg-white/5 transition-all duration-300 font-semibold px-4 py-3 rounded-xl"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Users className="w-5 h-5" />
-                <span>Reading Rooms</span>
-              </Link>
-            )} */}
 
             {/* Share Button - Mobile/Tablet */}
             <button

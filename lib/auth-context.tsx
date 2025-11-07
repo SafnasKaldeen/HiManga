@@ -9,7 +9,7 @@ import {
   getUserProfile,
   updateUserProfile,
 } from "@/lib/supabase";
-import { supabase } from "@/lib/supabase"; // ✅ make sure supabase client is imported
+import { supabase } from "@/lib/supabase";
 
 export interface User {
   id: string;
@@ -37,26 +37,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// ✅ Move the signIn helper OUTSIDE the component
-export async function signIn(email: string, password: string) {
-  const { data: authData, error: authError } =
-    await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-  if (authError) throw new Error(authError.message);
-
-  const { data: profileData, error: profileError } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", authData.user.id)
-    .single();
-
-  if (profileError) throw new Error("User profile not found");
-  return profileData;
-}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -101,6 +81,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userData = convertToUser(data);
       setUser(userData);
       localStorage.setItem("userId", data.id);
+
+      // ✅ Set cookies after successful login
+      console.log("🍪 Setting cookies for user:", data.id);
+      const cookieResponse = await fetch("/api/auth/set-cookie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          userId: data.id,
+          accessToken: data.id, // Using userId as token for now
+        }),
+      });
+
+      if (!cookieResponse.ok) {
+        console.error("⚠️ Failed to set cookies");
+      } else {
+        console.log("✅ Cookies set successfully");
+      }
     } catch (error: any) {
       console.error("Login error:", error);
       throw new Error(error.message || "Failed to login");
@@ -120,6 +118,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userData = convertToUser(data);
       setUser(userData);
       localStorage.setItem("userId", data.id);
+
+      // ✅ Set cookies after successful signup
+      await fetch("/api/auth/set-cookie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          userId: data.id,
+          accessToken: data.id,
+        }),
+      });
     } catch (error: any) {
       console.error("Signup error:", error);
       throw new Error(error.message || "Failed to create account");
@@ -128,6 +137,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
+      // ✅ Clear cookies on logout
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
       setUser(null);
       localStorage.removeItem("userId");
     } catch (error: any) {

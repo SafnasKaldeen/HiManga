@@ -38,3 +38,4 @@ next-env.d.ts
 /public/demon-slayer-kimetsu-no-yaiba
 /public/manga_metadata.csv
 /public/one-punch-man
+/lib/generated/prisma

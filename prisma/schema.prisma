@@ -1,0 +1,40 @@
+datasource db {
+  provider = "mongodb"  
+  url      = "mongodb+srv://Vercel-Admin-HiManga_User_Stash:yBIo0Skidf60fZHx@himanga-user-stash.cc2xjux.mongodb.net/himanga?retryWrites=true&w=majority"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  bookmarks Bookmark[]
+  readingHistory ReadingHistory[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Bookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mangaId   String
+  mangaTitle String
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, mangaId])
+}
+
+model ReadingHistory {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mangaId    String
+  chapterId  String
+  lastRead   DateTime @default(now())
+  
+  @@unique([userId, mangaId, chapterId])
+}
