@@ -13,42 +13,30 @@ export async function POST(request: Request) {
       );
     }
 
-    // Set cookies - await is required in Next.js 15+
     const cookieStore = await cookies();
-    
-    console.log('Setting cookies for userId:', userId);
-    
-    // Set user ID cookie
-    cookieStore.set('userId', userId, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    });
+    const isProd = process.env.NODE_ENV === "production";
 
-    // Set access token cookie
-    cookieStore.set('accessToken', accessToken, {
+    const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    });
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      maxAge: 60 * 60 * 24 * 365 * 10, // ✅ 10 years
+      path: "/",
+      domain: isProd ? ".himanga.fun" : undefined,
+    };
 
-    console.log('Cookies set successfully');
+    cookieStore.set("userId", userId, cookieOptions);
+    cookieStore.set("accessToken", accessToken, cookieOptions);
 
     return NextResponse.json(
-      { 
-        message: 'Cookies set successfully',
-        debug: { userId: 'set', accessToken: 'set' }
-      },
+      { message: "Cookies set (never expire)" },
       { status: 200 }
     );
+
   } catch (error) {
-    console.error('Set cookie error:', error);
+    console.error("Set cookie error:", error);
     return NextResponse.json(
-      { error: 'Failed to set cookies' },
+      { error: "Failed to set cookies" },
       { status: 500 }
     );
   }
