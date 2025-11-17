@@ -288,7 +288,7 @@ export default function AnimeNewsHub() {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
 
                 <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
-                  <div className="absolute -left-3 -top-3 w-10 h-10 z-10">
+                  {/* <div className="absolute -left-3 -top-3 w-10 h-10 z-10">
                     <div
                       className={`w-full h-full bg-gradient-to-br ${getPriorityColor(
                         item.priority
@@ -296,11 +296,11 @@ export default function AnimeNewsHub() {
                     >
                       {item.priority}
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="flex gap-4 p-4">
                     <div className="flex-shrink-0">
-                      <div className="w-32 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
+                      <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
                         <img
                           src={item.thumbnail}
                           alt={item.title}
