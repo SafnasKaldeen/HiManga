@@ -10,6 +10,7 @@ import {
   AlertCircle,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
 
 const GNEWS_API_KEY = "b4e1c729cba6efad3b5045497e50cef7";
 const GNEWS_BASE_URL = "https://gnews.io/api/v4/search";
@@ -301,12 +302,20 @@ export default function AnimeNewsHub() {
                   <div className="flex gap-4 p-4">
                     <div className="flex-shrink-0">
                       <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
-                        <img
-                          src={item.thumbnail}
+                        <Image
+                          src={
+                            item.thumbnail ||
+                            PLACEHOLDER_IMAGES[
+                              index % PLACEHOLDER_IMAGES.length
+                            ]
+                          }
                           alt={item.title}
+                          width={192} // w-48 = 192px
+                          height={128} // h-32 = 128px
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.target.src =
+                            const target = e.target as HTMLImageElement;
+                            target.src =
                               PLACEHOLDER_IMAGES[
                                 index % PLACEHOLDER_IMAGES.length
                               ];
