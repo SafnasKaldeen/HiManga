@@ -229,7 +229,7 @@ export default function AnimeNewsHub() {
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-2xl">{category.icon}</span>
+                  {/* <span className="text-2xl">{category.icon}</span> */}
                   <span>{category.name}</span>
                 </div>
                 {isSelected && (
