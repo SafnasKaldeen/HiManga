@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Loader2,
   RefreshCw,
@@ -10,8 +8,9 @@ import {
   AlertCircle,
   Zap,
 } from "lucide-react";
-import Img from "next/image";
-import { Header } from "@/components/header";
+
+const GNEWS_API_KEY = "b4e1c729cba6efad3b5045497e50cef7";
+const GNEWS_BASE_URL = "https://gnews.io/api/v4/search";
 
 const NEWS_CATEGORIES = [
   {
@@ -19,18 +18,14 @@ const NEWS_CATEGORIES = [
     name: "Anime",
     color: "from-blue-500 to-cyan-400",
     icon: "🎬",
-    feeds: [
-      "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%2Fsearch%3Fq%3Danime%2Bnews%26hl%3Den-US%26gl%3DUS%26ceid%3DUS%3Aen",
-    ],
+    query: "anime",
   },
   {
     id: "manga",
     name: "Manga",
     color: "from-purple-500 to-pink-400",
     icon: "📖",
-    feeds: [
-      "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%2Fsearch%3Fq%3Dmanga%2Bnews%26hl%3Den-US%26gl%3DUS%26ceid%3DUS%3Aen",
-    ],
+    query: "manga",
   },
 ];
 
@@ -43,58 +38,34 @@ const PLACEHOLDER_IMAGES = [
 ];
 
 export default function AnimeNewsHub() {
-  const [selectedCategory, setSelectedCategory] = useState("manga");
+  const [selectedCategory, setSelectedCategory] = useState("anime");
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const observerRef = useRef();
+  const [totalArticles, setTotalArticles] = useState(0);
 
   useEffect(() => {
-    setNews([]);
-    setPage(1);
-    setHasMore(true);
-    fetchNews(true);
+    fetchNews();
   }, [selectedCategory]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
-          loadMoreNews();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [hasMore, loading, loadingMore, news]);
-
-  const fetchNews = async (initial = false) => {
-    if (initial) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
+  const fetchNews = async () => {
+    setLoading(true);
     setError(null);
 
     try {
       const category = NEWS_CATEGORIES.find(
         (cat) => cat.id === selectedCategory
       );
-      const feedUrl = category.feeds[0];
+
+      const url = `${GNEWS_BASE_URL}?q=${encodeURIComponent(
+        category.query
+      )}&lang=en&max=50&apikey=${GNEWS_API_KEY}`;
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await fetch(feedUrl, {
+      const response = await fetch(url, {
         signal: controller.signal,
         method: "GET",
         headers: { Accept: "application/json" },
@@ -103,173 +74,46 @@ export default function AnimeNewsHub() {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error("Failed to fetch news");
+        throw new Error(`Failed to fetch news: ${response.status}`);
       }
 
       const data = await response.json();
 
-      if (data.status !== "ok" || !data.items || data.items.length === 0) {
-        loadDemoData(initial);
-        return;
+      if (!data.articles || data.articles.length === 0) {
+        throw new Error("No articles found");
       }
 
-      const parsedNews = data.items
-        .map((item, index) => {
-          const titleParts = item.title.split(" - ");
-          const cleanTitle =
-            titleParts.length > 1
-              ? titleParts.slice(0, -1).join(" - ")
-              : item.title;
-          const source =
-            titleParts.length > 1
-              ? titleParts[titleParts.length - 1]
-              : "News Source";
+      setTotalArticles(data.totalArticles || 0);
 
-          let thumbnail = null;
-          if (item.enclosure?.link) {
-            thumbnail = item.enclosure.link;
-          } else if (
-            item.thumbnail &&
-            !item.thumbnail.includes("gstatic.com")
-          ) {
-            thumbnail = item.thumbnail;
-          } else {
-            const imgFromDesc = extractImageFromDescription(item.description);
-            if (imgFromDesc && !imgFromDesc.includes("gstatic.com")) {
-              thumbnail = imgFromDesc;
-            }
-          }
-
-          if (!thumbnail) {
-            thumbnail = PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length];
-          }
-
+      const parsedNews = data.articles
+        .map((article, index) => {
           return {
-            id: item.guid || item.link,
-            title: cleanTitle,
-            url: item.link,
-            excerpt: stripHtml(item.description || "").substring(0, 200),
-            source: source,
-            date: item.pubDate,
-            timestamp: new Date(item.pubDate).getTime(),
+            id: article.id || article.url,
+            title: article.title,
+            url: article.url,
+            excerpt: article.description || "",
+            source: article.source.name,
+            date: article.publishedAt,
+            timestamp: new Date(article.publishedAt).getTime(),
             category: selectedCategory,
-            thumbnail: thumbnail,
+            thumbnail:
+              article.image ||
+              PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length],
             priority: getPriority(index),
           };
         })
         .sort((a, b) => b.timestamp - a.timestamp);
 
-      if (initial) {
-        setNews(parsedNews);
-        setHasMore(false);
-      } else {
-        setNews((prev) => {
-          const existingIds = new Set(prev.map((item) => item.id));
-          const newItems = parsedNews.filter(
-            (item) => !existingIds.has(item.id)
-          );
-          const combined = [...prev, ...newItems];
-          return combined.sort((a, b) => b.timestamp - a.timestamp);
-        });
-
-        if (parsedNews.length === 0) {
-          setHasMore(false);
-        }
-      }
-
+      setNews(parsedNews);
       setLastUpdated(new Date());
       setError(null);
     } catch (err) {
       console.error("Fetch error:", err);
-      loadDemoData(initial);
+      setError(err.message || "Failed to load news. Please try again.");
+      setNews([]);
     } finally {
       setLoading(false);
-      setLoadingMore(false);
     }
-  };
-
-  const loadMoreNews = () => {
-    if (news.length >= 50) {
-      setHasMore(false);
-      return;
-    }
-    setPage((p) => p + 1);
-    fetchNews(false);
-  };
-
-  const loadDemoData = (initial) => {
-    const demoNews = [
-      {
-        id: `demo-1-${Date.now()}`,
-        title: "Solo Leveling Season 2 Announces Epic Return Date",
-        url: "https://news.google.com/search?q=anime",
-        excerpt:
-          "The highly anticipated second season of Solo Leveling has been confirmed with a release date. Fans worldwide prepare for Sung Jin-Woo's next adventure...",
-        source: "Anime Herald",
-        date: new Date().toISOString(),
-        category: selectedCategory,
-        thumbnail: PLACEHOLDER_IMAGES[0],
-        priority: 1,
-      },
-      {
-        id: `demo-2-${Date.now()}`,
-        title: "Chainsaw Man Part 2 Manga Breaks Records",
-        url: "https://news.google.com/search?q=manga",
-        excerpt:
-          "The continuation of Chainsaw Man in manga form shatters previous sales records, cementing its place as one of the most popular series...",
-        source: "Manga Plus",
-        date: new Date(Date.now() - 3600000).toISOString(),
-        category: selectedCategory,
-        thumbnail: PLACEHOLDER_IMAGES[1],
-        priority: 1,
-      },
-      {
-        id: `demo-3-${Date.now()}`,
-        title: "Attack on Titan Final Exhibition Reveals New Artwork",
-        url: "https://news.google.com/search?q=anime",
-        excerpt:
-          "Special exhibition features never-before-seen concept art and behind-the-scenes materials from the epic finale...",
-        source: "Crunchyroll News",
-        date: new Date(Date.now() - 7200000).toISOString(),
-        category: selectedCategory,
-        thumbnail: PLACEHOLDER_IMAGES[2],
-        priority: 2,
-      },
-      {
-        id: `demo-4-${Date.now()}`,
-        title: "Demon Slayer Movie Surpasses Box Office Expectations",
-        url: "https://news.google.com/search?q=anime",
-        excerpt:
-          "The latest theatrical release continues to dominate global box offices, breaking records in multiple territories...",
-        source: "Anime News Network",
-        date: new Date(Date.now() - 10800000).toISOString(),
-        category: selectedCategory,
-        thumbnail: PLACEHOLDER_IMAGES[3],
-        priority: 2,
-      },
-      {
-        id: `demo-5-${Date.now()}`,
-        title: "One Piece Manga Reaches Historic Milestone",
-        url: "https://news.google.com/search?q=manga",
-        excerpt:
-          "Eiichiro Oda's legendary series achieves an unprecedented milestone in manga publishing history...",
-        source: "Shonen Jump",
-        date: new Date(Date.now() - 14400000).toISOString(),
-        category: selectedCategory,
-        thumbnail: PLACEHOLDER_IMAGES[4],
-        priority: 1,
-      },
-    ];
-
-    if (initial) {
-      setNews(demoNews);
-    } else {
-      setNews((prev) => [
-        ...prev,
-        ...demoNews.map((item, i) => ({ ...item, id: `${item.id}-${i}` })),
-      ]);
-    }
-    setError("Demo Mode: Showing sample articles");
   };
 
   const getPriority = (index) => {
@@ -292,19 +136,6 @@ export default function AnimeNewsHub() {
       default:
         return "from-slate-500 to-slate-400";
     }
-  };
-
-  const stripHtml = (html) => {
-    if (!html) return "";
-    const tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
-  };
-
-  const extractImageFromDescription = (description) => {
-    if (!description) return null;
-    const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
-    return imgMatch ? imgMatch[1] : null;
   };
 
   const formatDate = (dateStr) => {
@@ -332,7 +163,6 @@ export default function AnimeNewsHub() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <Header />
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
         <div
@@ -397,7 +227,7 @@ export default function AnimeNewsHub() {
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  {/* <span className="text-2xl">{category.icon}</span> */}
+                  <span className="text-2xl">{category.icon}</span>
                   <span>{category.name}</span>
                 </div>
                 {isSelected && (
@@ -410,27 +240,22 @@ export default function AnimeNewsHub() {
           })}
         </div>
 
-        {/* <div className="mb-6">
+        <div className="mb-6">
           <button
-            onClick={() => {
-              setNews([]);
-              setPage(1);
-              setHasMore(true);
-              fetchNews(true);
-            }}
+            onClick={() => fetchNews()}
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-black tracking-wider shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
             <span>{loading ? "Loading..." : "Refresh Feed"}</span>
           </button>
-        </div> */}
+        </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-blue-500/10 border-2 border-blue-500/30">
+          <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500/30">
             <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
-              <p className="text-blue-300 font-bold text-sm tracking-wide">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+              <p className="text-red-300 font-bold text-sm tracking-wide">
                 {error}
               </p>
             </div>
@@ -461,7 +286,7 @@ export default function AnimeNewsHub() {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
 
                 <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
-                  {/* <div className="absolute -left-3 -top-3 w-10 h-10 z-10">
+                  <div className="absolute -left-3 -top-3 w-10 h-10 z-10">
                     <div
                       className={`w-full h-full bg-gradient-to-br ${getPriorityColor(
                         item.priority
@@ -469,17 +294,21 @@ export default function AnimeNewsHub() {
                     >
                       {item.priority}
                     </div>
-                  </div> */}
+                  </div>
 
                   <div className="flex gap-4 p-4">
                     <div className="flex-shrink-0">
                       <div className="w-32 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
-                        <Img
-                          src={"/news_thumbnail_" + (index % 10) + ".png"}
+                        <img
+                          src={item.thumbnail}
                           alt={item.title}
-                          className="w-full h-full object-cover aspect-[16/9]"
-                          width={128}
-                          height={72}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src =
+                              PLACEHOLDER_IMAGES[
+                                index % PLACEHOLDER_IMAGES.length
+                              ];
+                          }}
                         />
                       </div>
                     </div>
@@ -511,6 +340,10 @@ export default function AnimeNewsHub() {
                         </h3>
                       </a>
 
+                      <p className="text-slate-400 text-sm line-clamp-2">
+                        {item.excerpt}
+                      </p>
+
                       <a
                         href={item.url}
                         target="_blank"
@@ -530,35 +363,13 @@ export default function AnimeNewsHub() {
           </div>
         )}
 
-        {hasMore && news.length > 0 && (
-          <div ref={observerRef} className="py-8 text-center">
-            {loadingMore && (
-              <div className="flex flex-col items-center gap-3">
-                <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
-                <p className="text-blue-300 font-bold tracking-wide text-sm">
-                  Loading More Stories...
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {!hasMore && news.length > 0 && (
-          <div className="py-8 text-center">
-            <div className="inline-block p-4 bg-slate-800/50 border-2 border-blue-500/30">
-              <p className="text-blue-300 font-black tracking-wider text-sm">
-                End of Feed
-              </p>
-            </div>
-          </div>
-        )}
-
         {news.length > 0 && (
-          <div className="mt-8 text-center">
+          <div className="mt-8 text-center space-y-4">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-800/50 border-2 border-blue-500/30">
               <TrendingUp className="w-5 h-5 text-blue-400" />
               <span className="text-blue-300 font-bold tracking-wide text-sm">
-                {news.length} Stories
+                Showing {news.length} of {totalArticles.toLocaleString()}{" "}
+                articles
               </span>
             </div>
           </div>
