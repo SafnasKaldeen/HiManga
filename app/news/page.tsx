@@ -254,8 +254,18 @@ export default function AnimeNewsHub() {
         thumbnail: article.image_url,
       }));
 
-      // Already sorted by backend, but ensure it's by timestamp
-      const sortedNews = parsedNews.sort((a, b) => b.timestamp - a.timestamp);
+      // 🔥 DEDUPLICATE NEWS BY TITLE (case-insensitive)
+      const uniqueMap = new Map();
+      parsedNews.forEach((item) => {
+        const key = item.title?.trim().toLowerCase();
+        if (key && !uniqueMap.has(key)) {
+          uniqueMap.set(key, item);
+        }
+      });
+      const dedupedNews = Array.from(uniqueMap.values());
+
+      // Sort newest to oldest
+      const sortedNews = dedupedNews.sort((a, b) => b.timestamp - a.timestamp);
 
       setNews(sortedNews);
       setLastUpdated(new Date());
