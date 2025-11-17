@@ -74,7 +74,7 @@ export function Header() {
                 className="w-full h-full object-contain"
               />
             </div>
-            <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent text-xl md:text-2xl">
+            <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent text-2xl md:text-3xl">
               H!Manga
             </span>
           </Link>
