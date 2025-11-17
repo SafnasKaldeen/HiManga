@@ -18,8 +18,8 @@ export function Footer() {
                 height={40}
               />
 
-              <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-                HiManga
+              <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent text-xl md:text-2xl">
+                H!Manga
               </span>
             </div>
             <p className="text-sm text-white/60 leading-relaxed">
