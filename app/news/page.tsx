@@ -116,9 +116,9 @@ const NewsCard = React.memo(({ item, index }) => {
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
 
       <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
-        <div className="flex gap-2 sm:gap-4 p-4">
-          <div className="flex-shrink-0 w-24 sm:w-48">
-            <div className="w-full h-20 sm:h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20 relative">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4">
+          <div className="flex-shrink-0 w-full sm:w-48">
+            <div className="w-full h-48 sm:h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20 relative">
               {imgLoading && item.thumbnail && !imgError && (
                 <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
                   <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
