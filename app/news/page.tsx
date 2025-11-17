@@ -11,6 +11,7 @@ import {
   Zap,
   Database,
 } from "lucide-react";
+import { Header } from "@/components/header";
 
 const NEWS_CATEGORIES = [
   {
@@ -270,158 +271,160 @@ export default function AnimeNewsHub() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div
-          className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        />
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
-        <div className="relative mb-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-xl animate-pulse" />
-          <div className="relative bg-gradient-to-b from-slate-900/95 to-black/95 border-2 border-blue-500/30 p-6">
-            <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-blue-400/50" />
-            <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-blue-400/50" />
-            <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-blue-400/50" />
-            <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-blue-400/50" />
-
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30">
-                <Database className="w-4 h-4 text-blue-400" />
-                <span className="text-blue-300 text-xs font-bold tracking-wider">
-                  POWERED BY SUPABASE
-                </span>
-              </div>
-
-              <h1
-                className="text-4xl md:text-6xl font-black text-white tracking-wider"
-                style={{
-                  fontFamily: 'Impact, "Arial Black", sans-serif',
-                  textShadow: "0 0 20px rgba(59, 130, 246, 0.5)",
-                }}
-              >
-                ANIME NEWS HUB
-              </h1>
-
-              <p className="text-blue-300 text-sm font-bold tracking-wide">
-                Latest Updates & Breaking Stories
-              </p>
-
-              {lastUpdated && (
-                <div className="flex items-center justify-center gap-2 text-slate-500 text-xs font-bold tracking-wide">
-                  <Clock className="w-4 h-4" />
-                  <span>Last Updated: {formattedTime}</span>
-                </div>
-              )}
-            </div>
-          </div>
+    <>
+      <Header />
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+          <div
+            className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
         </div>
 
-        <div className="flex gap-4 mb-8">
-          {NEWS_CATEGORIES.map((category) => {
-            const isSelected = selectedCategory === category.id;
-            return (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                disabled={loading}
-                className={`relative flex-1 py-4 px-6 transition-all duration-300 font-black tracking-wider text-sm ${
-                  isSelected
-                    ? `bg-gradient-to-r ${category.color} text-white border-2 border-white/50 shadow-lg scale-105`
-                    : "bg-slate-800/50 text-slate-400 border-2 border-blue-500/20 hover:border-blue-500/40"
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-xl">{category.name}</span>
-                </div>
-                {isSelected && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-xs font-black shadow-lg animate-pulse">
-                    ✓
+        <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
+          <div className="relative mb-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-xl animate-pulse" />
+            <div className="relative bg-gradient-to-b from-slate-900/95 to-black/95 border-2 border-blue-500/30 p-6">
+              <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-blue-400/50" />
+              <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-blue-400/50" />
+              <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-blue-400/50" />
+              <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-blue-400/50" />
+
+              <div className="text-center space-y-4">
+                <h1
+                  className="text-4xl md:text-6xl font-black text-white tracking-wider"
+                  style={{
+                    fontFamily: 'Impact, "Arial Black", sans-serif',
+                    textShadow: "0 0 20px rgba(59, 130, 246, 0.5)",
+                  }}
+                >
+                  ANIME NEWS HUB
+                </h1>
+
+                <p className="text-blue-300 text-sm font-bold tracking-wide">
+                  Latest Updates & Breaking Stories
+                </p>
+
+                {lastUpdated && (
+                  <div className="flex items-center justify-center gap-2 text-slate-500 text-xs font-bold tracking-wide">
+                    <Clock className="w-4 h-4" />
+                    <span>Last Updated: {formattedTime}</span>
                   </div>
                 )}
-              </button>
-            );
-          })}
-        </div>
+              </div>
+            </div>
+          </div>
 
-        <div className="mb-6">
-          <button
-            onClick={fetchNews}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-black tracking-wider shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
-            <span>{loading ? "Loading..." : "Refresh Feed"}</span>
-          </button>
-        </div>
+          <div className="flex gap-4 mb-8">
+            {NEWS_CATEGORIES.map((category) => {
+              const isSelected = selectedCategory === category.id;
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  disabled={loading}
+                  className={`relative flex-1 py-4 px-6 transition-all duration-300 font-black tracking-wider text-sm ${
+                    isSelected
+                      ? `bg-gradient-to-r ${category.color} text-white border-2 border-white/50 shadow-lg scale-105`
+                      : "bg-slate-800/50 text-slate-400 border-2 border-blue-500/20 hover:border-blue-500/40"
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-xl">{category.name}</span>
+                  </div>
+                  {isSelected && (
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-xs font-black shadow-lg animate-pulse">
+                      ✓
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500/30">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-              <p className="text-red-300 font-bold text-sm tracking-wide">
-                {error}
+          <div className="mb-6">
+            <button
+              onClick={fetchNews}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-black tracking-wider shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RefreshCw
+                className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
+              />
+              <span>{loading ? "Loading..." : "Refresh Feed"}</span>
+            </button>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500/30">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <p className="text-red-300 font-bold text-sm tracking-wide">
+                  {error}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {loading && news.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
+              <p className="text-blue-300 font-black tracking-wider">
+                Loading Feed...
               </p>
             </div>
-          </div>
-        )}
+          )}
 
-        {loading && news.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
-            <p className="text-blue-300 font-black tracking-wider">
-              Loading Feed...
-            </p>
-          </div>
-        )}
-
-        {!loading && news.length === 0 && !error && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Database className="w-16 h-16 text-slate-600 mb-4" />
-            <p className="text-slate-400 font-bold tracking-wide">
-              No articles available
-            </p>
-            <p className="text-slate-500 text-sm mt-2">
-              Try refreshing or check back later
-            </p>
-          </div>
-        )}
-
-        {news.length > 0 && (
-          <div className="space-y-4">
-            {news.map((item, index) => (
-              <NewsCard key={`${item.id}-${index}`} item={item} index={index} />
-            ))}
-          </div>
-        )}
-
-        {news.length > 0 && (
-          <div className="mt-8 text-center space-y-4">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-800/50 border-2 border-blue-500/30">
-              <TrendingUp className="w-5 h-5 text-blue-400" />
-              <span className="text-blue-300 font-bold tracking-wide text-sm">
-                Showing {news.length} articles
-              </span>
+          {!loading && news.length === 0 && !error && (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Database className="w-16 h-16 text-slate-600 mb-4" />
+              <p className="text-slate-400 font-bold tracking-wide">
+                No articles available
+              </p>
+              <p className="text-slate-500 text-sm mt-2">
+                Try refreshing or check back later
+              </p>
             </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      <style jsx>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
+          {news.length > 0 && (
+            <div className="space-y-4">
+              {news.map((item, index) => (
+                <NewsCard
+                  key={`${item.id}-${index}`}
+                  item={item}
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
+
+          {news.length > 0 && (
+            <div className="mt-8 text-center space-y-4">
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-800/50 border-2 border-blue-500/30">
+                <TrendingUp className="w-5 h-5 text-blue-400" />
+                <span className="text-blue-300 font-bold tracking-wide text-sm">
+                  Showing {news.length} articles
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <style jsx>{`
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: translateX(-20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
           }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
-    </div>
+        `}</style>
+      </div>
+    </>
   );
 }
