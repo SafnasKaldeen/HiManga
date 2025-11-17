@@ -11,7 +11,6 @@ import {
   Zap,
   Database,
 } from "lucide-react";
-import Image from "next/image";
 
 const NEWS_CATEGORIES = [
   {
@@ -59,19 +58,15 @@ const formatDate = (dateStr) => {
   }
 };
 
-// Fixed NewsCard component with better image handling
 const NewsCard = React.memo(({ item, index }) => {
   const [imgError, setImgError] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
 
-  // Determine which image to use
-  // If we have a Google News image, proxy it through our API
   const getImageUrl = () => {
     if (imgError || !item.thumbnail) {
       return PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length];
     }
 
-    // Check if it's a Google News image that needs proxying
     if (item.thumbnail.includes("news.google.com")) {
       return `/api/image-proxy?url=${encodeURIComponent(item.thumbnail)}`;
     }
@@ -81,7 +76,6 @@ const NewsCard = React.memo(({ item, index }) => {
 
   const imageUrl = getImageUrl();
 
-  // Debug: Log image URL (remove this after debugging)
   useEffect(() => {
     console.log(`Article ${index}:`, {
       title: item.title?.substring(0, 50),
@@ -92,7 +86,6 @@ const NewsCard = React.memo(({ item, index }) => {
   }, [item.thumbnail, imgError, index, item.title]);
 
   const handleImageError = (e) => {
-    // Only log once per article, not spam console
     if (!imgError) {
       console.log(`Using placeholder for article ${index} (image unavailable)`);
     }
@@ -121,8 +114,8 @@ const NewsCard = React.memo(({ item, index }) => {
 
       <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
         <div className="flex gap-4 p-4">
-          <div className="flex-shrink-0">
-            <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20 relative">
+          <div className="flex-shrink-0 w-32 sm:w-48">
+            <div className="w-full h-24 sm:h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20 relative">
               {imgLoading && item.thumbnail && !imgError && (
                 <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
                   <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
@@ -139,7 +132,7 @@ const NewsCard = React.memo(({ item, index }) => {
             </div>
           </div>
 
-          <div className="flex-1 space-y-2 ml-2">
+          <div className="flex-1 space-y-2 ml-2 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold tracking-wide">
                 {item.source}
@@ -207,7 +200,6 @@ export default function AnimeNewsHub() {
         (cat) => cat.id === selectedCategory
       );
 
-      // Fetch from Supabase via API route
       const url = `/api/news?q=${encodeURIComponent(category.query)}&max=100`;
 
       const controller = new AbortController();
@@ -252,7 +244,6 @@ export default function AnimeNewsHub() {
         thumbnail: article.image_url,
       }));
 
-      // 🔥 DEDUPLICATE NEWS BY TITLE (case-insensitive)
       const uniqueMap = new Map();
       parsedNews.forEach((item) => {
         const key = item.title?.trim().toLowerCase();
@@ -262,7 +253,6 @@ export default function AnimeNewsHub() {
       });
       const dedupedNews = Array.from(uniqueMap.values());
 
-      // Sort newest to oldest
       const sortedNews = dedupedNews.sort((a, b) => b.timestamp - a.timestamp);
 
       setNews(sortedNews);
