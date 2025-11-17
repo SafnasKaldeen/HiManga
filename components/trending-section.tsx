@@ -100,7 +100,7 @@ export function TrendingSection() {
         )}
 
         {/* Anime Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 mb-12">
           {visibleMangas.map((manga) => (
             <AnimeCard key={manga.id} manga={manga} />
           ))}
@@ -122,7 +122,7 @@ export function TrendingSection() {
               size="lg"
               variant="outline"
               onClick={handleLoadMore}
-              className="gap-2 bg-transparent border-pink-500/40 hover:bg-pink-500/10 text-pink-500 rounded-full font-bold px-8"
+              className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500/50 text-pink-500 rounded-full font-bold px-8"
             >
               <span className="hidden sm:inline">Load More Anime</span>
               <span className="sm:hidden">Load More</span>
