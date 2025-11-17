@@ -9,10 +9,9 @@ import {
   TrendingUp,
   AlertCircle,
   Zap,
+  Database,
 } from "lucide-react";
 import Image from "next/image";
-
-const GNEWS_API_KEY = "b4e1c729cba6efad3b5045497e50cef7";
 
 const NEWS_CATEGORIES = [
   {
@@ -39,39 +38,6 @@ const PLACEHOLDER_IMAGES = [
   "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=400&h=300&fit=crop",
 ];
 
-// Utility function to normalize titles for comparison
-const normalizeTitle = (title) => {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-};
-
-// Utility function to deduplicate articles by title
-const deduplicateArticles = (articles) => {
-  const seen = new Map();
-  const deduplicated = [];
-
-  for (const article of articles) {
-    const normalizedTitle = normalizeTitle(article.title);
-
-    if (!seen.has(normalizedTitle)) {
-      seen.set(normalizedTitle, true);
-      deduplicated.push(article);
-    }
-  }
-
-  return deduplicated;
-};
-
-const getPriority = (index) => {
-  if (index < 3) return 1;
-  if (index < 8) return 2;
-  if (index < 15) return 3;
-  return 4;
-};
-
 const formatDate = (dateStr) => {
   if (!dateStr) return "Recent";
   try {
@@ -97,6 +63,8 @@ const formatDate = (dateStr) => {
 
 // Memoized NewsCard component
 const NewsCard = React.memo(({ item, index }) => {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <div
       className="relative group transition-all duration-300"
@@ -114,18 +82,16 @@ const NewsCard = React.memo(({ item, index }) => {
             <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
               <Image
                 src={
-                  item.thumbnail ||
-                  PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length]
+                  imgError || !item.thumbnail
+                    ? PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length]
+                    : item.thumbnail
                 }
                 alt={item.title}
                 width={192}
                 height={128}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target;
-                  target.src =
-                    PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length];
-                }}
+                onError={() => setImgError(true)}
+                unoptimized
               />
             </div>
           </div>
@@ -198,10 +164,8 @@ export default function AnimeNewsHub() {
         (cat) => cat.id === selectedCategory
       );
 
-      // Use API route to avoid CORS issues
-      const url = `/api/news?q=${encodeURIComponent(
-        category.query
-      )}&lang=en&max=50`;
+      // Fetch from Supabase via API route
+      const url = `/api/news?q=${encodeURIComponent(category.query)}&max=100`;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -215,47 +179,53 @@ export default function AnimeNewsHub() {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch news: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `Failed to fetch news: ${response.status}`
+        );
       }
 
       const data = await response.json();
 
       if (!data.articles || data.articles.length === 0) {
-        throw new Error("No articles found");
+        setNews([]);
+        setTotalArticles(0);
+        setLastUpdated(new Date());
+        setError("No articles found for this category yet. Check back soon!");
+        return;
       }
 
-      setTotalArticles(data.totalArticles || 0);
+      setTotalArticles(data.totalArticles || data.articles.length);
 
       const parsedNews = data.articles.map((article, index) => ({
         id: article.url,
         title: article.title,
         url: article.url,
-        excerpt: article.description || "",
-        source: article.source.name,
+        excerpt: article.description || "No description available",
+        source: article.source?.name || "Unknown Source",
         date: article.publishedAt,
         timestamp: new Date(article.publishedAt).getTime(),
         category: selectedCategory,
-        thumbnail:
-          article.image ||
-          PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length],
-        priority: getPriority(index),
+        thumbnail: article.image,
       }));
 
-      // Deduplicate articles by title
-      const deduplicatedNews = deduplicateArticles(parsedNews);
-
-      // Sort by timestamp
-      const sortedNews = deduplicatedNews.sort(
-        (a, b) => b.timestamp - a.timestamp
-      );
+      // Already sorted by backend, but ensure it's by timestamp
+      const sortedNews = parsedNews.sort((a, b) => b.timestamp - a.timestamp);
 
       setNews(sortedNews);
       setLastUpdated(new Date());
       setError(null);
     } catch (err) {
       console.error("Fetch error:", err);
-      setError(err.message || "Failed to load news. Please try again.");
+
+      if (err.name === "AbortError") {
+        setError("Request timed out. Please try again.");
+      } else {
+        setError(err.message || "Failed to load news. Please try again.");
+      }
+
       setNews([]);
+      setTotalArticles(0);
     } finally {
       setLoading(false);
     }
@@ -291,9 +261,9 @@ export default function AnimeNewsHub() {
 
             <div className="text-center space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30">
-                <Zap className="w-4 h-4 text-blue-400" />
+                <Database className="w-4 h-4 text-blue-400" />
                 <span className="text-blue-300 text-xs font-bold tracking-wider">
-                  LIVE FEED
+                  POWERED BY SUPABASE
                 </span>
               </div>
 
@@ -336,6 +306,7 @@ export default function AnimeNewsHub() {
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
+                  <span className="text-xl">{category.icon}</span>
                   <span>{category.name}</span>
                 </div>
                 {isSelected && (
@@ -379,10 +350,22 @@ export default function AnimeNewsHub() {
           </div>
         )}
 
+        {!loading && news.length === 0 && !error && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Database className="w-16 h-16 text-slate-600 mb-4" />
+            <p className="text-slate-400 font-bold tracking-wide">
+              No articles available
+            </p>
+            <p className="text-slate-500 text-sm mt-2">
+              Try refreshing or check back later
+            </p>
+          </div>
+        )}
+
         {news.length > 0 && (
           <div className="space-y-4">
             {news.map((item, index) => (
-              <NewsCard key={item.id} item={item} index={index} />
+              <NewsCard key={`${item.id}-${index}`} item={item} index={index} />
             ))}
           </div>
         )}
@@ -399,7 +382,7 @@ export default function AnimeNewsHub() {
         )}
       </div>
 
-      <style>{`
+      <style jsx>{`
         @keyframes slideIn {
           from {
             opacity: 0;
