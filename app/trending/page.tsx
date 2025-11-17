@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState, useMemo } from "react";
+import { ArrowRight } from "lucide-react";
 
 export default function TrendingPage() {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"rating" | "views" | "recent">("rating");
-  const [itemsPerPage] = useState(12);
+  const [itemsPerPage] = useState(10);
   const [displayedItems, setDisplayedItems] = useState(itemsPerPage);
 
   const genres = [
@@ -146,12 +147,16 @@ export default function TrendingPage() {
             </div>
 
             {hasMore && (
-              <div className="flex justify-center mb-12">
+              <div className="flex justify-center">
                 <Button
+                  size="lg"
+                  variant="outline"
                   onClick={handleLoadMore}
-                  className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/20 px-8 py-6 text-lg"
+                  className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500/50 text-pink-500 rounded-full font-bold px-8"
                 >
-                  Load More
+                  <span className="hidden sm:inline">Load More Anime</span>
+                  <span className="sm:hidden">Load More</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
             )}
