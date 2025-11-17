@@ -343,19 +343,6 @@ export default function AnimeNewsHub() {
             })}
           </div>
 
-          <div className="mb-6">
-            <button
-              onClick={fetchNews}
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-black tracking-wider shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <RefreshCw
-                className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
-              />
-              <span>{loading ? "Loading..." : "Refresh Feed"}</span>
-            </button>
-          </div>
-
           {error && (
             <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500/30">
               <div className="flex items-center gap-3">
