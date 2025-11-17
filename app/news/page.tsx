@@ -102,8 +102,11 @@ const NewsCard = React.memo(({ item, index }) => {
   };
 
   return (
-    <div
-      className="relative group transition-all duration-300"
+    <a
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative group transition-all duration-300 block cursor-pointer"
       style={{
         animation: "slideIn 0.4s ease-out forwards",
         animationDelay: `${(index % 10) * 0.05}s`,
@@ -113,9 +116,9 @@ const NewsCard = React.memo(({ item, index }) => {
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
 
       <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
-        <div className="flex gap-4 p-4">
-          <div className="flex-shrink-0 w-32 sm:w-48">
-            <div className="w-full h-24 sm:h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20 relative">
+        <div className="flex gap-2 sm:gap-4 p-4">
+          <div className="flex-shrink-0 w-24 sm:w-48">
+            <div className="w-full h-20 sm:h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20 relative">
               {imgLoading && item.thumbnail && !imgError && (
                 <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
                   <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
@@ -132,9 +135,9 @@ const NewsCard = React.memo(({ item, index }) => {
             </div>
           </div>
 
-          <div className="flex-1 space-y-2 ml-2 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold tracking-wide">
+          <div className="flex-1 space-y-2 min-w-0">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+              <span className="px-2 sm:px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold tracking-wide">
                 {item.source}
               </span>
               <span className="text-slate-500 text-xs font-bold tracking-wide flex items-center gap-1">
@@ -143,41 +146,24 @@ const NewsCard = React.memo(({ item, index }) => {
               </span>
             </div>
 
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block"
+            <h3
+              className="font-extralight text-white text-base sm:text-lg leading-tight group-hover:text-blue-400 transition-colors tracking-wide line-clamp-2"
+              style={{
+                fontFamily: 'Impact, "Arial Black", sans-serif',
+              }}
             >
-              <h3
-                className="font-extralight text-white text-lg leading-tight group-hover:text-blue-400 transition-colors tracking-wide"
-                style={{
-                  fontFamily: 'Impact, "Arial Black", sans-serif',
-                }}
-              >
-                {item.title}
-              </h3>
-            </a>
+              {item.title}
+            </h3>
 
-            <p className="text-slate-400 text-sm line-clamp-2">
+            <p className="text-slate-400 text-xs sm:text-sm line-clamp-2">
               {item.excerpt}
             </p>
-
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-400/50 text-blue-300 hover:text-blue-200 transition-all duration-300 font-bold text-xs tracking-wide"
-            >
-              <span>Read More</span>
-              <ExternalLink className="w-4 h-4" />
-            </a>
           </div>
         </div>
 
         <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-400" />
       </div>
-    </div>
+    </a>
   );
 });
 
