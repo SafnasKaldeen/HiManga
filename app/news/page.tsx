@@ -18,14 +18,12 @@ const NEWS_CATEGORIES = [
     id: "anime",
     name: "Anime",
     color: "from-blue-500 to-cyan-400",
-    icon: "🎬",
     query: "anime",
   },
   {
     id: "manga",
     name: "Manga",
     color: "from-purple-500 to-pink-400",
-    icon: "📖",
     query: "manga",
   },
 ];
@@ -361,8 +359,7 @@ export default function AnimeNewsHub() {
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-xl">{category.icon}</span>
-                  <span>{category.name}</span>
+                  <span className="text-xl">{category.name}</span>
                 </div>
                 {isSelected && (
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-xs font-black shadow-lg animate-pulse">
