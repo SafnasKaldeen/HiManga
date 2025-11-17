@@ -19,7 +19,7 @@ export async function GET(request) {
       .from('news_articles')
       .select('*')
       .eq('query', query)
-      .gt('expires_at', new Date().toISOString()) // Only get non-expired articles
+      .gt('expires_at', new Date().toISOString())
       .order('published_at', { ascending: false })
       .limit(max);
 
@@ -31,15 +31,23 @@ export async function GET(request) {
       );
     }
 
-    // Transform Supabase data to match the GNews API format
+    // Handle empty results
+    if (!data || data.length === 0) {
+      return Response.json({
+        totalArticles: 0,
+        articles: []
+      });
+    }
+
+    // Transform Supabase data to match expected frontend format
     const articles = data.map((article) => ({
-      title: article.title,
+      title: article.title || 'Untitled',
       description: article.published_text || 'No description available',
       url: article.article_url,
-      image: article.image_url,
+      image_url: article.image_url || null, // Keep as image_url to match frontend
       publishedAt: article.published_at,
       source: {
-        name: article.publisher || 'Unknown',
+        name: article.publisher || 'Unknown Source',
         url: article.article_url
       }
     }));
@@ -47,6 +55,10 @@ export async function GET(request) {
     return Response.json({
       totalArticles: articles.length,
       articles: articles
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+      }
     });
 
   } catch (err) {

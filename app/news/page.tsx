@@ -61,9 +61,54 @@ const formatDate = (dateStr) => {
   }
 };
 
-// Memoized NewsCard component
+// Fixed NewsCard component with better image handling
 const NewsCard = React.memo(({ item, index }) => {
   const [imgError, setImgError] = useState(false);
+  const [imgLoading, setImgLoading] = useState(true);
+
+  // Determine which image to use
+  // If we have a Google News image, proxy it through our API
+  const getImageUrl = () => {
+    if (imgError || !item.thumbnail) {
+      return PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length];
+    }
+
+    // Check if it's a Google News image that needs proxying
+    if (item.thumbnail.includes("news.google.com")) {
+      return `/api/image-proxy?url=${encodeURIComponent(item.thumbnail)}`;
+    }
+
+    return item.thumbnail;
+  };
+
+  const imageUrl = getImageUrl();
+
+  // Debug: Log image URL (remove this after debugging)
+  useEffect(() => {
+    console.log(`Article ${index}:`, {
+      title: item.title?.substring(0, 50),
+      thumbnail: item.thumbnail,
+      hasImage: !!item.thumbnail,
+      imgError,
+    });
+  }, [item.thumbnail, imgError, index, item.title]);
+
+  const handleImageError = (e) => {
+    // Only log once per article, not spam console
+    if (!imgError) {
+      console.log(`Using placeholder for article ${index} (image unavailable)`);
+    }
+    setImgError(true);
+    setImgLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    console.log(
+      `Image loaded successfully for article ${index}:`,
+      item.thumbnail
+    );
+    setImgLoading(false);
+  };
 
   return (
     <div
@@ -79,19 +124,19 @@ const NewsCard = React.memo(({ item, index }) => {
       <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
         <div className="flex gap-4 p-4">
           <div className="flex-shrink-0">
-            <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
-              <Image
-                src={
-                  imgError || !item.thumbnail
-                    ? PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length]
-                    : item.thumbnail
-                }
+            <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20 relative">
+              {imgLoading && item.thumbnail && !imgError && (
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
+                  <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
+                </div>
+              )}
+              <img
+                src={imageUrl}
                 alt={item.title}
-                width={192}
-                height={128}
                 className="w-full h-full object-cover"
-                onError={() => setImgError(true)}
-                unoptimized
+                onError={handleImageError}
+                onLoad={handleImageLoad}
+                loading="lazy"
               />
             </div>
           </div>
@@ -206,7 +251,7 @@ export default function AnimeNewsHub() {
         date: article.publishedAt,
         timestamp: new Date(article.publishedAt).getTime(),
         category: selectedCategory,
-        thumbnail: article.image,
+        thumbnail: article.image_url,
       }));
 
       // Already sorted by backend, but ensure it's by timestamp
