@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Loader2,
   RefreshCw,
@@ -13,7 +13,6 @@ import {
 import Image from "next/image";
 
 const GNEWS_API_KEY = "b4e1c729cba6efad3b5045497e50cef7";
-const GNEWS_BASE_URL = "https://gnews.io/api/v4/search";
 
 const NEWS_CATEGORIES = [
   {
@@ -40,6 +39,148 @@ const PLACEHOLDER_IMAGES = [
   "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=400&h=300&fit=crop",
 ];
 
+// Utility function to normalize titles for comparison
+const normalizeTitle = (title) => {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+// Utility function to deduplicate articles by title
+const deduplicateArticles = (articles) => {
+  const seen = new Map();
+  const deduplicated = [];
+
+  for (const article of articles) {
+    const normalizedTitle = normalizeTitle(article.title);
+
+    if (!seen.has(normalizedTitle)) {
+      seen.set(normalizedTitle, true);
+      deduplicated.push(article);
+    }
+  }
+
+  return deduplicated;
+};
+
+const getPriority = (index) => {
+  if (index < 3) return 1;
+  if (index < 8) return 2;
+  if (index < 15) return 3;
+  return 4;
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "Recent";
+  try {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffHours < 1) return "Just now";
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return "Recent";
+  }
+};
+
+// Memoized NewsCard component
+const NewsCard = React.memo(({ item, index }) => {
+  return (
+    <div
+      className="relative group transition-all duration-300"
+      style={{
+        animation: "slideIn 0.4s ease-out forwards",
+        animationDelay: `${(index % 10) * 0.05}s`,
+        opacity: 0,
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
+
+      <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
+        <div className="flex gap-4 p-4">
+          <div className="flex-shrink-0">
+            <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
+              <Image
+                src={
+                  item.thumbnail ||
+                  PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length]
+                }
+                alt={item.title}
+                width={192}
+                height={128}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target;
+                  target.src =
+                    PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length];
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="flex-1 space-y-2 ml-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold tracking-wide">
+                {item.source}
+              </span>
+              <span className="text-slate-500 text-xs font-bold tracking-wide flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {formatDate(item.date)}
+              </span>
+            </div>
+
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <h3
+                className="font-extralight text-white text-lg leading-tight group-hover:text-blue-400 transition-colors tracking-wide"
+                style={{
+                  fontFamily: 'Impact, "Arial Black", sans-serif',
+                }}
+              >
+                {item.title}
+              </h3>
+            </a>
+
+            <p className="text-slate-400 text-sm line-clamp-2">
+              {item.excerpt}
+            </p>
+
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-400/50 text-blue-300 hover:text-blue-200 transition-all duration-300 font-bold text-xs tracking-wide"
+            >
+              <span>Read More</span>
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+
+        <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-400" />
+      </div>
+    </div>
+  );
+});
+
+NewsCard.displayName = "NewsCard";
+
 export default function AnimeNewsHub() {
   const [selectedCategory, setSelectedCategory] = useState("anime");
   const [news, setNews] = useState([]);
@@ -48,11 +189,7 @@ export default function AnimeNewsHub() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [totalArticles, setTotalArticles] = useState(0);
 
-  useEffect(() => {
-    fetchNews();
-  }, [selectedCategory]);
-
-  const fetchNews = async () => {
+  const fetchNews = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -61,9 +198,10 @@ export default function AnimeNewsHub() {
         (cat) => cat.id === selectedCategory
       );
 
-      const url = `${GNEWS_BASE_URL}?q=${encodeURIComponent(
+      // Use API route to avoid CORS issues
+      const url = `/api/news?q=${encodeURIComponent(
         category.query
-      )}&lang=en&max=50&apikey=${GNEWS_API_KEY}`;
+      )}&lang=en&max=50`;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -88,26 +226,30 @@ export default function AnimeNewsHub() {
 
       setTotalArticles(data.totalArticles || 0);
 
-      const parsedNews = data.articles
-        .map((article, index) => {
-          return {
-            id: article.id || article.url,
-            title: article.title,
-            url: article.url,
-            excerpt: article.description || "",
-            source: article.source.name,
-            date: article.publishedAt,
-            timestamp: new Date(article.publishedAt).getTime(),
-            category: selectedCategory,
-            thumbnail:
-              article.image ||
-              PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length],
-            priority: getPriority(index),
-          };
-        })
-        .sort((a, b) => b.timestamp - a.timestamp);
+      const parsedNews = data.articles.map((article, index) => ({
+        id: article.url,
+        title: article.title,
+        url: article.url,
+        excerpt: article.description || "",
+        source: article.source.name,
+        date: article.publishedAt,
+        timestamp: new Date(article.publishedAt).getTime(),
+        category: selectedCategory,
+        thumbnail:
+          article.image ||
+          PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length],
+        priority: getPriority(index),
+      }));
 
-      setNews(parsedNews);
+      // Deduplicate articles by title
+      const deduplicatedNews = deduplicateArticles(parsedNews);
+
+      // Sort by timestamp
+      const sortedNews = deduplicatedNews.sort(
+        (a, b) => b.timestamp - a.timestamp
+      );
+
+      setNews(sortedNews);
       setLastUpdated(new Date());
       setError(null);
     } catch (err) {
@@ -117,52 +259,16 @@ export default function AnimeNewsHub() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory]);
 
-  const getPriority = (index) => {
-    if (index < 3) return 1;
-    if (index < 8) return 2;
-    if (index < 15) return 3;
-    return 4;
-  };
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 1:
-        return "from-yellow-500 to-orange-400";
-      case 2:
-        return "from-blue-500 to-cyan-400";
-      case 3:
-        return "from-purple-500 to-pink-400";
-      case 4:
-        return "from-green-500 to-emerald-400";
-      default:
-        return "from-slate-500 to-slate-400";
-    }
-  };
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "Recent";
-    try {
-      const date = new Date(dateStr);
-      const now = new Date();
-      const diffMs = now - date;
-      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-      const diffDays = Math.floor(diffHours / 24);
-
-      if (diffHours < 1) return "Just now";
-      if (diffHours < 24) return `${diffHours}h ago`;
-      if (diffDays === 1) return "Yesterday";
-      if (diffDays < 7) return `${diffDays} days ago`;
-
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-    } catch {
-      return "Recent";
-    }
-  };
+  const formattedTime = useMemo(
+    () => lastUpdated?.toLocaleTimeString(),
+    [lastUpdated]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
@@ -208,7 +314,7 @@ export default function AnimeNewsHub() {
               {lastUpdated && (
                 <div className="flex items-center justify-center gap-2 text-slate-500 text-xs font-bold tracking-wide">
                   <Clock className="w-4 h-4" />
-                  <span>Last Updated: {lastUpdated.toLocaleTimeString()}</span>
+                  <span>Last Updated: {formattedTime}</span>
                 </div>
               )}
             </div>
@@ -230,7 +336,6 @@ export default function AnimeNewsHub() {
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  {/* <span className="text-2xl">{category.icon}</span> */}
                   <span>{category.name}</span>
                 </div>
                 {isSelected && (
@@ -245,7 +350,7 @@ export default function AnimeNewsHub() {
 
         <div className="mb-6">
           <button
-            onClick={() => fetchNews()}
+            onClick={fetchNews}
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-black tracking-wider shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -277,99 +382,7 @@ export default function AnimeNewsHub() {
         {news.length > 0 && (
           <div className="space-y-4">
             {news.map((item, index) => (
-              <div
-                key={item.id}
-                className="relative group transition-all duration-300"
-                style={{
-                  animation: "slideIn 0.4s ease-out forwards",
-                  animationDelay: `${(index % 10) * 0.05}s`,
-                  opacity: 0,
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
-
-                <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-2 border-blue-500/30 group-hover:border-blue-400/60 transition-all duration-300">
-                  {/* <div className="absolute -left-3 -top-3 w-10 h-10 z-10">
-                    <div
-                      className={`w-full h-full bg-gradient-to-br ${getPriorityColor(
-                        item.priority
-                      )} rounded-full flex items-center justify-center font-black text-white text-sm shadow-lg border-2 border-white/50`}
-                    >
-                      {item.priority}
-                    </div>
-                  </div> */}
-
-                  <div className="flex gap-4 p-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-900/50 border-2 border-blue-500/20">
-                        <Image
-                          src={
-                            item.thumbnail ||
-                            PLACEHOLDER_IMAGES[
-                              index % PLACEHOLDER_IMAGES.length
-                            ]
-                          }
-                          alt={item.title}
-                          width={192} // w-48 = 192px
-                          height={128} // h-32 = 128px
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src =
-                              PLACEHOLDER_IMAGES[
-                                index % PLACEHOLDER_IMAGES.length
-                              ];
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex-1 space-y-2 ml-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold tracking-wide">
-                          {item.source}
-                        </span>
-                        <span className="text-slate-500 text-xs font-bold tracking-wide flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {formatDate(item.date)}
-                        </span>
-                      </div>
-
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block"
-                      >
-                        <h3
-                          className="font-extralight text-white text-lg leading-tight group-hover:text-blue-400 transition-colors tracking-wide"
-                          style={{
-                            fontFamily: 'Impact, "Arial Black", sans-serif',
-                          }}
-                        >
-                          {item.title}
-                        </h3>
-                      </a>
-
-                      <p className="text-slate-400 text-sm line-clamp-2">
-                        {item.excerpt}
-                      </p>
-
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-400/50 text-blue-300 hover:text-blue-200 transition-all duration-300 font-bold text-xs tracking-wide"
-                      >
-                        <span>Read More</span>
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-400" />
-                </div>
-              </div>
+              <NewsCard key={item.id} item={item} index={index} />
             ))}
           </div>
         )}
@@ -379,8 +392,7 @@ export default function AnimeNewsHub() {
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-800/50 border-2 border-blue-500/30">
               <TrendingUp className="w-5 h-5 text-blue-400" />
               <span className="text-blue-300 font-bold tracking-wide text-sm">
-                Showing {news.length} of {totalArticles.toLocaleString()}{" "}
-                articles
+                Showing {news.length} articles
               </span>
             </div>
           </div>
