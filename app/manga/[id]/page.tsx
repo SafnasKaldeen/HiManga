@@ -67,7 +67,7 @@ export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
           <div className="h-24 bg-gradient-to-b from-[#0a0a1a] via-[#0f1729] to-slate-900"></div>
 
           <div className="bg-slate-900 px-0 py-8">
-            <div className="mx-auto max-w-[1600px]">
+            <div className="mx-auto -my-10 max-w-[1600px]">
               <div className="flex items-center gap-2 mb-6 px-6 lg:px-10">
                 <BookOpen className="h-5 w-5 text-pink-500" />
                 <h2 className="text-2xl font-bold text-white">
