@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import {
   Loader2,
   RefreshCw,
@@ -11,7 +17,6 @@ import {
   Zap,
   Database,
 } from "lucide-react";
-import { Header } from "@/components/header";
 
 const NEWS_CATEGORIES = [
   {
@@ -36,6 +41,8 @@ const PLACEHOLDER_IMAGES = [
   "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=400&h=300&fit=crop",
 ];
 
+const ITEMS_PER_PAGE = 20;
+
 const formatDate = (dateStr) => {
   if (!dateStr) return "Recent";
   try {
@@ -59,6 +66,22 @@ const formatDate = (dateStr) => {
   }
 };
 
+const formatDateTime = (dateStr) => {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
+  }
+};
+
 const NewsCard = React.memo(({ item, index }) => {
   const [imgError, setImgError] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
@@ -77,28 +100,12 @@ const NewsCard = React.memo(({ item, index }) => {
 
   const imageUrl = getImageUrl();
 
-  useEffect(() => {
-    console.log(`Article ${index}:`, {
-      title: item.title?.substring(0, 50),
-      thumbnail: item.thumbnail,
-      hasImage: !!item.thumbnail,
-      imgError,
-    });
-  }, [item.thumbnail, imgError, index, item.title]);
-
-  const handleImageError = (e) => {
-    if (!imgError) {
-      console.log(`Using placeholder for article ${index} (image unavailable)`);
-    }
+  const handleImageError = () => {
     setImgError(true);
     setImgLoading(false);
   };
 
   const handleImageLoad = () => {
-    console.log(
-      `Image loaded successfully for article ${index}:`,
-      item.thumbnail
-    );
     setImgLoading(false);
   };
 
@@ -110,7 +117,7 @@ const NewsCard = React.memo(({ item, index }) => {
       className="relative group transition-all duration-300 block cursor-pointer"
       style={{
         animation: "slideIn 0.4s ease-out forwards",
-        animationDelay: `${(index % 10) * 0.05}s`,
+        animationDelay: `${(index % 20) * 0.05}s`,
         opacity: 0,
       }}
     >
@@ -157,7 +164,7 @@ const NewsCard = React.memo(({ item, index }) => {
             </h3>
 
             <p className="text-slate-400 text-xs sm:text-sm line-clamp-2">
-              {item.excerpt}
+              {formatDateTime(item.date)}
             </p>
           </div>
         </div>
@@ -172,22 +179,28 @@ NewsCard.displayName = "NewsCard";
 
 export default function AnimeNewsHub() {
   const [selectedCategory, setSelectedCategory] = useState("anime");
-  const [news, setNews] = useState([]);
+  const [allNews, setAllNews] = useState([]);
+  const [displayedNews, setDisplayedNews] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
-  const [totalArticles, setTotalArticles] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const observerTarget = useRef(null);
 
   const fetchNews = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setPage(1);
 
     try {
       const category = NEWS_CATEGORIES.find(
         (cat) => cat.id === selectedCategory
       );
 
-      const url = `/api/news?q=${encodeURIComponent(category.query)}`;
+      const url = `/api/news?q=${encodeURIComponent(category.query)}&max=500`;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -210,27 +223,27 @@ export default function AnimeNewsHub() {
       const data = await response.json();
 
       if (!data.articles || data.articles.length === 0) {
-        setNews([]);
-        setTotalArticles(0);
+        setAllNews([]);
+        setDisplayedNews([]);
         setLastUpdated(new Date());
         setError("No articles found for this category yet. Check back soon!");
+        setHasMore(false);
         return;
       }
 
-      setTotalArticles(data.totalArticles || data.articles.length);
-
       const parsedNews = data.articles.map((article, index) => ({
-        id: article.url,
+        id: article.url || `article-${index}`,
         title: article.title,
         url: article.url,
         excerpt: article.description || "No description available",
         source: article.source?.name || "Unknown Source",
         date: article.publishedAt,
-        timestamp: new Date(article.publishedAt).getTime(),
+        timestamp: new Date(article.publishedAt).getTime() || 0,
         category: selectedCategory,
         thumbnail: article.image_url,
       }));
 
+      // Remove duplicates
       const uniqueMap = new Map();
       parsedNews.forEach((item) => {
         const key = item.title?.trim().toLowerCase();
@@ -240,9 +253,16 @@ export default function AnimeNewsHub() {
       });
       const dedupedNews = Array.from(uniqueMap.values());
 
-      const sortedNews = dedupedNews.sort((a, b) => b.timestamp - a.timestamp);
+      // Sort by newest first (descending)
+      const sortedNews = dedupedNews.sort((a, b) => {
+        const timeA = a.timestamp || 0;
+        const timeB = b.timestamp || 0;
+        return timeB - timeA;
+      });
 
-      setNews(sortedNews);
+      setAllNews(sortedNews);
+      setDisplayedNews(sortedNews.slice(0, ITEMS_PER_PAGE));
+      setHasMore(sortedNews.length > ITEMS_PER_PAGE);
       setLastUpdated(new Date());
       setError(null);
     } catch (err) {
@@ -254,16 +274,58 @@ export default function AnimeNewsHub() {
         setError(err.message || "Failed to load news. Please try again.");
       }
 
-      setNews([]);
-      setTotalArticles(0);
+      setAllNews([]);
+      setDisplayedNews([]);
+      setHasMore(false);
     } finally {
       setLoading(false);
     }
   }, [selectedCategory]);
 
+  const loadMore = useCallback(() => {
+    if (loadingMore || !hasMore || loading) return;
+
+    setLoadingMore(true);
+
+    setTimeout(() => {
+      const nextPage = page + 1;
+      const startIndex = 0;
+      const endIndex = nextPage * ITEMS_PER_PAGE;
+      const newDisplayedNews = allNews.slice(startIndex, endIndex);
+
+      setDisplayedNews(newDisplayedNews);
+      setPage(nextPage);
+      setHasMore(endIndex < allNews.length);
+      setLoadingMore(false);
+    }, 500);
+  }, [allNews, page, hasMore, loadingMore, loading]);
+
   useEffect(() => {
     fetchNews();
   }, [fetchNews]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, loadMore, loadingMore, loading]);
 
   const formattedTime = useMemo(
     () => lastUpdated?.toLocaleTimeString(),
@@ -271,113 +333,112 @@ export default function AnimeNewsHub() {
   );
 
   return (
-    <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-          <div
-            className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
-            style={{ animationDelay: "1s" }}
-          />
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div
+          className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-xl animate-pulse" />
+          <div className="relative bg-gradient-to-b from-slate-900/95 to-black/95 border-2 border-blue-500/30 p-6">
+            <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-blue-400/50" />
+            <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-blue-400/50" />
+            <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-blue-400/50" />
+            <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-blue-400/50" />
+
+            <div className="text-center space-y-4">
+              <h1
+                className="text-4xl md:text-6xl font-black text-white tracking-wider"
+                style={{
+                  fontFamily: 'Impact, "Arial Black", sans-serif',
+                  textShadow: "0 0 20px rgba(59, 130, 246, 0.5)",
+                }}
+              >
+                ANIME NEWS HUB
+              </h1>
+
+              <p className="text-blue-300 text-sm font-bold tracking-wide">
+                Latest Updates & Breaking Stories
+              </p>
+
+              {lastUpdated && (
+                <div className="flex items-center justify-center gap-2 text-slate-500 text-xs font-bold tracking-wide">
+                  <Clock className="w-4 h-4" />
+                  <span>Last Updated: {formattedTime}</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
-          <div className="relative mb-8">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-xl animate-pulse" />
-            <div className="relative bg-gradient-to-b from-slate-900/95 to-black/95 border-2 border-blue-500/30 p-6">
-              <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-blue-400/50" />
-              <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-blue-400/50" />
-              <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-blue-400/50" />
-              <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-blue-400/50" />
-
-              <div className="text-center space-y-4">
-                <h1
-                  className="text-4xl md:text-6xl font-black text-white tracking-wider"
-                  style={{
-                    fontFamily: 'Impact, "Arial Black", sans-serif',
-                    textShadow: "0 0 20px rgba(59, 130, 246, 0.5)",
-                  }}
-                >
-                  ANIME NEWS HUB
-                </h1>
-
-                <p className="text-blue-300 text-sm font-bold tracking-wide">
-                  Latest Updates & Breaking Stories
-                </p>
-
-                {lastUpdated && (
-                  <div className="flex items-center justify-center gap-2 text-slate-500 text-xs font-bold tracking-wide">
-                    <Clock className="w-4 h-4" />
-                    <span>Last Updated: {formattedTime}</span>
+        <div className="flex gap-4 mb-8">
+          {NEWS_CATEGORIES.map((category) => {
+            const isSelected = selectedCategory === category.id;
+            return (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                disabled={loading}
+                className={`relative flex-1 py-4 px-6 transition-all duration-300 font-black tracking-wider text-sm ${
+                  isSelected
+                    ? `bg-gradient-to-r ${category.color} text-white border-2 border-white/50 shadow-lg scale-105`
+                    : "bg-slate-800/50 text-slate-400 border-2 border-blue-500/20 hover:border-blue-500/40"
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-xl">{category.name}</span>
+                </div>
+                {isSelected && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-xs font-black shadow-lg animate-pulse">
+                    ✓
                   </div>
                 )}
-              </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500/30">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+              <p className="text-red-300 font-bold text-sm tracking-wide">
+                {error}
+              </p>
             </div>
           </div>
+        )}
 
-          <div className="flex gap-4 mb-8">
-            {NEWS_CATEGORIES.map((category) => {
-              const isSelected = selectedCategory === category.id;
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  disabled={loading}
-                  className={`relative flex-1 py-4 px-6 transition-all duration-300 font-black tracking-wider text-sm ${
-                    isSelected
-                      ? `bg-gradient-to-r ${category.color} text-white border-2 border-white/50 shadow-lg scale-105`
-                      : "bg-slate-800/50 text-slate-400 border-2 border-blue-500/20 hover:border-blue-500/40"
-                  }`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-xl">{category.name}</span>
-                  </div>
-                  {isSelected && (
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-xs font-black shadow-lg animate-pulse">
-                      ✓
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+        {loading && displayedNews.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
+            <p className="text-blue-300 font-black tracking-wider">
+              Loading Feed...
+            </p>
           </div>
+        )}
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500/30">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                <p className="text-red-300 font-bold text-sm tracking-wide">
-                  {error}
-                </p>
-              </div>
-            </div>
-          )}
+        {!loading && displayedNews.length === 0 && !error && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Database className="w-16 h-16 text-slate-600 mb-4" />
+            <p className="text-slate-400 font-bold tracking-wide">
+              No articles available
+            </p>
+            <p className="text-slate-500 text-sm mt-2">
+              Try refreshing or check back later
+            </p>
+          </div>
+        )}
 
-          {loading && news.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
-              <p className="text-blue-300 font-black tracking-wider">
-                Loading Feed...
-              </p>
-            </div>
-          )}
-
-          {!loading && news.length === 0 && !error && (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Database className="w-16 h-16 text-slate-600 mb-4" />
-              <p className="text-slate-400 font-bold tracking-wide">
-                No articles available
-              </p>
-              <p className="text-slate-500 text-sm mt-2">
-                Try refreshing or check back later
-              </p>
-            </div>
-          )}
-
-          {news.length > 0 && (
+        {displayedNews.length > 0 && (
+          <>
             <div className="space-y-4">
-              {news.map((item, index) => (
+              {displayedNews.map((item, index) => (
                 <NewsCard
                   key={`${item.id}-${index}`}
                   item={item}
@@ -385,33 +446,45 @@ export default function AnimeNewsHub() {
                 />
               ))}
             </div>
-          )}
 
-          {news.length > 0 && (
-            <div className="mt-8 text-center space-y-4">
-              <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-800/50 border-2 border-blue-500/30">
-                <TrendingUp className="w-5 h-5 text-blue-400" />
-                <span className="text-blue-300 font-bold tracking-wide text-sm">
-                  Showing {news.length} articles
-                </span>
-              </div>
+            {/* Infinite scroll trigger */}
+            <div ref={observerTarget} className="py-8">
+              {loadingMore && (
+                <div className="flex flex-col items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-blue-400 animate-spin mb-2" />
+                  <p className="text-blue-300 font-bold tracking-wide text-sm">
+                    Loading more articles...
+                  </p>
+                </div>
+              )}
+
+              {!hasMore && !loadingMore && (
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-800/50 border-2 border-blue-500/30">
+                    <TrendingUp className="w-5 h-5 text-blue-400" />
+                    <span className="text-blue-300 font-bold tracking-wide text-sm">
+                      All {allNews.length} articles loaded
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-
-        <style jsx>{`
-          @keyframes slideIn {
-            from {
-              opacity: 0;
-              transform: translateX(-20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateX(0);
-            }
-          }
-        `}</style>
+          </>
+        )}
       </div>
-    </>
+
+      <style jsx>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
+    </div>
   );
 }
