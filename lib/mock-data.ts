@@ -39,7 +39,7 @@ export const trendingMangas: Manga[] = [
   },
   {
     id: "2",
-    title: "Solo Leveling Manhwa",
+    title: "Solo Leveling",
     slug: "solo-leveling-manhwa",
     author: "Chugong",
     cover: "/anime-manga-cover-solo-leveling.jpg",
