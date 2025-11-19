@@ -119,7 +119,7 @@ export function HeroSection() {
   const anime = featuredAnimes[currentSlide];
 
   return (
-    <section className="relative w-full h-[calc(100vh-80px)] overflow-hidden bg-[#0a0a1a]">
+    <section className="relative w-full h-[calc(100dvh-80px)] overflow-hidden bg-[#0a0a1a]">
       {/* Slides Container */}
       <div className="relative w-full h-full">
         {featuredAnimes.map((slide, index) => (
