@@ -30,7 +30,7 @@ export default function MangaDetailsPage({ params }: MangaDetailsPageProps) {
     .filter(
       (m) => m.id !== manga.id && m.genre.some((g) => manga.genre.includes(g))
     )
-    .slice(0, 12);
+    .slice(0, 20);
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
