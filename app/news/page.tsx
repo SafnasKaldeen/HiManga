@@ -187,7 +187,7 @@ export default function AnimeNewsHub() {
         (cat) => cat.id === selectedCategory
       );
 
-      const url = `/api/news?q=${encodeURIComponent(category.query)}&max=100`;
+      const url = `/api/news?q=${encodeURIComponent(category.query)}`;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
