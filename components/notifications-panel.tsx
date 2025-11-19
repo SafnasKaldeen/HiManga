@@ -98,7 +98,7 @@ export default function NotificationsPanel() {
       {/* Bell Icon Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:text-pink-500 rounded-lg transition-colors text-white/70"
+        className="relative p-2 hover:text-pink-500 rounded-lg transition-colors text-white/70 z-100"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
