@@ -179,38 +179,6 @@ export function AnimeCard({ manga }: AnimeCardProps) {
               </p>
             </div>
 
-            {/* Genres - Responsive display */}
-            <div className="flex flex-wrap gap-1 sm:gap-1.5">
-              {manga.genre.slice(0, 2).map((g, idx) => (
-                <Badge
-                  key={g}
-                  variant="outline"
-                  className={`text-[10px] sm:text-xs font-medium transition-all duration-300 ${
-                    isLocked
-                      ? "bg-white/5 border-white/10 text-slate-500"
-                      : "bg-gradient-to-r from-white/10 to-white/5 border-white/20 text-slate-300 hover:border-pink-400/60 hover:text-pink-300 hover:shadow-lg hover:shadow-pink-500/20"
-                  }`}
-                  style={{
-                    transitionDelay: `${idx * 50}ms`,
-                  }}
-                >
-                  {g}
-                </Badge>
-              ))}
-              {manga.genre.length > 2 && (
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] sm:text-xs font-medium transition-all duration-300 ${
-                    isLocked
-                      ? "bg-white/5 border-white/10 text-slate-500"
-                      : "bg-gradient-to-r from-white/10 to-white/5 border-white/20 text-slate-300 hover:border-purple-400/60 hover:text-purple-300"
-                  }`}
-                >
-                  +{manga.genre.length - 2}
-                </Badge>
-              )}
-            </div>
-
             {/* Rating Component - Hidden on mobile */}
             {!isLocked && (
               <div className="hidden sm:block py-2 border-t border-white/10">
