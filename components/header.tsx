@@ -207,7 +207,7 @@ export function Header() {
 
       {/* Mobile/Tablet Menu Drawer - Shows up to 1280px */}
       <div
-        className={`fixed top-[73px] right-0 w-full sm:w-96 md:w-[400px] h-[calc(100vh-73px)] bg-[#0a0a1a]/95 backdrop-blur-xl border-l border-white/10 transform transition-transform duration-300 ease-in-out z-40 xl:hidden ${
+        className={`fixed top-[73px] right-0 w-full sm:w-96 md:w-[400px] h-[calc(100dvh-73px)] bg-[#0a0a1a]/95 backdrop-blur-xl border-l border-white/10 transform transition-transform duration-300 ease-in-out z-40 xl:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
