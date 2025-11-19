@@ -1,6 +1,7 @@
+// hooks/use-favorites.ts
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { supabase } from "@/lib/supabase"
 
 export interface Favorite {
@@ -17,17 +18,11 @@ export function useFavorites(userId: string | null) {
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Load favorites from Supabase on mount
-  useEffect(() => {
-    if (userId) {
-      loadFavorites()
-    } else {
+  const loadFavorites = useCallback(async () => {
+    if (!userId) {
       setIsLoaded(true)
+      return
     }
-  }, [userId])
-
-  const loadFavorites = async () => {
-    if (!userId) return
 
     try {
       const { data, error } = await supabase
@@ -60,16 +55,20 @@ export function useFavorites(userId: string | null) {
     } finally {
       setIsLoaded(true)
     }
-  }
+  }, [userId])
+
+  useEffect(() => {
+    loadFavorites()
+  }, [loadFavorites])
 
   const addFavorite = async (mangaId: string) => {
     if (!userId) {
       setError("User must be logged in to add favorites")
-      return
+      return false
     }
 
     // Optimistic update
-    if (favorites.includes(mangaId)) return
+    if (favorites.includes(mangaId)) return true
     setFavorites((prev) => [...prev, mangaId])
 
     try {
@@ -83,21 +82,25 @@ export function useFavorites(userId: string | null) {
       // Reload to get full manga details
       await loadFavorites()
       setError(null)
+      return true
     } catch (err) {
       console.error("Failed to add favorite:", err)
       setError(err instanceof Error ? err.message : "Failed to add favorite")
       // Revert optimistic update
       setFavorites((prev) => prev.filter((id) => id !== mangaId))
+      return false
     }
   }
 
   const removeFavorite = async (mangaId: string) => {
     if (!userId) {
       setError("User must be logged in to remove favorites")
-      return
+      return false
     }
 
     // Optimistic update
+    const previousFavorites = favorites
+    const previousData = favoritesData
     setFavorites((prev) => prev.filter((id) => id !== mangaId))
     setFavoritesData((prev) => prev.filter((fav) => fav.manga_id !== mangaId))
 
@@ -110,29 +113,32 @@ export function useFavorites(userId: string | null) {
 
       if (error) throw error
       setError(null)
+      return true
     } catch (err) {
       console.error("Failed to remove favorite:", err)
       setError(err instanceof Error ? err.message : "Failed to remove favorite")
       // Revert optimistic update
-      await loadFavorites()
+      setFavorites(previousFavorites)
+      setFavoritesData(previousData)
+      return false
     }
   }
 
   const toggleFavorite = async (mangaId: string) => {
     if (favorites.includes(mangaId)) {
-      await removeFavorite(mangaId)
+      return await removeFavorite(mangaId)
     } else {
-      await addFavorite(mangaId)
+      return await addFavorite(mangaId)
     }
   }
 
-  const isFavorite = (mangaId: string) => {
+  const isFavorite = useCallback((mangaId: string) => {
     return favorites.includes(mangaId)
-  }
+  }, [favorites])
 
   return {
     favorites,
-    favoritesData, // Returns full favorite objects with manga details
+    favoritesData,
     addFavorite,
     removeFavorite,
     toggleFavorite,

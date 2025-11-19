@@ -25,7 +25,7 @@ export interface MangaWithChapters extends Manga {
 
 export const trendingMangas: Manga[] = [
   {
-    id: "1",
+    id: "a0022615-09c2-4f20-a66c-83e25fe00db1",
     title: "One Piece",
     slug: "one-piece",
     author: "Eiichiro Oda",
@@ -38,7 +38,7 @@ export const trendingMangas: Manga[] = [
     views: 5000000,
   },
   {
-    id: "2",
+    id: "b3d55846-d09b-4fe7-826d-37b98fabff4f",
     title: "Solo Leveling",
     slug: "solo-leveling-manhwa",
     author: "Chugong",
@@ -51,7 +51,7 @@ export const trendingMangas: Manga[] = [
     views: 4500000,
   },
   {
-    id: "3",
+    id: "ebaaa57e-0f65-47f9-804c-f7edef8c85a6",
     title: "Black Clover",
     author: "Yūki Tabata",
     slug: "black-clover",
@@ -65,7 +65,7 @@ export const trendingMangas: Manga[] = [
   },
   
   {
-    id: "4",
+    id: "0201d424-a952-4ebf-8bbd-406542873117",
     title: "Demon Slayers",
     author: "Haruto Takahashi",
     slug: "demon-slayer-kimetsu-no-yaiba",
@@ -78,7 +78,7 @@ export const trendingMangas: Manga[] = [
     views: 2500000,
   },
    {
-    id: "5",
+    id: "6fb9d3a3-9680-4a32-895f-3341e3249f11",
     title: "Jujutsu Kaisen",
     author: "Gege Akutami",
     slug: "jujutsu-kaisen",
@@ -91,7 +91,7 @@ export const trendingMangas: Manga[] = [
     views: 4000000,
   },
   {
-    id: "6",
+    id: "b3d0c7f6-0f1b-414d-8438-8d99adda5406",
     title: "kaiju no 8",
     author: "Naoya Matsumoto",
     slug: "kaiju-no-8",
@@ -104,7 +104,7 @@ export const trendingMangas: Manga[] = [
     views: 3000000,
   },
   {
-    id: "7",
+    id: "51b394fb-7940-4b8d-a093-4799d0696978",
     title: "One Punch Man",
     author: "ONE",
     slug: "one-punch-man",
@@ -117,7 +117,7 @@ export const trendingMangas: Manga[] = [
     views: 3500000,
   },
   {
-    id: "8",
+    id: "4a3c56ea-2e82-4364-866d-86d0d9c32d6f",
     title: "Dandadan",
     author: "Yukinobu Tatsu",
     slug: "dandadan",
@@ -130,7 +130,7 @@ export const trendingMangas: Manga[] = [
     views: 1500000,
   },
   {
-    id: "9",
+    id: "d985ad04-8633-478a-a8c6-3e106acc50be",
     title: "Spy x Family",
     author: "Tatsuya Endo",
     slug: "spy-x-family",
@@ -143,7 +143,7 @@ export const trendingMangas: Manga[] = [
     views: 2000000,
   },
   {
-    id: "10",
+    id: "dbe7805d-e10a-4096-9c8e-88b4ceafa862",
     title: "Attack on Titan",
     slug: "attack-on-titan",
     author: "Hajime Isayama",
@@ -156,7 +156,7 @@ export const trendingMangas: Manga[] = [
     views: 6000000,
   },
   {
-    id: "11",
+    id: "c4b4ede7-1ab4-46c5-9416-e6e34537dfb3",
     title: "Chainsaw Man",
     author: "Tatsuki Fujimoto",
     slug: "chainsaw-man",
@@ -169,7 +169,7 @@ export const trendingMangas: Manga[] = [
     views: 3000000,
   },
   {
-    id: "12",
+    id: "3f0de9a9-830e-48cf-b487-035e0c8710f3",
     title: "Sakamoto Days",
     author: "Yuto Suzuki",
     slug: "sakamoto-days",
@@ -182,7 +182,7 @@ export const trendingMangas: Manga[] = [
     views: 1500000,
   },
   {
-    id: "13",
+    id: "6d1059c3-de28-4b4f-9fc7-90e12e24cbcb",
     title: "Blue Lock",
     author: "Muneyuki Kaneshiro",
     slug: "blue-lock",
@@ -221,7 +221,7 @@ export const trendingMangas: Manga[] = [
   //   views: 800000,
   // },
   {
-    id: "15",
+    id: "02354c72-f95f-4858-bef6-4429d47148b9",
     title: "Shangri-La Frontier",
     author: "Yuki Yamamoto",
     slug: "shangri-la-frontier",
@@ -235,7 +235,7 @@ export const trendingMangas: Manga[] = [
   },
   
   {
-    id: "16",
+    id: "a92ebc52-40e3-4416-8606-e78cfe721a5c",
     title: "Muscle - Joseon",
     author: "Unknown",
     slug: "muscle-joseon",

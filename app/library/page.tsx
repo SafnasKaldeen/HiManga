@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { useFavorites } from "@/hooks/use-favorites"
-import { useBookmarks } from "@/hooks/use-bookmarks"
-import { trendingMangas } from "@/lib/mock-data"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Link from "next/link"
-import { Star, Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useState, useEffect } from "react"
-import { RatingComponent } from "@/components/rating-component"
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useBookmarks } from "@/hooks/use-bookmarks";
+import { trendingMangas } from "@/lib/mock-data";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from "next/link";
+import { Star, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { RatingComponent } from "@/components/rating-component";
 
 export default function LibraryPage() {
-  const { favorites, removeFavorite, isLoaded: favLoaded } = useFavorites()
-  const { bookmarks, removeBookmark, isLoaded: bookLoaded } = useBookmarks()
-  const [isClient, setIsClient] = useState(false)
+  const { favorites, removeFavorite, isLoaded: favLoaded } = useFavorites();
+  const { bookmarks, removeBookmark, isLoaded: bookLoaded } = useBookmarks();
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
 
   if (!isClient || !favLoaded || !bookLoaded) {
     return (
@@ -34,11 +34,13 @@ export default function LibraryPage() {
         </main>
         <Footer />
       </div>
-    )
+    );
   }
 
-  const favoriteMangas = trendingMangas.filter((m) => favorites.includes(m.id))
-  const bookmarkedMangas = trendingMangas.filter((m) => bookmarks.some((b) => b.mangaId === m.id))
+  const favoriteMangas = trendingMangas.filter((m) => favorites.includes(m.id));
+  const bookmarkedMangas = trendingMangas.filter((m) =>
+    bookmarks.some((b) => b.mangaId === m.id)
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -48,7 +50,9 @@ export default function LibraryPage() {
           <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             My Library
           </h1>
-          <p className="text-muted-foreground">Manage your favorites and bookmarks</p>
+          <p className="text-muted-foreground">
+            Manage your favorites and bookmarks
+          </p>
         </div>
 
         <Tabs defaultValue="favorites" className="w-full">
@@ -90,10 +94,14 @@ export default function LibraryPage() {
                           {manga.title}
                         </h3>
                       </Link>
-                      <p className="text-sm text-muted-foreground mb-3">{manga.author}</p>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {manga.author}
+                      </p>
                       <div className="flex items-center gap-1 mb-3">
                         <Star className="w-4 h-4 fill-primary text-primary" />
-                        <span className="text-sm font-medium">{manga.rating}</span>
+                        <span className="text-sm font-medium">
+                          {manga.rating}
+                        </span>
                       </div>
                       <div className="mb-3 pb-3 border-b border-white/10">
                         <RatingComponent mangaId={manga.id} />
@@ -114,8 +122,10 @@ export default function LibraryPage() {
             ) : (
               <Card className="p-12 text-center bg-card/50 border-white/10 backdrop-blur-sm">
                 <p className="text-muted-foreground mb-4">No favorites yet</p>
-                <Link href="/">
-                  <Button className="bg-gradient-to-r from-primary to-secondary">Explore Manga</Button>
+                <Link href="/trending">
+                  <Button className="bg-gradient-to-r from-primary to-secondary">
+                    Explore Manga
+                  </Button>
                 </Link>
               </Card>
             )}
@@ -125,14 +135,19 @@ export default function LibraryPage() {
             {bookmarkedMangas.length > 0 ? (
               <div className="space-y-4">
                 {bookmarkedMangas.map((manga) => {
-                  const bookmark = bookmarks.find((b) => b.mangaId === manga.id)
+                  const bookmark = bookmarks.find(
+                    (b) => b.mangaId === manga.id
+                  );
                   return (
                     <Card
                       key={manga.id}
                       className="p-4 bg-card/50 border-white/10 hover:border-primary/30 transition-colors backdrop-blur-sm"
                     >
                       <div className="flex gap-4">
-                        <Link href={`/manga/${manga.id}`} className="flex-shrink-0">
+                        <Link
+                          href={`/manga/${manga.id}`}
+                          className="flex-shrink-0"
+                        >
                           <img
                             src={manga.cover || "/placeholder.svg"}
                             alt={manga.title}
@@ -145,22 +160,33 @@ export default function LibraryPage() {
                               {manga.title}
                             </h3>
                           </Link>
-                          <p className="text-sm text-muted-foreground mb-2">{manga.author}</p>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {manga.author}
+                          </p>
                           <div className="flex items-center gap-4 mb-4">
                             <div className="flex items-center gap-1">
                               <Star className="w-4 h-4 fill-primary text-primary" />
                               <span className="text-sm">{manga.rating}</span>
                             </div>
-                            <Badge variant="outline" className="bg-white/5 border-white/10">
-                              Chapter {bookmark?.chapterNumber} • Page {bookmark?.pageNumber}
+                            <Badge
+                              variant="outline"
+                              className="bg-white/5 border-white/10"
+                            >
+                              Chapter {bookmark?.chapterNumber} • Page{" "}
+                              {bookmark?.pageNumber}
                             </Badge>
                           </div>
                           <div className="mb-3 pb-3 border-b border-white/10">
                             <RatingComponent mangaId={manga.id} />
                           </div>
                           <div className="flex gap-2">
-                            <Link href={`/manga/${manga.id}/chapter/${bookmark?.chapterNumber}`}>
-                              <Button size="sm" className="bg-gradient-to-r from-primary to-secondary">
+                            <Link
+                              href={`/manga/${manga.id}/chapter/${bookmark?.chapterNumber}`}
+                            >
+                              <Button
+                                size="sm"
+                                className="bg-gradient-to-r from-primary to-secondary"
+                              >
                                 Continue Reading
                               </Button>
                             </Link>
@@ -176,14 +202,16 @@ export default function LibraryPage() {
                         </div>
                       </div>
                     </Card>
-                  )
+                  );
                 })}
               </div>
             ) : (
               <Card className="p-12 text-center bg-card/50 border-white/10 backdrop-blur-sm">
                 <p className="text-muted-foreground mb-4">No bookmarks yet</p>
                 <Link href="/">
-                  <Button className="bg-gradient-to-r from-primary to-secondary">Start Reading</Button>
+                  <Button className="bg-gradient-to-r from-primary to-secondary">
+                    Start Reading
+                  </Button>
                 </Link>
               </Card>
             )}
@@ -192,5 +220,5 @@ export default function LibraryPage() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }

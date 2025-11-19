@@ -1,27 +1,33 @@
+// components/bookmark-button.tsx
 "use client";
 
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBookmarks } from "@/hooks/use-bookmarks";
+import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
 
 interface BookmarkButtonProps {
   mangaId: string;
-  chapterNumber: number;
-  pageNumber: number;
+  chapterNumber?: number;
+  pageNumber?: number;
   size?: "sm" | "default" | "lg";
   showText?: boolean;
 }
 
 export function BookmarkButton({
   mangaId,
-  chapterNumber,
-  pageNumber,
+  chapterNumber = 1,
+  pageNumber = 1,
   size = "default",
   showText = false,
 }: BookmarkButtonProps) {
-  const { getBookmark, addBookmark, removeBookmark, isLoaded } = useBookmarks();
+  const { user } = useAuth();
+  const { getBookmark, addBookmark, removeBookmark, isLoaded } = useBookmarks(
+    user?.id ?? null
+  );
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isLoaded) {
@@ -29,13 +35,26 @@ export function BookmarkButton({
     }
   }, [isLoaded, mangaId, getBookmark]);
 
-  const handleToggle = () => {
-    if (isBookmarked) {
-      removeBookmark(mangaId);
-    } else {
-      addBookmark(mangaId, chapterNumber, pageNumber);
+  const handleToggle = async () => {
+    if (isLoading || !user) return;
+
+    setIsLoading(true);
+
+    try {
+      if (isBookmarked) {
+        const success = await removeBookmark(mangaId);
+        if (success) {
+          setIsBookmarked(false);
+        }
+      } else {
+        const success = await addBookmark(mangaId, chapterNumber, pageNumber);
+        if (success) {
+          setIsBookmarked(true);
+        }
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setIsBookmarked(!isBookmarked);
   };
 
   if (!isLoaded) {
@@ -47,11 +66,16 @@ export function BookmarkButton({
       variant="outline"
       size={size}
       onClick={handleToggle}
-      className={`gap-2 bg-transparent text-foreground hover:text-accent ${
+      disabled={isLoading || !user}
+      className={`gap-2 bg-transparent text-foreground hover:text-accent transition-all ${
         isBookmarked ? "text-accent" : ""
       }`}
     >
-      <Bookmark className={`w-4 h-4 ${isBookmarked ? "fill-accent" : ""}`} />
+      <Bookmark
+        className={`w-4 h-4 transition-all ${
+          isBookmarked ? "fill-accent" : ""
+        }`}
+      />
       {showText && (isBookmarked ? "Bookmarked" : "Bookmark")}
     </Button>
   );

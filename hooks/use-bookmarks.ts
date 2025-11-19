@@ -1,6 +1,7 @@
+// hooks/use-bookmarks.ts
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { supabase } from "@/lib/supabase"
 
 export interface Bookmark {
@@ -17,17 +18,11 @@ export function useBookmarks(userId: string | null) {
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Load bookmarks from Supabase on mount
-  useEffect(() => {
-    if (userId) {
-      loadBookmarks()
-    } else {
+  const loadBookmarks = useCallback(async () => {
+    if (!userId) {
       setIsLoaded(true)
+      return
     }
-  }, [userId])
-
-  const loadBookmarks = async () => {
-    if (!userId) return
 
     try {
       const { data, error } = await supabase
@@ -46,7 +41,11 @@ export function useBookmarks(userId: string | null) {
     } finally {
       setIsLoaded(true)
     }
-  }
+  }, [userId])
+
+  useEffect(() => {
+    loadBookmarks()
+  }, [loadBookmarks])
 
   const addBookmark = async (
     mangaId: string,
@@ -55,11 +54,10 @@ export function useBookmarks(userId: string | null) {
   ) => {
     if (!userId) {
       setError("User must be logged in to add bookmarks")
-      return
+      return false
     }
 
     try {
-      // Check if bookmark already exists
       const { data: existing } = await supabase
         .from("bookmarks")
         .select("id")
@@ -68,7 +66,6 @@ export function useBookmarks(userId: string | null) {
         .maybeSingle()
 
       if (existing) {
-        // Update existing bookmark
         const { data, error } = await supabase
           .from("bookmarks")
           .update({
@@ -86,7 +83,6 @@ export function useBookmarks(userId: string | null) {
           prev.map((b) => (b.id === existing.id ? data : b))
         )
       } else {
-        // Insert new bookmark
         const { data, error } = await supabase
           .from("bookmarks")
           .insert({
@@ -105,16 +101,18 @@ export function useBookmarks(userId: string | null) {
       }
 
       setError(null)
+      return true
     } catch (err) {
       console.error("Failed to add bookmark:", err)
       setError(err instanceof Error ? err.message : "Failed to add bookmark")
+      return false
     }
   }
 
   const removeBookmark = async (mangaId: string) => {
     if (!userId) {
       setError("User must be logged in to remove bookmarks")
-      return
+      return false
     }
 
     try {
@@ -128,15 +126,17 @@ export function useBookmarks(userId: string | null) {
 
       setBookmarks((prev) => prev.filter((b) => b.manga_id !== mangaId))
       setError(null)
+      return true
     } catch (err) {
       console.error("Failed to remove bookmark:", err)
       setError(err instanceof Error ? err.message : "Failed to remove bookmark")
+      return false
     }
   }
 
-  const getBookmark = (mangaId: string) => {
+  const getBookmark = useCallback((mangaId: string) => {
     return bookmarks.find((b) => b.manga_id === mangaId)
-  }
+  }, [bookmarks])
 
   return { bookmarks, addBookmark, removeBookmark, getBookmark, isLoaded, error }
 }
