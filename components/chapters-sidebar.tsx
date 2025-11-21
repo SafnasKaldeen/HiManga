@@ -166,10 +166,6 @@ export function ChaptersSidebar({
         <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
           Chapters
         </h2>
-        <p className="text-xs text-slate-400 mt-1">
-          {chaptersData.length} chapters{" "}
-          {usingFallback ? "(Fallback)" : "(Supabase)"}
-        </p>
 
         {/* Search Input */}
         <div className="mt-3 relative">
