@@ -4,6 +4,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useBookmarks } from "@/hooks/use-bookmarks";
+import { useAuth } from "@/lib/auth-context";
 import { trendingMangas } from "@/lib/mock-data";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +16,17 @@ import { useState, useEffect } from "react";
 import { RatingComponent } from "@/components/rating-component";
 
 export default function LibraryPage() {
-  const { favorites, removeFavorite, isLoaded: favLoaded } = useFavorites();
-  const { bookmarks, removeBookmark, isLoaded: bookLoaded } = useBookmarks();
+  const { user } = useAuth();
+  const {
+    favorites,
+    removeFavorite,
+    isLoaded: favLoaded,
+  } = useFavorites(user?.id || null);
+  const {
+    bookmarks,
+    removeBookmark,
+    isLoaded: bookLoaded,
+  } = useBookmarks(user?.id || null);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -37,9 +47,14 @@ export default function LibraryPage() {
     );
   }
 
-  const favoriteMangas = trendingMangas.filter((m) => favorites.includes(m.id));
+  // Extract manga IDs from favorites array
+  const favoriteMangaIds = favorites.map((f) => f.manga_id);
+  const favoriteMangas = trendingMangas.filter((m) =>
+    favoriteMangaIds.includes(m.id)
+  );
+
   const bookmarkedMangas = trendingMangas.filter((m) =>
-    bookmarks.some((b) => b.mangaId === m.id)
+    bookmarks.some((b) => b.manga_id === m.id)
   );
 
   return (
@@ -136,7 +151,7 @@ export default function LibraryPage() {
               <div className="space-y-4">
                 {bookmarkedMangas.map((manga) => {
                   const bookmark = bookmarks.find(
-                    (b) => b.mangaId === manga.id
+                    (b) => b.manga_id === manga.id
                   );
                   return (
                     <Card
@@ -172,8 +187,8 @@ export default function LibraryPage() {
                               variant="outline"
                               className="bg-white/5 border-white/10"
                             >
-                              Chapter {bookmark?.chapterNumber} • Page{" "}
-                              {bookmark?.pageNumber}
+                              Chapter {bookmark?.chapter_number} • Page{" "}
+                              {bookmark?.page_number}
                             </Badge>
                           </div>
                           <div className="mb-3 pb-3 border-b border-white/10">
@@ -181,7 +196,7 @@ export default function LibraryPage() {
                           </div>
                           <div className="flex gap-2">
                             <Link
-                              href={`/manga/${manga.id}/chapter/${bookmark?.chapterNumber}`}
+                              href={`/manga/${manga.id}/chapter/${bookmark?.chapter_number}`}
                             >
                               <Button
                                 size="sm"
