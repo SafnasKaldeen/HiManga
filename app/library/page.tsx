@@ -15,8 +15,10 @@ import Link from "next/link";
 import { Star, Trash2, Search, ArrowRight } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { RatingComponent } from "@/components/rating-component";
+import { useRouter } from "next/navigation";
 
 export default function LibraryPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const {
     favorites,
@@ -82,6 +84,17 @@ export default function LibraryPage() {
     setActiveTab(tab);
     setDisplayedItems(itemsPerPage);
     setSearchQuery("");
+  };
+
+  const handleContinueReading = (
+    mangaId: string,
+    chapterNumber: number,
+    panelNumber: number
+  ) => {
+    // Navigate to the chapter with panel as query parameter
+    router.push(
+      `/manga/${mangaId}/chapter/${chapterNumber}?panel=${panelNumber}`
+    );
   };
 
   if (!isClient || !favLoaded || !bookLoaded) {
@@ -258,16 +271,19 @@ export default function LibraryPage() {
                           <RatingComponent mangaId={manga.id} />
                         </div>
                         <div className="flex gap-2">
-                          <Link
-                            href={`/manga/${manga.id}/chapter/${bookmark?.chapter_number}?panel=${bookmark?.page_number}`}
+                          <Button
+                            size="sm"
+                            className="bg-gradient-to-r from-primary to-secondary"
+                            onClick={() =>
+                              handleContinueReading(
+                                manga.id,
+                                bookmark?.chapter_number || 1,
+                                bookmark?.page_number || 1
+                              )
+                            }
                           >
-                            <Button
-                              size="sm"
-                              className="bg-gradient-to-r from-primary to-secondary"
-                            >
-                              Continue Reading
-                            </Button>
-                          </Link>
+                            Continue Reading
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"

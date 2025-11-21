@@ -87,6 +87,22 @@ export function MangaReader({
     return `/api/manga/image?manga=${mangaSlug}&chapter=${paddedChapter}&panel=${paddedPanel}`;
   };
 
+  // Handle panel query parameter on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const panelParam = urlParams.get("panel");
+
+      if (panelParam) {
+        const panelNumber = parseInt(panelParam, 10);
+        if (!isNaN(panelNumber) && panelNumber > 0) {
+          setShouldScrollToPanel(panelNumber);
+          setCurrentVisiblePanel(panelNumber);
+        }
+      }
+    }
+  }, []); // Run once on mount
+
   // Track visible panel using Intersection Observer
   useEffect(() => {
     if (isLockedChapter || displayedPanels.length === 0) return;
@@ -126,7 +142,7 @@ export function MangaReader({
         setBookmarkSaved(true);
         setTimeout(() => setBookmarkSaved(false), 3000);
       }
-    }, 10000); // 10 seconds
+    }, 10000);
 
     return () => {
       if (bookmarkTimerRef.current) {
@@ -152,7 +168,7 @@ export function MangaReader({
 
     panelUpdateTimerRef.current = setInterval(() => {
       updatePanelProgress();
-    }, 10000); // Update every 10 seconds
+    }, 10000);
 
     return () => {
       if (panelUpdateTimerRef.current) {
@@ -168,12 +184,13 @@ export function MangaReader({
     isLockedChapter,
   ]);
 
-  // Scroll to bookmarked panel when it's loaded
+  // Unified scroll to panel effect
   useEffect(() => {
     if (
       shouldScrollToPanel &&
       panelRefs.current[shouldScrollToPanel] &&
-      !isDetecting
+      !isDetecting &&
+      displayedPanels.includes(shouldScrollToPanel)
     ) {
       const panelElement = panelRefs.current[shouldScrollToPanel];
       if (panelElement) {
@@ -182,8 +199,8 @@ export function MangaReader({
             behavior: "smooth",
             block: "center",
           });
-          setShouldScrollToPanel(null); // Clear after scrolling
-        }, 500); // Small delay to ensure panels are rendered
+          setShouldScrollToPanel(null);
+        }, 1000); // Wait for images to load
       }
     }
   }, [shouldScrollToPanel, displayedPanels, isDetecting]);
@@ -253,8 +270,16 @@ export function MangaReader({
 
       if (lastValidPanel > 0) {
         setDetectedTotalPanels(lastValidPanel);
+
+        // If we need to jump to a specific panel, load up to that panel
+        const targetPanel = shouldScrollToPanel || 10;
+        const panelsToLoad = Math.max(
+          10,
+          Math.min(targetPanel + 5, lastValidPanel)
+        );
+
         const initialPanels = Array.from(
-          { length: Math.min(10, lastValidPanel) },
+          { length: panelsToLoad },
           (_, i) => i + 1
         );
         setDisplayedPanels(initialPanels);
@@ -269,19 +294,31 @@ export function MangaReader({
     } finally {
       setIsDetecting(false);
     }
-  }, [chapter, mangaSlug, isLockedChapter]);
+  }, [chapter, mangaSlug, isLockedChapter, shouldScrollToPanel]);
 
   useEffect(() => {
     if (!providedTotalPanels && !isLockedChapter) {
       detectTotalPanels();
     } else if (providedTotalPanels) {
+      // Load panels up to the target panel if specified
+      const targetPanel = shouldScrollToPanel || 15;
+      const panelsToLoad = Math.min(
+        Math.max(15, targetPanel + 5),
+        providedTotalPanels
+      );
+
       const initialPanels = Array.from(
-        { length: Math.min(15, providedTotalPanels) },
+        { length: panelsToLoad },
         (_, i) => i + 1
       );
       setDisplayedPanels(initialPanels);
     }
-  }, [detectTotalPanels, providedTotalPanels, isLockedChapter]);
+  }, [
+    detectTotalPanels,
+    providedTotalPanels,
+    isLockedChapter,
+    shouldScrollToPanel,
+  ]);
 
   useEffect(() => {
     const handleResize = () => {
