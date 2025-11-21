@@ -20,10 +20,12 @@ import { useState } from "react";
 import Image from "next/image";
 import { useAvatar } from "@/hooks/useAvatar";
 import { getAvatarUrl } from "@/lib/avatar-utils";
+import { usePathname } from "next/navigation";
 
 export function Header() {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   // Load avatar with proper server sync
   // Default to 0 for new users (will show /0.png)
@@ -35,19 +37,69 @@ export function Header() {
   const avatarUrl = getAvatarUrl(avatarId) || "/Profile_pic/0.png";
 
   const handleShare = async () => {
+    const currentUrl = window.location.href;
+
+    // Generate a better title and description based on the current page
+    let title = "HiManga";
+    let text = "Check out HiManga - Read manga together!";
+
+    // Customize share text based on the current page
+    if (pathname?.includes("/manga/")) {
+      if (pathname?.includes("/chapter/")) {
+        // Extract chapter info from URL if possible
+        const chapterMatch = pathname.match(/\/chapter\/(\d+)/);
+        const chapterNum = chapterMatch ? chapterMatch[1] : "";
+        title = chapterNum
+          ? `Chapter ${chapterNum} - HiManga`
+          : "Reading on HiManga";
+        text = chapterNum
+          ? `Check out Chapter ${chapterNum} on HiManga!`
+          : "Check out this manga on HiManga!";
+      } else {
+        title = "Manga on HiManga";
+        text = "Check out this manga on HiManga!";
+      }
+    } else if (pathname === "/trending") {
+      title = "Trending Manga - HiManga";
+      text = "Check out trending manga on HiManga!";
+    } else if (pathname === "/library") {
+      title = "Manga Library - HiManga";
+      text = "Browse the manga library on HiManga!";
+    } else if (pathname === "/news") {
+      title = "Manga News - HiManga";
+      text = "Check out the latest manga news on HiManga!";
+    }
+
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "HiManga",
-          text: "Check out HiManga - Read manga together!",
-          url: window.location.origin,
+          title: title,
+          text: text,
+          url: currentUrl,
         });
       } catch (err) {
-        // User cancelled share
+        // User cancelled share or error occurred
+        if (err instanceof Error && err.name !== "AbortError") {
+          // Fallback to clipboard if share fails
+          fallbackCopyToClipboard(currentUrl);
+        }
       }
     } else {
-      navigator.clipboard.writeText(window.location.origin);
+      // Fallback for browsers that don't support Web Share API
+      fallbackCopyToClipboard(currentUrl);
+    }
+  };
+
+  const fallbackCopyToClipboard = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      // You could add a toast notification here
       alert("Link copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy link:", err);
+      alert(
+        "Failed to copy link. Please copy it manually from the address bar."
+      );
     }
   };
 
@@ -117,7 +169,7 @@ export function Header() {
             <button
               onClick={handleShare}
               className="hidden sm:flex items-center gap-2 text-white/70 hover:text-pink-500 transition-colors duration-300 px-3 py-2 rounded-full hover:bg-white/5 group"
-              title="Share HiManga"
+              title="Share this page"
             >
               <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               <span className="hidden xl:inline text-sm font-medium">
@@ -284,7 +336,7 @@ export function Header() {
               className="flex items-center gap-4 text-white/70 hover:text-pink-500 hover:bg-white/5 transition-all duration-300 font-semibold px-4 py-3 rounded-xl w-full"
             >
               <Share2 className="w-5 h-5" />
-              <span>Share HiManga</span>
+              <span>Share Page</span>
             </button>
           </nav>
 
