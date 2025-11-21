@@ -16,11 +16,14 @@ import {
   Settings,
   RotateCcw,
   AlertCircle,
+  BookmarkCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
 import { Header } from "./header";
 import { MobileCommentsOverlay } from "./mobile-comments-overlay";
+import { useBookmarks } from "@/hooks/use-bookmarks";
+import { useAuth } from "@/lib/auth-context";
 
 interface MangaReaderProps {
   mangaId: string;
@@ -43,6 +46,9 @@ export function MangaReader({
   nextChapter,
   totalChapters = 1200,
 }: MangaReaderProps) {
+  const { user } = useAuth();
+  const { addBookmark } = useBookmarks(user?.id || null);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
@@ -53,6 +59,7 @@ export function MangaReader({
   );
   const [isDetecting, setIsDetecting] = useState(!providedTotalPanels);
   const [detectionError, setDetectionError] = useState<string | null>(null);
+  const [bookmarkSaved, setBookmarkSaved] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -63,19 +70,37 @@ export function MangaReader({
   const [scrollSpeed, setScrollSpeed] = useState(50);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasBookmarkedRef = useRef(false);
+  const bookmarkTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isLockedChapter = chapter > totalChapters;
 
-  // UPDATED: Simple API route URL instead of direct Cloudinary
   const getOptimizedPanelUrl = (panelNumber: number) => {
     const paddedChapter = String(chapter).padStart(3, "0");
     const paddedPanel = String(panelNumber).padStart(3, "0");
-
-    // Use API route instead of direct Cloudinary URL
     return `/api/manga/image?manga=${mangaSlug}&chapter=${paddedChapter}&panel=${paddedPanel}`;
   };
 
-  // Dynamic panel detection
+  // Save bookmark after 10 seconds of reading
+  useEffect(() => {
+    if (!user || isLockedChapter || hasBookmarkedRef.current) return;
+
+    bookmarkTimerRef.current = setTimeout(async () => {
+      const success = await addBookmark(mangaId, chapter, 1);
+      if (success) {
+        hasBookmarkedRef.current = true;
+        setBookmarkSaved(true);
+        setTimeout(() => setBookmarkSaved(false), 3000);
+      }
+    }, 10000); // 10 seconds
+
+    return () => {
+      if (bookmarkTimerRef.current) {
+        clearTimeout(bookmarkTimerRef.current);
+      }
+    };
+  }, [user, chapter, mangaId, addBookmark, isLockedChapter]);
+
   const detectTotalPanels = useCallback(async () => {
     if (isLockedChapter) return;
 
@@ -359,9 +384,23 @@ export function MangaReader({
 
   return (
     <div className="h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden">
-      {/* <div className="lg:hidden"> */}
       <Header />
-      {/* </div> */}
+
+      {/* Bookmark Saved Notification */}
+      {bookmarkSaved && (
+        <div className="fixed top-20 right-4 z-[100] animate-in slide-in-from-right duration-300">
+          <div className="bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 backdrop-blur-xl border border-cyan-400/30 rounded-lg px-4 py-3 shadow-lg shadow-cyan-500/20 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <BookmarkCheck className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Bookmark Saved</p>
+              <p className="text-xs text-white/80">Chapter {chapter}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-1 relative overflow-hidden">
         {sidebarOpen && !isFullscreen && (
           <div
@@ -735,7 +774,6 @@ export function MangaReader({
             </div>
           )}
 
-          {/* Advanced Controls Overlay - Fullscreen */}
           {showAdvancedControls && isFullscreen && (
             <>
               <div
@@ -874,7 +912,6 @@ export function MangaReader({
             </>
           )}
 
-          {/* Comments Button */}
           <button
             onClick={() => setIsCommentsOpen(true)}
             className="absolute bottom-[2.5px] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-1 bg-slate-800/90 border border-slate-700/50 hover:bg-slate-800 hover:border-cyan-400/40 text-slate-100 px-3 py-2 rounded-lg transition-all duration-200 group min-w-[60px]"
@@ -883,7 +920,6 @@ export function MangaReader({
             <span className="text-xs font-medium text-center">Comments</span>
           </button>
 
-          {/* Comments Overlay */}
           <MobileCommentsOverlay
             mangaId={mangaId}
             isOpen={isCommentsOpen}
@@ -915,7 +951,6 @@ export function MangaReader({
               }
             `}</style>
 
-            {/* Detection Loading State */}
             {isDetecting && (
               <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[60vh] space-y-6">
                 <div className="relative">
@@ -933,7 +968,6 @@ export function MangaReader({
               </div>
             )}
 
-            {/* Detection Error */}
             {detectionError && !isDetecting && (
               <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[40vh] space-y-4">
                 <AlertCircle className="w-12 h-12 text-yellow-500" />

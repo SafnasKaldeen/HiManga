@@ -30,7 +30,7 @@ export default function LibraryPage() {
   } = useBookmarks(user?.id || null);
   const [isClient, setIsClient] = useState(false);
   const [activeTab, setActiveTab] = useState<"favorites" | "bookmarks">(
-    "favorites"
+    "bookmarks"
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [itemsPerPage] = useState(12);
@@ -250,8 +250,7 @@ export default function LibraryPage() {
                             variant="outline"
                             className="bg-white/5 border-white/10"
                           >
-                            Chapter {bookmark?.chapter_number} • Page{" "}
-                            {bookmark?.page_number}
+                            Chapter {bookmark?.chapter_number}
                           </Badge>
                         </div>
                         <div className="mb-3 pb-3 border-b border-white/10">
