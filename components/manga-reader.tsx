@@ -61,11 +61,15 @@ export function MangaReader({
   const [shouldScrollToPanel, setShouldScrollToPanel] = useState<number | null>(
     null
   );
-  const [isDetecting, setIsDetecting] = useState(!providedTotalPanels);
-  const [detectionError, setDetectionError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingChapterInfo, setIsFetchingChapterInfo] = useState(
+    !providedTotalPanels
+  );
+  const [isDetecting, setIsDetecting] = useState(!providedTotalPanels); // Alias for compatibility
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [detectionError, setDetectionError] = useState<string | null>(null); // Alias for compatibility
   const [bookmarkSaved, setBookmarkSaved] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
@@ -101,7 +105,7 @@ export function MangaReader({
         }
       }
     }
-  }, []); // Run once on mount
+  }, []);
 
   // Track visible panel using Intersection Observer
   useEffect(() => {
@@ -189,6 +193,7 @@ export function MangaReader({
     if (
       shouldScrollToPanel &&
       panelRefs.current[shouldScrollToPanel] &&
+      !isFetchingChapterInfo &&
       !isDetecting &&
       displayedPanels.includes(shouldScrollToPanel)
     ) {
@@ -200,105 +205,131 @@ export function MangaReader({
             block: "center",
           });
           setShouldScrollToPanel(null);
-        }, 1000); // Wait for images to load
+        }, 1000);
       }
     }
-  }, [shouldScrollToPanel, displayedPanels, isDetecting]);
+  }, [
+    shouldScrollToPanel,
+    displayedPanels,
+    isFetchingChapterInfo,
+    isDetecting,
+  ]);
 
-  const detectTotalPanels = useCallback(async () => {
-    if (isLockedChapter) return;
+  // Fetch chapter info from API
+  // Updated fetchChapterInfo function with better error handling
+  // Replace the existing fetchChapterInfo in your MangaReader component
 
+  const fetchChapterInfo = useCallback(async () => {
+    if (isLockedChapter || !mangaSlug) return;
+
+    setIsFetchingChapterInfo(true);
     setIsDetecting(true);
+    setFetchError(null);
     setDetectionError(null);
 
     try {
-      let left = 1;
-      let right = 200;
-      let lastValidPanel = 0;
+      const response = await fetch(
+        `/api/manga/chapter-info?manga=${mangaId}&chapter=${chapter}`
+      );
 
-      const checkPanelExists = async (panelNum: number): Promise<boolean> => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          const url = getOptimizedPanelUrl(panelNum);
+      const data = await response.json();
 
-          const timeout = setTimeout(() => {
-            img.src = "";
-            resolve(false);
-          }, 5000);
+      // Handle 404 - Chapter not in database
+      if (!response.ok) {
+        console.error("API Error:", data);
 
-          img.onload = () => {
-            clearTimeout(timeout);
-            resolve(true);
-          };
+        if (response.status === 404) {
+          // Chapter doesn't exist in database - use fallback mechanism
+          console.log(
+            "Chapter not found in DB, using fallback panel detection"
+          );
 
-          img.onerror = () => {
-            clearTimeout(timeout);
-            resolve(false);
-          };
+          // Try to load panels anyway by attempting to fetch images
+          // Start with a reasonable default (e.g., 50 panels)
+          const fallbackPanelCount = 50;
+          setDetectedTotalPanels(fallbackPanelCount);
 
-          img.src = url;
-        });
-      };
+          const targetPanel = shouldScrollToPanel || 10;
+          const panelsToLoad = Math.max(
+            10,
+            Math.min(targetPanel + 5, fallbackPanelCount)
+          );
 
-      while (left <= right) {
-        const mid = Math.floor((left + right) / 2);
-        const exists = await checkPanelExists(mid);
+          const initialPanels = Array.from(
+            { length: panelsToLoad },
+            (_, i) => i + 1
+          );
+          setDisplayedPanels(initialPanels);
 
-        if (exists) {
-          lastValidPanel = mid;
-          left = mid + 1;
+          // Show a warning but allow reading
+          setFetchError(
+            `Chapter ${chapter} metadata not found in database. Attempting to load panels...`
+          );
+          setDetectionError(
+            `Chapter ${chapter} metadata not found in database. Attempting to load panels...`
+          );
         } else {
-          right = mid - 1;
+          throw new Error(data.error || "Failed to fetch chapter information");
         }
-      }
-
-      if (lastValidPanel === 0) {
-        let panelNum = 1;
-        let consecutiveFails = 0;
-
-        while (consecutiveFails < 3 && panelNum <= 50) {
-          const exists = await checkPanelExists(panelNum);
-          if (exists) {
-            lastValidPanel = panelNum;
-            consecutiveFails = 0;
-          } else {
-            consecutiveFails++;
-          }
-          panelNum++;
-        }
-      }
-
-      if (lastValidPanel > 0) {
-        setDetectedTotalPanels(lastValidPanel);
-
-        // If we need to jump to a specific panel, load up to that panel
-        const targetPanel = shouldScrollToPanel || 10;
-        const panelsToLoad = Math.max(
-          10,
-          Math.min(targetPanel + 5, lastValidPanel)
-        );
-
-        const initialPanels = Array.from(
-          { length: panelsToLoad },
-          (_, i) => i + 1
-        );
-        setDisplayedPanels(initialPanels);
       } else {
-        setDetectionError("No panels found. Please check the chapter.");
+        // Success - use data from database
+        if (data.totalPanels && data.totalPanels > 0) {
+          setDetectedTotalPanels(data.totalPanels);
+
+          const targetPanel = shouldScrollToPanel || 10;
+          const panelsToLoad = Math.max(
+            10,
+            Math.min(targetPanel + 5, data.totalPanels)
+          );
+
+          const initialPanels = Array.from(
+            { length: panelsToLoad },
+            (_, i) => i + 1
+          );
+          setDisplayedPanels(initialPanels);
+
+          // Clear any previous errors
+          setFetchError(null);
+          setDetectionError(null);
+        } else {
+          const errorMsg = "No panels found for this chapter.";
+          setFetchError(errorMsg);
+          setDetectionError(errorMsg);
+        }
       }
     } catch (error) {
-      console.error("Panel detection error:", error);
-      setDetectionError("Failed to detect panels. Using fallback.");
-      setDetectedTotalPanels(23);
-      setDisplayedPanels([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      console.error("Error fetching chapter info:", error);
+
+      // Network error or other unexpected error - try fallback
+      console.log("Unexpected error, attempting fallback panel loading");
+
+      const fallbackPanelCount = 50;
+      setDetectedTotalPanels(fallbackPanelCount);
+
+      const targetPanel = shouldScrollToPanel || 10;
+      const panelsToLoad = Math.max(
+        10,
+        Math.min(targetPanel + 5, fallbackPanelCount)
+      );
+
+      const initialPanels = Array.from(
+        { length: panelsToLoad },
+        (_, i) => i + 1
+      );
+      setDisplayedPanels(initialPanels);
+
+      const errorMsg = `Unable to load chapter metadata. Attempting to load panels...`;
+      setFetchError(errorMsg);
+      setDetectionError(errorMsg);
     } finally {
+      setIsFetchingChapterInfo(false);
       setIsDetecting(false);
     }
-  }, [chapter, mangaSlug, isLockedChapter, shouldScrollToPanel]);
+  }, [chapter, mangaId, mangaSlug, isLockedChapter, shouldScrollToPanel]);
 
   useEffect(() => {
-    if (!providedTotalPanels && !isLockedChapter) {
-      detectTotalPanels();
+    if (!providedTotalPanels && !isLockedChapter && mangaSlug) {
+      fetchChapterInfo();
     } else if (providedTotalPanels) {
       // Load panels up to the target panel if specified
       const targetPanel = shouldScrollToPanel || 15;
@@ -314,10 +345,11 @@ export function MangaReader({
       setDisplayedPanels(initialPanels);
     }
   }, [
-    detectTotalPanels,
+    fetchChapterInfo,
     providedTotalPanels,
     isLockedChapter,
     shouldScrollToPanel,
+    mangaSlug,
   ]);
 
   useEffect(() => {
@@ -363,7 +395,7 @@ export function MangaReader({
   }, [displayedPanels.length, totalPanelsToUse, isLoading, isLockedChapter]);
 
   useEffect(() => {
-    if (isLockedChapter || isDetecting) return;
+    if (isLockedChapter || isFetchingChapterInfo || isDetecting) return;
 
     const handleScroll = () => {
       const container = scrollContainerRef.current;
@@ -395,6 +427,7 @@ export function MangaReader({
     displayedPanels.length,
     totalPanelsToUse,
     isLockedChapter,
+    isFetchingChapterInfo,
     isDetecting,
   ]);
 
@@ -1075,7 +1108,7 @@ export function MangaReader({
               }
             `}</style>
 
-            {isDetecting && (
+            {(isFetchingChapterInfo || isDetecting) && (
               <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[60vh] space-y-6">
                 <div className="relative">
                   <Loader2 className="w-16 h-16 text-cyan-500 animate-spin" />
@@ -1083,32 +1116,36 @@ export function MangaReader({
                 </div>
                 <div className="text-center space-y-2">
                   <h2 className="text-xl font-bold text-slate-200">
-                    Fetching Panels...
+                    Loading Chapter Info...
                   </h2>
                   <p className="text-sm text-slate-500">
-                    This may take a few seconds
+                    Fetching panel data from database
                   </p>
                 </div>
               </div>
             )}
 
-            {detectionError && !isDetecting && (
-              <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[40vh] space-y-4">
-                <AlertCircle className="w-12 h-12 text-yellow-500" />
-                <div className="text-center space-y-2">
-                  <h2 className="text-lg font-bold text-slate-200">
-                    Detection Issue
-                  </h2>
-                  <p className="text-slate-400">{detectionError}</p>
-                  <Button
-                    onClick={detectTotalPanels}
-                    className="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
-                  >
-                    Retry Detection
-                  </Button>
+            {(fetchError || detectionError) &&
+              !isFetchingChapterInfo &&
+              !isDetecting && (
+                <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[40vh] space-y-4">
+                  <AlertCircle className="w-12 h-12 text-yellow-500" />
+                  <div className="text-center space-y-2">
+                    <h2 className="text-lg font-bold text-slate-200">
+                      Error Loading Chapter
+                    </h2>
+                    <p className="text-slate-400">
+                      {fetchError || detectionError}
+                    </p>
+                    <Button
+                      onClick={fetchChapterInfo}
+                      className="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
+                    >
+                      Retry
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {isLockedChapter ? (
               <div className="w-full max-w-4xl flex flex-col items-center justify-center min-h-[60vh] space-y-6">
@@ -1137,6 +1174,7 @@ export function MangaReader({
                 </Button>
               </div>
             ) : (
+              !isFetchingChapterInfo &&
               !isDetecting &&
               displayedPanels.length > 0 && (
                 <div
