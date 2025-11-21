@@ -1,48 +1,177 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import type { Manga } from "@/lib/mock-data"
-import { Lock, ChevronLeft, ChevronRight } from "lucide-react"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Lock,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
+import Link from "next/link";
+
+interface Manga {
+  id: string;
+  title: string;
+  chapters: number;
+}
+
+interface Chapter {
+  id: string;
+  chapter_number: number;
+  title: string | null;
+  total_panels: number;
+  published_at: string;
+  created_at: string;
+}
 
 interface ChaptersListProps {
-  manga: Manga
+  manga: Manga;
 }
 
 export function ChaptersList({ manga }: ChaptersListProps) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest")
-  const chaptersPerPage = 12
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
-  // Generate mock chapters
-  let chapters = Array.from({ length: manga.chapters }, (_, i) => ({
-    number: manga.chapters - i,
-    title: `Chapter ${manga.chapters - i}`,
-    date: new Date(Date.now() - i * 86400000).toLocaleDateString(),
-    isLocked: i > 5,
-  }))
+  const chaptersPerPage = 12;
 
-  if (sortOrder === "oldest") {
-    chapters = chapters.reverse()
+  // Fetch chapters from Supabase
+  useEffect(() => {
+    const fetchChapters = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/manga/chapters?mangaId=${manga.id}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch chapters");
+        }
+
+        const data = await response.json();
+
+        if (data.chapters && data.chapters.length > 0) {
+          setChapters(data.chapters);
+          setUsingFallback(false);
+        } else {
+          // Fallback to generated chapters
+          generateFallbackChapters();
+        }
+      } catch (err) {
+        console.error("Error fetching chapters:", err);
+        // Fallback to generated chapters
+        generateFallbackChapters();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchChapters();
+  }, [manga.id, manga.chapters]);
+
+  // Generate fallback chapters when Supabase data is unavailable
+  const generateFallbackChapters = () => {
+    const fallbackChapters = Array.from({ length: manga.chapters }, (_, i) => ({
+      id: `fallback-${i}`,
+      chapter_number: manga.chapters - i,
+      title: `Chapter ${manga.chapters - i}`,
+      total_panels: 0,
+      published_at: new Date(Date.now() - i * 86400000).toISOString(),
+      created_at: new Date(Date.now() - i * 86400000).toISOString(),
+    }));
+
+    setChapters(fallbackChapters);
+    setUsingFallback(true);
+  };
+
+  // Sort chapters
+  const sortedChapters = [...chapters].sort((a, b) => {
+    if (sortOrder === "newest") {
+      return b.chapter_number - a.chapter_number;
+    } else {
+      return a.chapter_number - b.chapter_number;
+    }
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(sortedChapters.length / chaptersPerPage);
+  const startIndex = (currentPage - 1) * chaptersPerPage;
+  const paginatedChapters = sortedChapters.slice(
+    startIndex,
+    startIndex + chaptersPerPage
+  );
+
+  // Format chapter number display (handles decimals)
+  const formatChapterNumber = (num: number) => {
+    return num % 1 === 0
+      ? num.toString()
+      : num.toFixed(2).replace(/\.?0+$/, "");
+  };
+
+  // Determine if chapter is locked (you can adjust this logic)
+  const isChapterLocked = (chapterNumber: number) => {
+    // Example: Lock chapters beyond the latest 6
+    const maxUnlockedChapter = Math.max(
+      ...chapters.map((c) => c.chapter_number)
+    );
+    return chapterNumber > maxUnlockedChapter || chapterNumber > manga.chapters;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">Loading chapters...</p>
+      </div>
+    );
   }
 
-  const totalPages = Math.ceil(chapters.length / chaptersPerPage)
-  const startIndex = (currentPage - 1) * chaptersPerPage
-  const paginatedChapters = chapters.slice(startIndex, startIndex + chaptersPerPage)
+  if (error && !usingFallback) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <AlertCircle className="w-8 h-8 text-destructive" />
+        <p className="text-sm text-muted-foreground">{error}</p>
+        <Button
+          onClick={() => window.location.reload()}
+          variant="outline"
+          size="sm"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold mb-1">Chapters</h2>
-          <p className="text-sm text-muted-foreground">Total: {manga.chapters} chapters</p>
+          <p className="text-sm text-muted-foreground">
+            Total: {chapters.length} chapters
+            {usingFallback ? (
+              <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-500">
+                (Using fallback data)
+              </span>
+            ) : (
+              <span className="ml-2 text-xs text-green-600 dark:text-green-500">
+                (Loaded from Supabase)
+              </span>
+            )}
+          </p>
         </div>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
+          onClick={() =>
+            setSortOrder(sortOrder === "newest" ? "oldest" : "newest")
+          }
           className="text-xs"
         >
           {sortOrder === "newest" ? "Newest First" : "Oldest First"}
@@ -50,27 +179,47 @@ export function ChaptersList({ manga }: ChaptersListProps) {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 mb-6">
-        {paginatedChapters.map((chapter) => (
-          <Link
-            key={chapter.number}
-            href={chapter.isLocked ? "#" : `/manga/${manga.id}/chapter/${chapter.number}`}
-            className={chapter.isLocked ? "pointer-events-none" : ""}
-          >
-            <Card
-              className={`p-3 text-center transition-all hover:scale-105 ${
-                chapter.isLocked
-                  ? "opacity-50 cursor-not-allowed bg-muted/30"
-                  : "cursor-pointer hover:bg-primary/10 hover:border-primary/50"
-              }`}
+        {paginatedChapters.map((chapter) => {
+          const isLocked = isChapterLocked(chapter.chapter_number);
+
+          return (
+            <Link
+              key={chapter.id}
+              href={
+                isLocked
+                  ? "#"
+                  : `/manga/${manga.id}/chapter/${chapter.chapter_number}`
+              }
+              className={isLocked ? "pointer-events-none" : ""}
             >
-              <div className="flex flex-col items-center gap-1">
-                {chapter.isLocked && <Lock className="w-3 h-3 text-muted-foreground" />}
-                <p className="text-xs font-semibold truncate w-full">Ch. {chapter.number}</p>
-                <p className="text-xs text-muted-foreground line-clamp-1">{chapter.date}</p>
-              </div>
-            </Card>
-          </Link>
-        ))}
+              <Card
+                className={`p-3 text-center transition-all hover:scale-105 ${
+                  isLocked
+                    ? "opacity-50 cursor-not-allowed bg-muted/30"
+                    : "cursor-pointer hover:bg-primary/10 hover:border-primary/50"
+                }`}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  {isLocked && (
+                    <Lock className="w-3 h-3 text-muted-foreground" />
+                  )}
+                  <p className="text-xs font-semibold truncate w-full">
+                    {chapter.title ||
+                      `Ch. ${formatChapterNumber(chapter.chapter_number)}`}
+                  </p>
+                  <p className="text-xs text-muted-foreground line-clamp-1">
+                    {new Date(chapter.published_at).toLocaleDateString()}
+                  </p>
+                  {chapter.total_panels > 0 && (
+                    <p className="text-xs text-muted-foreground/60">
+                      {chapter.total_panels} panels
+                    </p>
+                  )}
+                </div>
+              </Card>
+            </Link>
+          );
+        })}
       </div>
 
       {totalPages > 1 && (
@@ -85,23 +234,38 @@ export function ChaptersList({ manga }: ChaptersListProps) {
           </Button>
 
           <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "outline"}
-                size="sm"
-                onClick={() => setCurrentPage(page)}
-                className="w-8 h-8 p-0"
-              >
-                {page}
-              </Button>
-            ))}
+            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+              let page: number;
+              if (totalPages <= 7) {
+                page = i + 1;
+              } else if (currentPage <= 4) {
+                page = i + 1;
+              } else if (currentPage >= totalPages - 3) {
+                page = totalPages - 6 + i;
+              } else {
+                page = currentPage - 3 + i;
+              }
+
+              return (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(page)}
+                  className="w-8 h-8 p-0"
+                >
+                  {page}
+                </Button>
+              );
+            })}
           </div>
 
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            onClick={() =>
+              setCurrentPage(Math.min(totalPages, currentPage + 1))
+            }
             disabled={currentPage === totalPages}
           >
             <ChevronRight className="w-4 h-4" />
@@ -109,5 +273,5 @@ export function ChaptersList({ manga }: ChaptersListProps) {
         </div>
       )}
     </div>
-  )
+  );
 }
