@@ -19,7 +19,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
   const manga = trendingMangas.find((m) => m.id === id);
-  const chapterNum = Number.parseInt(chapterNumber);
+  const chapterNum = Number.parseFloat(chapterNumber);
 
   if (!manga || chapterNum < 1 || chapterNum > manga.chapters) {
     notFound();
