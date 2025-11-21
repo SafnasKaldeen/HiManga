@@ -131,7 +131,7 @@ export function MangaReader({
     return () => observer.disconnect();
   }, [displayedPanels, isLockedChapter]);
 
-  // Initial bookmark save after 10 seconds (with notification)
+  // Initial bookmark save after 20 seconds (with notification)
   useEffect(() => {
     if (!user || isLockedChapter || hasBookmarkedRef.current) return;
 
@@ -142,7 +142,7 @@ export function MangaReader({
         setBookmarkSaved(true);
         setTimeout(() => setBookmarkSaved(false), 3000);
       }
-    }, 10000);
+    }, 20000);
 
     return () => {
       if (bookmarkTimerRef.current) {
