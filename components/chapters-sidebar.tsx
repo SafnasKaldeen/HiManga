@@ -44,6 +44,14 @@ export function ChaptersSidebar({
     process.env.NEXT_PUBLIC_SUPESUPABASE_ANON_KEY!
   );
 
+  const sanitizeTitle = (title: string | null) => {
+    if (!title) return "";
+    const parts = title.split("-"); // split by dash
+    const lastPart = parts[parts.length - 1].trim(); // take the last part
+    // Keep last part if it starts with "Chapter", otherwise use original title
+    return lastPart.match(/^Chapter\s\d+/i) ? lastPart : title;
+  };
+
   useEffect(() => {
     const fetchChapters = async () => {
       setIsLoading(true);
@@ -164,7 +172,7 @@ export function ChaptersSidebar({
       {/* Fixed Header Section */}
       <div className="flex-shrink-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
         <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-          Chapters
+          {totalChapters} Chapters
         </h2>
 
         {/* Search Input */}
@@ -258,7 +266,7 @@ export function ChaptersSidebar({
               >
                 <div className="flex flex-col gap-0.5 flex-1">
                   <p className="text-sm font-semibold text-slate-100">
-                    {chapter.title}
+                    {chapter.title || `Chapter ${chapter.chapter_number}`}
                   </p>
                   <p className="text-xs text-slate-400">
                     {new Date(chapter.published_at).toLocaleDateString()}
