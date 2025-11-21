@@ -54,8 +54,12 @@ export function MangaReader({
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [displayedPanels, setDisplayedPanels] = useState<number[]>([]);
+  const [currentVisiblePanel, setCurrentVisiblePanel] = useState(1);
   const [detectedTotalPanels, setDetectedTotalPanels] = useState<number | null>(
     providedTotalPanels || null
+  );
+  const [shouldScrollToPanel, setShouldScrollToPanel] = useState<number | null>(
+    null
   );
   const [isDetecting, setIsDetecting] = useState(!providedTotalPanels);
   const [detectionError, setDetectionError] = useState<string | null>(null);
@@ -72,6 +76,8 @@ export function MangaReader({
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasBookmarkedRef = useRef(false);
   const bookmarkTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const panelUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const panelRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const isLockedChapter = chapter > totalChapters;
 
@@ -81,12 +87,40 @@ export function MangaReader({
     return `/api/manga/image?manga=${mangaSlug}&chapter=${paddedChapter}&panel=${paddedPanel}`;
   };
 
-  // Save bookmark after 10 seconds of reading
+  // Track visible panel using Intersection Observer
+  useEffect(() => {
+    if (isLockedChapter || displayedPanels.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const panelNumber = Number(entry.target.getAttribute("data-panel"));
+            if (panelNumber) {
+              setCurrentVisiblePanel(panelNumber);
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.5,
+        rootMargin: "-20% 0px -20% 0px",
+      }
+    );
+
+    Object.values(panelRefs.current).forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
+  }, [displayedPanels, isLockedChapter]);
+
+  // Initial bookmark save after 10 seconds (with notification)
   useEffect(() => {
     if (!user || isLockedChapter || hasBookmarkedRef.current) return;
 
     bookmarkTimerRef.current = setTimeout(async () => {
-      const success = await addBookmark(mangaId, chapter, 1);
+      const success = await addBookmark(mangaId, chapter, currentVisiblePanel);
       if (success) {
         hasBookmarkedRef.current = true;
         setBookmarkSaved(true);
@@ -99,7 +133,60 @@ export function MangaReader({
         clearTimeout(bookmarkTimerRef.current);
       }
     };
-  }, [user, chapter, mangaId, addBookmark, isLockedChapter]);
+  }, [
+    user,
+    chapter,
+    mangaId,
+    addBookmark,
+    isLockedChapter,
+    currentVisiblePanel,
+  ]);
+
+  // Silent panel update every 10 seconds after initial bookmark
+  useEffect(() => {
+    if (!user || isLockedChapter || !hasBookmarkedRef.current) return;
+
+    const updatePanelProgress = async () => {
+      await addBookmark(mangaId, chapter, currentVisiblePanel);
+    };
+
+    panelUpdateTimerRef.current = setInterval(() => {
+      updatePanelProgress();
+    }, 10000); // Update every 10 seconds
+
+    return () => {
+      if (panelUpdateTimerRef.current) {
+        clearInterval(panelUpdateTimerRef.current);
+      }
+    };
+  }, [
+    user,
+    chapter,
+    mangaId,
+    currentVisiblePanel,
+    addBookmark,
+    isLockedChapter,
+  ]);
+
+  // Scroll to bookmarked panel when it's loaded
+  useEffect(() => {
+    if (
+      shouldScrollToPanel &&
+      panelRefs.current[shouldScrollToPanel] &&
+      !isDetecting
+    ) {
+      const panelElement = panelRefs.current[shouldScrollToPanel];
+      if (panelElement) {
+        setTimeout(() => {
+          panelElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          setShouldScrollToPanel(null); // Clear after scrolling
+        }, 500); // Small delay to ensure panels are rendered
+      }
+    }
+  }, [shouldScrollToPanel, displayedPanels, isDetecting]);
 
   const detectTotalPanels = useCallback(async () => {
     if (isLockedChapter) return;
@@ -1022,6 +1109,10 @@ export function MangaReader({
                   {displayedPanels.map((panelNumber) => (
                     <div
                       key={panelNumber}
+                      ref={(el) => {
+                        panelRefs.current[panelNumber] = el;
+                      }}
+                      data-panel={panelNumber}
                       className="relative group overflow-hidden shadow-2xl border border-cyan-500/20 hover:border-cyan-400 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
                     >
                       <img

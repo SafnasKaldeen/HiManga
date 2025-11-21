@@ -250,7 +250,8 @@ export default function LibraryPage() {
                             variant="outline"
                             className="bg-white/5 border-white/10"
                           >
-                            Chapter {bookmark?.chapter_number}
+                            Chapter {bookmark?.chapter_number} • Panel{" "}
+                            {bookmark?.page_number}
                           </Badge>
                         </div>
                         <div className="mb-3 pb-3 border-b border-white/10">
@@ -258,7 +259,7 @@ export default function LibraryPage() {
                         </div>
                         <div className="flex gap-2">
                           <Link
-                            href={`/manga/${manga.id}/chapter/${bookmark?.chapter_number}`}
+                            href={`/manga/${manga.id}/chapter/${bookmark?.chapter_number}?panel=${bookmark?.page_number}`}
                           >
                             <Button
                               size="sm"
