@@ -1,38 +1,47 @@
 "use client";
 
-import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
 
 interface FavoriteButtonProps {
   mangaId: string;
-  size?: "sm" | "default" | "lg";
+  size?: "default" | "sm" | "lg" | "icon";
   showText?: boolean;
+  variant?: "default" | "outline" | "ghost";
 }
 
 export function FavoriteButton({
   mangaId,
   size = "default",
   showText = false,
+  variant = "outline",
 }: FavoriteButtonProps) {
-  const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
-  const [isFav, setIsFav] = useState(false);
+  const { user } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites(user?.id || null);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (isLoaded) {
-      setIsFav(isFavorite(mangaId));
+    setIsFavorited(isFavorite(mangaId));
+  }, [isFavorite, mangaId]);
+
+  const handleToggle = async () => {
+    if (!user) {
+      // You can add a toast notification here
+      console.log("Please login to add favorites");
+      return;
     }
-  }, [isLoaded, mangaId, isFavorite]);
 
-  const handleToggle = () => {
-    toggleFavorite(mangaId);
-    setIsFav(!isFav);
+    setIsLoading(true);
+    const success = await toggleFavorite(mangaId);
+    if (success) {
+      setIsFavorited(!isFavorited);
+    }
+    setIsLoading(false);
   };
-
-  if (!isLoaded) {
-    return null;
-  }
 
   return (
     <Button
@@ -40,11 +49,11 @@ export function FavoriteButton({
       size={size}
       onClick={handleToggle}
       className={`gap-2 bg-transparent text-foreground hover:text-secondary ${
-        isFav ? "text-secondary" : ""
+        isFavorited ? "text-secondary" : ""
       }`}
     >
-      <Heart className={`w-4 h-4 ${isFav ? "fill-secondary" : ""}`} />
-      {showText && (isFav ? "Favorited" : "Add to Favorites")}
+      <Heart className={`w-4 h-4 ${isFavorited ? "fill-secondary" : ""}`} />
+      {showText && (isFavorited ? "Favorited" : "Add to Favorites")}
     </Button>
   );
 }

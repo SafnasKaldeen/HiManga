@@ -8,13 +8,11 @@ export interface Favorite {
   id?: string
   user_id: string
   manga_id: string
-  created_at?: string
-  mangas?: any
+  created_at: string
 }
 
 export function useFavorites(userId: string | null) {
-  const [favorites, setFavorites] = useState<string[]>([])
-  const [favoritesData, setFavoritesData] = useState<Favorite[]>([])
+  const [favorites, setFavorites] = useState<Favorite[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -27,27 +25,13 @@ export function useFavorites(userId: string | null) {
     try {
       const { data, error } = await supabase
         .from("user_favorites")
-        .select(
-          `
-          *,
-          mangas(
-            id,
-            title,
-            cover_image_url,
-            average_rating,
-            total_chapters,
-            author,
-            status
-          )
-        `
-        )
+        .select("*")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
 
       if (error) throw error
 
-      setFavoritesData(data || [])
-      setFavorites((data || []).map((fav) => fav.manga_id))
+      setFavorites(data || [])
       setError(null)
     } catch (err) {
       console.error("Failed to load favorites:", err)
@@ -67,27 +51,37 @@ export function useFavorites(userId: string | null) {
       return false
     }
 
-    // Optimistic update
-    if (favorites.includes(mangaId)) return true
-    setFavorites((prev) => [...prev, mangaId])
-
     try {
-      const { error } = await supabase.from("user_favorites").insert({
-        user_id: userId,
-        manga_id: mangaId,
-      })
+      // Check if already exists
+      const { data: existing } = await supabase
+        .from("user_favorites")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("manga_id", mangaId)
+        .maybeSingle()
+
+      if (existing) {
+        return true // Already favorited
+      }
+
+      const { data, error } = await supabase
+        .from("user_favorites")
+        .insert({
+          user_id: userId,
+          manga_id: mangaId,
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single()
 
       if (error) throw error
 
-      // Reload to get full manga details
-      await loadFavorites()
+      setFavorites((prev) => [data, ...prev])
       setError(null)
       return true
     } catch (err) {
       console.error("Failed to add favorite:", err)
       setError(err instanceof Error ? err.message : "Failed to add favorite")
-      // Revert optimistic update
-      setFavorites((prev) => prev.filter((id) => id !== mangaId))
       return false
     }
   }
@@ -98,12 +92,6 @@ export function useFavorites(userId: string | null) {
       return false
     }
 
-    // Optimistic update
-    const previousFavorites = favorites
-    const previousData = favoritesData
-    setFavorites((prev) => prev.filter((id) => id !== mangaId))
-    setFavoritesData((prev) => prev.filter((fav) => fav.manga_id !== mangaId))
-
     try {
       const { error } = await supabase
         .from("user_favorites")
@@ -112,20 +100,19 @@ export function useFavorites(userId: string | null) {
         .eq("manga_id", mangaId)
 
       if (error) throw error
+
+      setFavorites((prev) => prev.filter((f) => f.manga_id !== mangaId))
       setError(null)
       return true
     } catch (err) {
       console.error("Failed to remove favorite:", err)
       setError(err instanceof Error ? err.message : "Failed to remove favorite")
-      // Revert optimistic update
-      setFavorites(previousFavorites)
-      setFavoritesData(previousData)
       return false
     }
   }
 
   const toggleFavorite = async (mangaId: string) => {
-    if (favorites.includes(mangaId)) {
+    if (isFavorite(mangaId)) {
       return await removeFavorite(mangaId)
     } else {
       return await addFavorite(mangaId)
@@ -133,17 +120,16 @@ export function useFavorites(userId: string | null) {
   }
 
   const isFavorite = useCallback((mangaId: string) => {
-    return favorites.includes(mangaId)
+    return favorites.some((f) => f.manga_id === mangaId)
   }, [favorites])
 
-  return {
-    favorites,
-    favoritesData,
-    addFavorite,
-    removeFavorite,
+  return { 
+    favorites, 
+    addFavorite, 
+    removeFavorite, 
     toggleFavorite,
-    isFavorite,
-    isLoaded,
-    error,
+    isFavorite, 
+    isLoaded, 
+    error 
   }
 }
