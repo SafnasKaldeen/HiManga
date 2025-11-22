@@ -3,13 +3,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Manga } from "@/lib/mock-data";
-import { Star, BookOpen, Eye, Bell, BellOff } from "lucide-react";
+import { Star, BookOpen, Eye, Bell, BellOff, PlayCircle } from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
 import { BookmarkButton } from "@/components/bookmark-button";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNotifications } from "@/lib/notifications-context";
 import { useAuth } from "@/lib/auth-context";
+import { useBookmarks } from "@/hooks/use-bookmarks";
 
 interface MangaDetailsHeroProps {
   manga: Manga;
@@ -18,9 +19,20 @@ interface MangaDetailsHeroProps {
 export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
   const { subscribeManga, unsubscribeManga, isSubscribed } = useNotifications();
   const { user } = useAuth();
+  const { getBookmark, isLoaded: bookmarksLoaded } = useBookmarks(
+    user?.id || null
+  );
   const [isSubscribedLocal, setIsSubscribedLocal] = useState(
     isSubscribed(manga.id)
   );
+  const [bookmark, setBookmark] = useState<any>(null);
+
+  useEffect(() => {
+    if (bookmarksLoaded && user) {
+      const userBookmark = getBookmark(manga.id);
+      setBookmark(userBookmark);
+    }
+  }, [bookmarksLoaded, manga.id, getBookmark, user]);
 
   const handleSubscribe = () => {
     if (isSubscribedLocal) {
@@ -65,7 +77,6 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
 
             {/* Stats Row */}
             <div className="flex flex-wrap items-center gap-6 sm:gap-3">
-              {" "}
               {/* Rating - No Card */}
               <div className="flex items-center gap-3">
                 <div className="hidden sm:flex items-center gap-1">
@@ -154,16 +165,53 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              {/* Primary Action - Full Width */}
-              <Link href={`/manga/${manga.id}/chapter/1`} className="block">
-                <Button
-                  size="lg"
-                  className="w-full gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02] transition-all duration-300 font-bold rounded-xl"
-                >
-                  <BookOpen className="w-5 h-5" />
-                  Start Reading
-                </Button>
-              </Link>
+              {/* Primary Action - Grid Layout */}
+              <div
+                className={`grid gap-3 ${
+                  bookmark ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"
+                }`}
+              >
+                {/* Continue Reading Button - Only show if bookmark exists */}
+                {bookmark && (
+                  <Link
+                    href={`/manga/${manga.id}/chapter/${bookmark.chapter_number}?page=${bookmark.page_number}`}
+                    className="block"
+                  >
+                    <Button
+                      size="lg"
+                      className="w-full gap-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] transition-all duration-300 font-bold rounded-xl"
+                    >
+                      <PlayCircle className="w-5 h-5" />
+                      <span className="hidden sm:inline">Continue Reading</span>
+                      <span className="sm:hidden">Continue</span>
+                      <span className="text-xs font-normal opacity-80 hidden sm:inline">
+                        (Ch. {bookmark.chapter_number}, Pg.{" "}
+                        {bookmark.page_number})
+                      </span>
+                    </Button>
+                  </Link>
+                )}
+
+                {/* Start Reading Button */}
+                <Link href={`/manga/${manga.id}/chapter/1`} className="block">
+                  <Button
+                    size="lg"
+                    className="w-full gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02] transition-all duration-300 font-bold rounded-xl"
+                  >
+                    <BookOpen className="w-5 h-5" />
+                    {bookmark ? (
+                      <>
+                        <span className="hidden sm:inline">
+                          Start from Beginning
+                        </span>
+                        <span className="sm:hidden">Start Over</span>
+                      </>
+                    ) : (
+                      "Start Reading"
+                    )}
+                  </Button>
+                </Link>
+              </div>
 
               {/* Secondary Actions - Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
