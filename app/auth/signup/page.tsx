@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { BookOpen, AlertCircle, Eye, EyeOff, Check } from "lucide-react";
+import Image from "next/image";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -73,10 +74,15 @@ export default function SignupPage() {
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-8">
             <div className="p-2 bg-gradient-to-br from-secondary to-primary rounded-lg">
-              <BookOpen className="w-6 h-6 text-white" />
+              <Image
+                src="/logo-white.svg"
+                alt="HiManga Logo"
+                width={32}
+                height={32}
+              />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              MangaFlow
+              HiManga
             </h1>
           </div>
 
