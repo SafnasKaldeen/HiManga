@@ -96,9 +96,7 @@ export function RatingComponent({
           ))}
         </div>
         {userRating && (
-          <span className="text-sm text-white/70">
-            You rated: {userRating}/5
-          </span>
+          <span className="text-sm text-white/70">Rated: {userRating}/5</span>
         )}
       </div>
       {error && <span className="text-sm text-red-500">{error}</span>}
