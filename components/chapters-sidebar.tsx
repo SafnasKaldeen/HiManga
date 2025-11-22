@@ -3,9 +3,15 @@
 import type React from "react";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Lock, ChevronRight, Search, ArrowUpDown, X } from "lucide-react";
+import {
+  Lock,
+  ChevronRight,
+  Search,
+  ArrowUpDown,
+  X,
+  CheckCircle2,
+} from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
 
 interface Chapter {
   id: string;
@@ -20,13 +26,22 @@ interface ChaptersSidebarProps {
   mangaId: string;
   currentChapter?: number;
   chapters: number;
+  userId?: string;
 }
 
 export function ChaptersSidebar({
   mangaId,
   currentChapter = 1,
   chapters: totalChapters,
+  userId,
 }: ChaptersSidebarProps) {
+  console.log("ChaptersSidebar rendered with:", {
+    mangaId,
+    currentChapter,
+    totalChapters,
+    userId,
+  });
+
   const [displayedChapters, setDisplayedChapters] = useState(50);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
@@ -35,23 +50,19 @@ export function ChaptersSidebar({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [chaptersData, setChaptersData] = useState<Chapter[]>([]);
+  const [readChapters, setReadChapters] = useState<number[]>([]);
   const [usingFallback, setUsingFallback] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // loading state
-
-  // Initialize Supabase
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPESUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPESUPABASE_ANON_KEY!
-  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingReadStatus, setIsLoadingReadStatus] = useState(false);
 
   const sanitizeTitle = (title: string | null) => {
     if (!title) return "";
-    const parts = title.split("-"); // split by dash
-    const lastPart = parts[parts.length - 1].trim(); // take the last part
-    // Keep last part if it starts with "Chapter", otherwise use original title
+    const parts = title.split("-");
+    const lastPart = parts[parts.length - 1].trim();
     return lastPart.match(/^Chapter\s\d+/i) ? lastPart : title;
   };
 
+  // Fetch chapters data
   useEffect(() => {
     const fetchChapters = async () => {
       setIsLoading(true);
@@ -79,7 +90,67 @@ export function ChaptersSidebar({
     };
 
     fetchChapters();
-  }, [mangaId, sortOrder]);
+  }, [mangaId, sortOrder, totalChapters]);
+
+  // Fetch read chapters separately with graceful fallback
+  useEffect(() => {
+    console.log("=== READ CHAPTERS USEEFFECT TRIGGERED ===");
+    console.log("userId:", userId);
+    console.log("mangaId:", mangaId);
+
+    const fetchReadChapters = async () => {
+      console.log("Fetching read chapters...");
+      setIsLoadingReadStatus(true);
+      try {
+        const url = `/api/manga/chapters/user-reads?mangaId=${mangaId}`;
+        console.log("Fetching URL:", url);
+
+        const res = await fetch(url);
+
+        console.log("Response status:", res.status);
+
+        // Check if response is ok
+        if (!res.ok) {
+          console.warn(`Failed to fetch read chapters: ${res.status}`);
+          setReadChapters([]);
+          return;
+        }
+
+        const data = await res.json();
+        console.log("Read chapters data:", data);
+
+        // Check for error in response
+        if (data.error) {
+          console.warn("Error in read chapters response:", data.error);
+          setReadChapters([]);
+          return;
+        }
+
+        if (data.readChapters && Array.isArray(data.readChapters)) {
+          // Convert to numbers to ensure consistency
+          const readChapterNumbers = data.readChapters
+            .map((ch: any) => (typeof ch === "number" ? ch : parseInt(ch, 10)))
+            .filter((ch: number) => !isNaN(ch));
+
+          setReadChapters(readChapterNumbers);
+        } else {
+          // Graceful fallback - no highlighting
+          setReadChapters([]);
+        }
+      } catch (err) {
+        // Graceful fallback on any error - don't break the UI
+        console.warn(
+          "Could not fetch read chapters, continuing without highlighting:",
+          err
+        );
+        setReadChapters([]);
+      } finally {
+        setIsLoadingReadStatus(false);
+      }
+    };
+
+    fetchReadChapters();
+  }, [userId, mangaId]);
 
   // Fallback generation if no Supabase data
   const generateFallbackChapters = () => {
@@ -96,6 +167,39 @@ export function ChaptersSidebar({
     });
     setChaptersData(fallbackChapters);
     setUsingFallback(true);
+  };
+
+  // Function to mark chapter as read with graceful error handling
+  const markChapterAsRead = async (chapterNumber: number) => {
+    if (!userId) return;
+
+    try {
+      const res = await fetch("/api/manga/chapters/user-reads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          mangaId,
+          chapterNumber,
+        }),
+      });
+
+      if (!res.ok) {
+        console.warn(`Failed to mark chapter as read: ${res.status}`);
+        return;
+      }
+
+      const data = await res.json();
+
+      if (data.success && data.readChapters) {
+        setReadChapters(data.readChapters);
+      }
+    } catch (err) {
+      console.warn("Could not mark chapter as read:", err);
+      // Don't break the UI, just log the error
+    }
   };
 
   // Infinite scroll
@@ -157,6 +261,9 @@ export function ChaptersSidebar({
   const isChapterLocked = (chapterNumber: number) =>
     chapterNumber > totalChapters;
 
+  const isChapterRead = (chapterNumber: number) =>
+    readChapters.includes(chapterNumber);
+
   return (
     <div
       className="w-full flex flex-col bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-transparent backdrop-blur-xl overflow-hidden h-100dvh lg:h-full lg:relative lg:border-l lg:border-slate-700/50"
@@ -171,9 +278,17 @@ export function ChaptersSidebar({
     >
       {/* Fixed Header Section */}
       <div className="flex-shrink-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
-        <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-          {totalChapters} Chapters
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            {totalChapters} Chapters
+          </h2>
+          {readChapters.length > 0 && (
+            <div className="flex items-center gap-1.5 text-xs text-emerald-400/80">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{readChapters.length} read</span>
+            </div>
+          )}
+        </div>
 
         {/* Search Input */}
         <div className="mt-3 relative">
@@ -239,54 +354,82 @@ export function ChaptersSidebar({
             <p className="text-xs text-slate-400 mt-2">Loading chapters...</p>
           </div>
         ) : chaptersList.length > 0 ? (
-          chaptersList.map((chapter) => (
-            <Link
-              key={chapter.id}
-              href={
-                isChapterLocked(chapter.chapter_number)
-                  ? "#"
-                  : `/manga/${mangaId}/chapter/${chapter.chapter_number}`
-              }
-              className={
-                isChapterLocked(chapter.chapter_number)
-                  ? "pointer-events-none"
-                  : ""
-              }
-            >
-              <div
-                className={`p-3 my-1 rounded-lg transition-all duration-200 group border flex items-center justify-between active:scale-[0.98] ${
-                  currentChapter === chapter.chapter_number
-                    ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 shadow-lg shadow-cyan-500/20"
-                    : "bg-slate-800/30 border-slate-700/50 hover:bg-slate-800/50 hover:border-cyan-400/40"
-                } ${
-                  isChapterLocked(chapter.chapter_number)
-                    ? "opacity-50 cursor-not-allowed"
-                    : "cursor-pointer"
-                }`}
+          chaptersList.map((chapter) => {
+            const isRead = isChapterRead(chapter.chapter_number);
+            const isLocked = isChapterLocked(chapter.chapter_number);
+            const isCurrent = currentChapter === chapter.chapter_number;
+
+            return (
+              <Link
+                key={chapter.id}
+                href={
+                  isLocked
+                    ? "#"
+                    : `/manga/${mangaId}/chapter/${chapter.chapter_number}`
+                }
+                className={isLocked ? "pointer-events-none" : ""}
               >
-                <div className="flex flex-col gap-0.5 flex-1">
-                  <p className="text-sm font-semibold text-slate-100">
-                    {chapter.title || `Chapter ${chapter.chapter_number}`}
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    {new Date(chapter.published_at).toLocaleDateString()}
-                  </p>
-                  {isChapterLocked(chapter.chapter_number) && (
-                    <p className="text-xs text-amber-400/70 mt-1">
-                      Not released yet
+                <div
+                  className={`p-3 my-1 rounded-lg transition-all duration-200 group border flex items-center justify-between active:scale-[0.98] relative overflow-hidden ${
+                    isCurrent
+                      ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 shadow-lg shadow-cyan-500/20"
+                      : isRead
+                      ? "bg-gradient-to-r from-emerald-900/30 to-emerald-800/20 border-emerald-600/50 hover:from-emerald-900/40 hover:to-emerald-800/30 hover:border-emerald-500/60"
+                      : "bg-slate-800/30 border-slate-700/50 hover:bg-slate-800/50 hover:border-cyan-400/40"
+                  } ${
+                    isLocked
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                >
+                  {/* Read indicator bar on the left */}
+                  {isRead && !isCurrent && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-400 to-emerald-600"></div>
+                  )}
+
+                  <div className="flex flex-col gap-0.5 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p
+                        className={`text-sm font-semibold ${
+                          isRead ? "text-emerald-50" : "text-slate-100"
+                        }`}
+                      >
+                        {chapter.title || `Chapter ${chapter.chapter_number}`}
+                      </p>
+                      {isRead && (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                      )}
+                    </div>
+                    <p
+                      className={`text-xs ${
+                        isRead ? "text-emerald-200/60" : "text-slate-400"
+                      }`}
+                    >
+                      {new Date(chapter.published_at).toLocaleDateString()}
                     </p>
-                  )}
+                    {isLocked && (
+                      <p className="text-xs text-amber-400/70 mt-1">
+                        Not released yet
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isLocked ? (
+                      <Lock className="w-4 h-4 text-amber-500/70" />
+                    ) : (
+                      <ChevronRight
+                        className={`w-4 h-4 transition-colors ${
+                          isRead
+                            ? "text-emerald-400/70 group-hover:text-emerald-300"
+                            : "text-cyan-400/60 group-hover:text-cyan-400"
+                        }`}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {isChapterLocked(chapter.chapter_number) ? (
-                    <Lock className="w-4 h-4 text-amber-500/70" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-cyan-400/60 group-hover:text-cyan-400 transition-colors" />
-                  )}
-                </div>
-              </div>
-            </Link>
-          ))
+              </Link>
+            );
+          })
         ) : (
           <div className="text-center py-8">
             <p className="text-sm text-slate-400">No chapters found</p>
