@@ -6,6 +6,7 @@ import type { Manga } from "@/lib/mock-data";
 import { Star, BookOpen, Eye, Bell, BellOff, PlayCircle } from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
 import { BookmarkButton } from "@/components/bookmark-button";
+import { RatingComponent } from "@/components/rating-component";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useNotifications } from "@/lib/notifications-context";
@@ -153,6 +154,11 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
               </div>
             </div>
 
+            {/* Mobile-only Rating Component */}
+            <div className="sm:hidden">
+              <RatingComponent mangaId={manga.id} />
+            </div>
+
             {/* Description */}
             <div>
               <p className="text-sm text-white/60 mb-3 font-bold">
@@ -185,7 +191,7 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
                       <span className="hidden sm:inline">Continue Reading</span>
                       <span className="sm:hidden">Continue</span>
                       <span className="text-xs font-normal opacity-80 hidden sm:inline">
-                        (Ch. {bookmark.chapter_number}, Panel.{" "}
+                        (Ch. {bookmark.chapter_number}, Pg.{" "}
                         {bookmark.page_number})
                       </span>
                     </Button>
