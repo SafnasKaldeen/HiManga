@@ -237,7 +237,7 @@ export const trendingMangas: Manga[] = [
   {
     id: "a92ebc52-40e3-4416-8606-e78cfe721a5c",
     title: "Muscle - Joseon",
-    author: "Unknown",
+    author: "ChadolbakE",
     slug: "muscle-joseon",
     cover: "/anime-manga-cover-muscle-joseon.jpg",
     rating: 4.5,

@@ -1,29 +1,79 @@
 // ========== TRENDING SECTION COMPONENT ==========
 "use client";
 
-import { trendingMangas } from "@/lib/mock-data";
+import { supabase } from "@/lib/supabase";
 import { AnimeCard } from "./anime-card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Filter, ChevronDown, X } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, Filter, ChevronDown, X, Loader2 } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { useMangas } from "@/hooks/use-mangas";
 
 export function TrendingSection() {
+  const [mangaIds, setMangaIds] = useState<string[]>([]);
+  const [isLoadingIds, setIsLoadingIds] = useState(true);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
 
-  const genres = ["All", "Action", "Fantasy", "Sci-Fi", "Romance", "Mystery"];
+  // Fetch all manga IDs
+  useEffect(() => {
+    async function fetchMangaIds() {
+      try {
+        const { data, error } = await supabase
+          .from("mangas")
+          .select("id")
+          .order("average_rating", { ascending: false })
+          .limit(50); // Limit to top 50 trending
+
+        if (error) throw error;
+
+        const ids = data?.map((m) => m.id) || [];
+        setMangaIds(ids);
+      } catch (error) {
+        console.error("Error fetching manga IDs:", error);
+      } finally {
+        setIsLoadingIds(false);
+      }
+    }
+
+    fetchMangaIds();
+  }, []);
+
+  // Use cached useMangas hook
+  const { favoriteMangas: allMangas, isLoading: mangasLoading } = useMangas(
+    "system",
+    mangaIds,
+    []
+  );
+
+  const isLoading = isLoadingIds || mangasLoading;
+
+  // Extract unique genres from mangas
+  const genres = useMemo(() => {
+    const allGenres = new Set<string>();
+    allMangas.forEach((manga) => {
+      manga.genre?.forEach((g) => allGenres.add(g));
+    });
+    return ["All", ...Array.from(allGenres).sort()];
+  }, [allMangas]);
 
   // Filter mangas based on selected genre
-  const filteredMangas = selectedGenre
-    ? trendingMangas.filter((manga) => manga.genre?.includes(selectedGenre))
-    : trendingMangas;
+  const filteredMangas = useMemo(() => {
+    return selectedGenre
+      ? allMangas.filter((manga) => manga.genre?.includes(selectedGenre))
+      : allMangas;
+  }, [allMangas, selectedGenre]);
 
   // Get visible mangas based on count
   const visibleMangas = filteredMangas.slice(0, visibleCount);
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + 10);
+  };
+
+  const handleGenreSelect = (genre: string) => {
+    setSelectedGenre(genre === "All" ? null : genre);
+    setVisibleCount(10);
   };
 
   return (
@@ -36,108 +86,111 @@ export function TrendingSection() {
               Trending Now
             </h2>
             <p className="text-white/60 text-lg">
-              Most popular anime this season
+              Most popular manga this season
             </p>
-          </div>
-          {/* <Button
-            variant="outline"
-            onClick={() => setShowFilterMenu(!showFilterMenu)}
-            className="gap-2 bg-transparent border-pink-500/40 hover:bg-pink-500/10 text-pink-500 w-fit rounded-full font-bold"
-          >
-            <Filter className="w-4 h-4" />
-            <span className="hidden sm:inline">Advanced Filters</span>
-            <span className="sm:hidden">Filters</span>
-          </Button> */}
-        </div>
-
-        {/* Genre Filter - Desktop: Horizontal scroll, Mobile: Dropdown */}
-        <div className="mb-12 relative">
-          {/* Mobile Dropdown */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setShowFilterMenu(!showFilterMenu)}
-              className="w-full flex items-center justify-between px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-bold backdrop-blur-sm"
-            >
-              <span>
-                {selectedGenre === null ? "All Genres" : selectedGenre}
-              </span>
-              <ChevronDown
-                className={`w-5 h-5 transition-transform ${
-                  showFilterMenu ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-          </div>
-
-          {/* Desktop Horizontal Scroll */}
-          <div className="hidden md:flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {genres.map((genre) => (
-              <button
-                key={genre}
-                onClick={() => {
-                  setSelectedGenre(genre === "All" ? null : genre);
-                  setVisibleCount(10); // Reset visible count on filter change
-                }}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all ${
-                  (genre === "All" && selectedGenre === null) ||
-                  selectedGenre === genre
-                    ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-500/30"
-                    : "bg-white/10 border border-white/20 text-white/70 hover:bg-white/15 hover:text-white backdrop-blur-sm"
-                }`}
-              >
-                {genre}
-              </button>
-            ))}
           </div>
         </div>
 
-        {/* Results Count */}
-        {selectedGenre && (
-          <p className="text-white/60 mb-6">
-            Showing {filteredMangas.length} result
-            {filteredMangas.length !== 1 ? "s" : ""} for {selectedGenre}
-          </p>
-        )}
-
-        {/* Anime Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 mb-12">
-          {visibleMangas.map((manga) => (
-            <AnimeCard key={manga.id} manga={manga} />
-          ))}
-        </div>
-
-        {/* No Results Message */}
-        {filteredMangas.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-white/60 text-lg">
-              No anime found in this genre. Try selecting a different filter.
-            </p>
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="text-center space-y-4">
+              <Loader2 className="w-12 h-12 animate-spin mx-auto text-pink-500" />
+              <p className="text-white/60">Loading trending manga...</p>
+            </div>
           </div>
-        )}
+        ) : (
+          <>
+            {/* Genre Filter - Desktop: Horizontal scroll, Mobile: Dropdown */}
+            <div className="mb-12 relative">
+              {/* Mobile Dropdown */}
+              <div className="md:hidden">
+                <button
+                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                  className="w-full flex items-center justify-between px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-bold backdrop-blur-sm"
+                >
+                  <span>
+                    {selectedGenre === null ? "All Genres" : selectedGenre}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform ${
+                      showFilterMenu ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+              </div>
 
-        {/* Load More Button */}
-        {visibleCount < filteredMangas.length && (
-          <div className="flex justify-center">
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={handleLoadMore}
-              className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500/50 text-pink-500 rounded-full font-bold px-8"
-            >
-              <span className="hidden sm:inline">Load More Anime</span>
-              <span className="sm:hidden">Load More</span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
+              {/* Desktop Horizontal Scroll */}
+              <div className="hidden md:flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                {genres.map((genre) => (
+                  <button
+                    key={genre}
+                    onClick={() => handleGenreSelect(genre)}
+                    className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all ${
+                      (genre === "All" && selectedGenre === null) ||
+                      selectedGenre === genre
+                        ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-500/30"
+                        : "bg-white/10 border border-white/20 text-white/70 hover:bg-white/15 hover:text-white backdrop-blur-sm"
+                    }`}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        {/* All Loaded Message */}
-        {visibleCount >= filteredMangas.length && filteredMangas.length > 0 && (
-          <div className="text-center">
-            <p className="text-white/60">
-              You've reached the end! All anime loaded.
-            </p>
-          </div>
+            {/* Results Count */}
+            {selectedGenre && (
+              <p className="text-white/60 mb-6">
+                Showing {filteredMangas.length} result
+                {filteredMangas.length !== 1 ? "s" : ""} for {selectedGenre}
+              </p>
+            )}
+
+            {/* Anime Grid */}
+            {visibleMangas.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 mb-12">
+                  {visibleMangas.map((manga) => (
+                    <AnimeCard key={manga.id} manga={manga} />
+                  ))}
+                </div>
+
+                {/* Load More Button */}
+                {visibleCount < filteredMangas.length && (
+                  <div className="flex justify-center">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      onClick={handleLoadMore}
+                      className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500/50 text-pink-500 rounded-full font-bold px-8"
+                    >
+                      <span className="hidden sm:inline">Load More Manga</span>
+                      <span className="sm:hidden">Load More</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+
+                {/* All Loaded Message */}
+                {visibleCount >= filteredMangas.length && (
+                  <div className="text-center">
+                    <p className="text-white/60">
+                      You've reached the end! All manga loaded.
+                    </p>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* No Results Message */
+              <div className="text-center py-12">
+                <p className="text-white/60 text-lg">
+                  No manga found in this genre. Try selecting a different
+                  filter.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -169,9 +222,8 @@ export function TrendingSection() {
                 <button
                   key={genre}
                   onClick={() => {
-                    setSelectedGenre(genre === "All" ? null : genre);
+                    handleGenreSelect(genre);
                     setShowFilterMenu(false);
-                    setVisibleCount(10); // Reset visible count on filter change
                   }}
                   className={`w-full px-5 py-3.5 text-left font-bold transition-all rounded-xl mb-1 ${
                     (genre === "All" && selectedGenre === null) ||
@@ -187,6 +239,16 @@ export function TrendingSection() {
           </div>
         </>
       )}
+
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </section>
   );
 }

@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, use } from "react";
-import { trendingMangas } from "@/lib/mock-data";
+import { useMangas } from "@/hooks/use-mangas";
 import { MangaReader } from "@/components/manga-reader";
-import { MobileCommentsOverlay } from "@/components/mobile-comments-overlay";
-import { MessageCircle, ChevronRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
 
 interface ChapterPageProps {
@@ -18,10 +17,35 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   const { id, chapterNumber } = use(params);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
-  const manga = trendingMangas.find((m) => m.id === id);
   const chapterNum = Number.parseFloat(chapterNumber);
 
-  if (!manga || chapterNum < 1 || chapterNum > manga.chapters) {
+  // Fetch manga using the cached hook
+  const {
+    favoriteMangas: mangas,
+    isLoading,
+    error,
+  } = useMangas(
+    "system", // Use a system user ID to enable caching
+    [id], // Fetch only this manga
+    []
+  );
+
+  const manga = mangas.find((m) => m.id === id);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
+          <p className="text-muted-foreground">Loading chapter...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error or not found
+  if (error || !manga || chapterNum < 1 || chapterNum > manga.chapters) {
     notFound();
   }
 
@@ -50,7 +74,6 @@ export default function ChapterPage({ params }: ChapterPageProps) {
           mangaTitle={manga.title}
           mangaSlug={manga.slug}
           chapter={chapterNum}
-          // totalPanels={60}
           pages={pages}
           previousChapter={previousChapter}
           nextChapter={nextChapter}

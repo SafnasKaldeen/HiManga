@@ -191,7 +191,7 @@ export function MangaDetailsHero({ manga }: MangaDetailsHeroProps) {
                       <span className="hidden sm:inline">Continue Reading</span>
                       <span className="sm:hidden">Continue</span>
                       <span className="text-xs font-normal opacity-80 hidden sm:inline">
-                        (Ch. {bookmark.chapter_number}, Pg.{" "}
+                        (Ch. {bookmark.chapter_number}, Panel.{" "}
                         {bookmark.page_number})
                       </span>
                     </Button>

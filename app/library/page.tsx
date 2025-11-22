@@ -4,15 +4,22 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useBookmarks } from "@/hooks/use-bookmarks";
+import { useMangas } from "@/hooks/use-mangas";
 import { useAuth } from "@/lib/auth-context";
-import { trendingMangas } from "@/lib/mock-data";
 import { FavoritedCard } from "@/components/favorited-card";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Star, Trash2, Search, ArrowRight } from "lucide-react";
+import {
+  Star,
+  Trash2,
+  Search,
+  ArrowRight,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { RatingComponent } from "@/components/rating-component";
 import { useRouter } from "next/navigation";
@@ -30,6 +37,19 @@ export default function LibraryPage() {
     removeBookmark,
     isLoaded: bookLoaded,
   } = useBookmarks(user?.id || null);
+
+  // Extract manga IDs from favorites and bookmarks
+  const favoriteMangaIds = favorites.map((f) => f.manga_id);
+  const bookmarkMangaIds = bookmarks.map((b) => b.manga_id);
+
+  // Fetch mangas from Supabase
+  const {
+    favoriteMangas,
+    bookmarkedMangas,
+    isLoading: mangasLoading,
+    error: mangasError,
+  } = useMangas(user?.id || null, favoriteMangaIds, bookmarkMangaIds);
+
   const [isClient, setIsClient] = useState(false);
   const [activeTab, setActiveTab] = useState<"favorites" | "bookmarks">(
     "bookmarks"
@@ -41,16 +61,6 @@ export default function LibraryPage() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  // Extract manga IDs from favorites and bookmarks
-  const favoriteMangaIds = favorites.map((f) => f.manga_id);
-  const favoriteMangas = trendingMangas.filter((m) =>
-    favoriteMangaIds.includes(m.id)
-  );
-
-  const bookmarkedMangas = trendingMangas.filter((m) =>
-    bookmarks.some((b) => b.manga_id === m.id)
-  );
 
   // Filter by search query
   const filteredFavorites = useMemo(() => {
@@ -91,19 +101,27 @@ export default function LibraryPage() {
     chapterNumber: number,
     panelNumber: number
   ) => {
-    // Navigate to the chapter with panel as query parameter
     router.push(
       `/manga/${mangaId}/chapter/${chapterNumber}?panel=${panelNumber}`
     );
   };
 
-  if (!isClient || !favLoaded || !bookLoaded) {
+  // Loading state - improved
+  if (!isClient || !favLoaded || !bookLoaded || mangasLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="flex flex-col min-h-screen bg-background">
         <Header />
-        <main className="container mx-auto px-4 py-12">
-          <div className="text-center">
-            <p className="text-muted-foreground">Loading your library...</p>
+        <main className="flex-1 flex items-center justify-center container mx-auto px-4 py-12">
+          <div className="text-center space-y-4">
+            <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold">
+                Loading your library...
+              </h2>
+              <p className="text-muted-foreground">
+                Please wait while we fetch your manga collection
+              </p>
+            </div>
           </div>
         </main>
         <Footer />
@@ -111,10 +129,37 @@ export default function LibraryPage() {
     );
   }
 
+  // Error state
+  if (mangasError) {
+    return (
+      <div className="flex flex-col min-h-screen bg-background">
+        <Header />
+        <main className="flex-1 container mx-auto px-4 py-12">
+          <Card className="p-8 bg-card/50 border-destructive/30 backdrop-blur-sm max-w-2xl mx-auto">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertCircle className="w-6 h-6 text-destructive" />
+              <h2 className="text-xl font-semibold text-destructive">
+                Error Loading Library
+              </h2>
+            </div>
+            <p className="text-muted-foreground mb-4">{mangasError}</p>
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-gradient-to-r from-primary to-secondary"
+            >
+              Retry
+            </Button>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-12">
+      <main className="flex-1 container mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -226,7 +271,8 @@ export default function LibraryPage() {
           )
         ) : displayedMangas.length > 0 ? (
           <>
-            <div className="space-y-4 mb-12">
+            {/* 2-column grid on large screens for bookmarks */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-12">
               {displayedMangas.map((manga) => {
                 const bookmark = bookmarks.find((b) => b.manga_id === manga.id);
                 return (
@@ -245,16 +291,16 @@ export default function LibraryPage() {
                           className="w-24 h-32 object-cover rounded"
                         />
                       </Link>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <Link href={`/manga/${manga.id}`}>
-                          <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
+                          <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors truncate">
                             {manga.title}
                           </h3>
                         </Link>
-                        <p className="text-sm text-muted-foreground mb-2">
+                        <p className="text-sm text-muted-foreground mb-2 truncate">
                           {manga.author}
                         </p>
-                        <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center gap-4 mb-4 flex-wrap">
                           <div className="flex items-center gap-1">
                             <Star className="w-4 h-4 fill-primary text-primary" />
                             <span className="text-sm">{manga.rating}</span>
@@ -273,7 +319,7 @@ export default function LibraryPage() {
                         <div className="flex gap-2">
                           <Button
                             size="sm"
-                            className="bg-gradient-to-r from-primary to-secondary"
+                            className="bg-gradient-to-r from-primary to-secondary flex-1"
                             onClick={() =>
                               handleContinueReading(
                                 manga.id,
