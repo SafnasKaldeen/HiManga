@@ -6,7 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AuthProvider } from "@/lib/auth-context";
 import { NotificationsProvider } from "@/lib/notifications-context";
 import "./globals.css";
-import { ServiceWorkerProvider } from "@/components/ServiceWorkerProvider";
+// import { ServiceWorkerProvider } from "@/components/ServiceWorkerProvider";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -105,7 +105,7 @@ export default function RootLayout({
         <meta name="favicon" content="/favicon.ico" />
       </head>
       <body className="font-sans antialiased overflow-x-hidden w-full max-w-[100vw]">
-        <ServiceWorkerProvider />
+        {/* <ServiceWorkerProvider /> */}
         <AuthProvider>
           <NotificationsProvider>
             <div className="overflow-x-hidden w-full">{children}</div>
