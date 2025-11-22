@@ -38,22 +38,22 @@ export function AnimeCard({ manga }: AnimeCardProps) {
         isLocked ? "cursor-not-allowed" : "cursor-pointer hover:scale-[1.03]"
       }`}
     >
-      <Link
-        href={isLocked ? "#" : `/manga/${manga.id}`}
-        onClick={(e) => {
-          if (isLocked) e.preventDefault();
-        }}
+      <Card
+        className={`overflow-hidden h-full flex flex-col group relative p-0
+          bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95
+          border border-white/10 backdrop-blur-xl
+          transition-all duration-500 ease-out
+          ${
+            isLocked
+              ? "hover:shadow-none"
+              : "hover:shadow-2xl hover:shadow-pink-500/25 hover:border-pink-500/60 hover:-translate-y-2"
+          }`}
       >
-        <Card
-          className={`overflow-hidden h-full flex flex-col group relative p-0
-            bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95
-            border border-white/10 backdrop-blur-xl
-            transition-all duration-500 ease-out
-            ${
-              isLocked
-                ? "hover:shadow-none"
-                : "hover:shadow-2xl hover:shadow-pink-500/25 hover:border-pink-500/60 hover:-translate-y-2"
-            }`}
+        <Link
+          href={isLocked ? "#" : `/manga/${manga.id}`}
+          onClick={(e) => {
+            if (isLocked) e.preventDefault();
+          }}
         >
           {/* Animated glow effect on hover */}
           {!isLocked && (
@@ -179,13 +179,6 @@ export function AnimeCard({ manga }: AnimeCardProps) {
               </p>
             </div>
 
-            {/* Rating Component - Hidden on mobile */}
-            {!isLocked && (
-              <div className="hidden sm:block py-2 border-t border-white/10">
-                <RatingComponent mangaId={manga.id} />
-              </div>
-            )}
-
             {/* Enhanced Stats - Responsive sizing */}
             <div
               className={`flex items-center justify-between gap-2 sm:gap-3 text-[10px] sm:text-xs mt-auto pt-2 sm:pt-3 border-t border-white/10
@@ -212,13 +205,22 @@ export function AnimeCard({ manga }: AnimeCardProps) {
               </div>
             </div>
           </div>
+        </Link>
 
-          {/* Bottom accent line */}
-          {!isLocked && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-pink-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          )}
-        </Card>
-      </Link>
+        {/* Rating Component - Outside Link, Hidden on mobile */}
+        {!isLocked && (
+          <div className="hidden sm:block px-3 sm:px-4 pb-3 sm:pb-4 relative z-10">
+            <div className="py-2 border-t border-white/10">
+              <RatingComponent mangaId={manga.id} />
+            </div>
+          </div>
+        )}
+
+        {/* Bottom accent line */}
+        {!isLocked && (
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-pink-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        )}
+      </Card>
     </div>
   );
 }
