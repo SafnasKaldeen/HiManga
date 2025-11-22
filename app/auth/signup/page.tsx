@@ -75,7 +75,7 @@ export default function SignupPage() {
           <div className="flex items-center justify-center gap-2 mb-8">
             <div className="p-2 bg-gradient-to-br from-secondary to-primary rounded-lg">
               <Image
-                src="/logo-white.svg"
+                src="/logo.png"
                 alt="HiManga Logo"
                 width={32}
                 height={32}
