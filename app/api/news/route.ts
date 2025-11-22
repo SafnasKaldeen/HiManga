@@ -1,10 +1,32 @@
 // app/api/news/route.js
 import { createClient } from '@supabase/supabase-js';
 
+// NEVER put fallback secrets in code.
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ppfbpmbomksqlgojwdhr.supabase.co',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZmJwbWJvbWtzcWxnb2p3ZGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4NTQ5NDMsImV4cCI6MjA3NjQzMDk0M30.5j7kSkZhoMZgvCGcxdG2phuoN3dwout3JgD1i1cUqaY'
+  process.env.NEXT_PUBLIC_SUPESUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPESUPABASE_ANON_KEY
 );
+
+// Utility to sanitize Google News URLs
+function sanitizeGoogleNewsURL(url) {
+  try {
+    if (!url) return url;
+
+    // If URL is a Google "sorry" redirect, extract the actual article URL
+    const parsed = new URL(url);
+    if (parsed.hostname === 'www.google.com' && parsed.pathname.startsWith('/sorry/index')) {
+      const continueParam = parsed.searchParams.get('continue');
+      if (continueParam) {
+        return decodeURIComponent(continueParam);
+      }
+    }
+
+    return url; // If normal URL, just return
+  } catch (err) {
+    console.warn('Failed to sanitize URL:', url, err);
+    return url; // fallback
+  }
+}
 
 export async function GET(request) {
   try {
@@ -13,8 +35,6 @@ export async function GET(request) {
     const max = parseInt(searchParams.get('max') || '50', 10);
 
     // Fetch articles from Supabase
-    // Order by published_at descending (newest first)
-    // Filter by query and only get non-expired articles
     const { data, error } = await supabase
       .from('news_articles')
       .select('*')
@@ -39,27 +59,30 @@ export async function GET(request) {
       });
     }
 
-    // Transform Supabase data to match expected frontend format
+    // Transform data and sanitize URLs
     const articles = data.map((article) => ({
       title: article.title || 'Untitled',
       description: article.published_text || 'No description available',
-      url: article.article_url,
-      image_url: article.image_url || null, // Keep as image_url to match frontend
+      url: sanitizeGoogleNewsURL(article.article_url),
+      image_url: article.image_url || null,
       publishedAt: article.published_at,
       source: {
         name: article.publisher || 'Unknown Source',
-        url: article.article_url
+        url: sanitizeGoogleNewsURL(article.article_url)
       }
     }));
 
-    return Response.json({
-      totalArticles: articles.length,
-      articles: articles
-    }, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+    return Response.json(
+      {
+        totalArticles: articles.length,
+        articles
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+        }
       }
-    });
+    );
 
   } catch (err) {
     console.error('API error:', err);
