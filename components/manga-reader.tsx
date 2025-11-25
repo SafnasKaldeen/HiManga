@@ -44,7 +44,7 @@ export function MangaReader({
   totalPanels: providedTotalPanels,
   previousChapter,
   nextChapter,
-  totalChapters = 2000,
+  totalChapters = 1200,
 }: MangaReaderProps) {
   const { user } = useAuth();
   const { addBookmark } = useBookmarks(user?.id || null);
