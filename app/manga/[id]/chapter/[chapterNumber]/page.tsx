@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, use } from "react";
-import { useMangas } from "@/hooks/use-mangas";
+import { useManga } from "@/hooks/use-mangas";
 import { MangaReader } from "@/components/manga-reader";
 import { Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -19,18 +19,8 @@ export default function ChapterPage({ params }: ChapterPageProps) {
 
   const chapterNum = Number.parseFloat(chapterNumber);
 
-  // Fetch manga using the cached hook
-  const {
-    favoriteMangas: mangas,
-    isLoading,
-    error,
-  } = useMangas(
-    "system", // Use a system user ID to enable caching
-    [id], // Fetch only this manga
-    []
-  );
-
-  const manga = mangas.find((m) => m.id === id);
+  // Fetch manga and highest chapter from database
+  const { manga, highestChapter, isLoading, error } = useManga(id);
 
   // Loading state
   if (isLoading) {
@@ -44,11 +34,13 @@ export default function ChapterPage({ params }: ChapterPageProps) {
     );
   }
 
-  // FIXED: Only validate manga exists and chapter is positive
-  // Remove the upper limit check to allow reading chapters beyond manga.chapters
+  // Error or not found - validate chapter number is positive
   if (error || !manga || chapterNum < 1 || isNaN(chapterNum)) {
     notFound();
   }
+
+  // Use highest chapter from database, fallback to metadata
+  const totalChapters = highestChapter || manga.chapters;
 
   // Generate mock pages for the chapter (20 pages per chapter)
   const pages = Array.from({ length: 20 }, (_, i) => ({
@@ -59,7 +51,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   }));
 
   const previousChapter = chapterNum > 1 ? chapterNum - 1 : null;
-  const nextChapter = chapterNum + 1; // Always allow next chapter
+  const nextChapter = chapterNum + 1; // Always allow navigation to next
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
@@ -78,7 +70,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
           pages={pages}
           previousChapter={previousChapter}
           nextChapter={nextChapter}
-          totalChapters={manga.chapters + 1}
+          totalChapters={totalChapters}
         />
       </div>
     </div>
