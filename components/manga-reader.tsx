@@ -17,6 +17,7 @@ import {
   RotateCcw,
   AlertCircle,
   BookmarkCheck,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
@@ -65,10 +66,13 @@ export function MangaReader({
   const [isFetchingChapterInfo, setIsFetchingChapterInfo] = useState(
     !providedTotalPanels
   );
-  const [isDetecting, setIsDetecting] = useState(!providedTotalPanels); // Alias for compatibility
+  const [isDetecting, setIsDetecting] = useState(!providedTotalPanels);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [detectionError, setDetectionError] = useState<string | null>(null); // Alias for compatibility
+  const [detectionError, setDetectionError] = useState<string | null>(null);
   const [bookmarkSaved, setBookmarkSaved] = useState(false);
+  const [loadingPanels, setLoadingPanels] = useState<Set<number>>(new Set());
+  const [loadedPanels, setLoadedPanels] = useState<Set<number>>(new Set());
+  const [failedPanels, setFailedPanels] = useState<Set<number>>(new Set());
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [brightness, setBrightness] = useState(100);
@@ -91,6 +95,43 @@ export function MangaReader({
     return `/api/manga/image?manga=${mangaSlug}&chapter=${paddedChapter}&panel=${paddedPanel}`;
   };
 
+  // Handle panel loading states
+  const handlePanelLoadStart = (panelNumber: number) => {
+    setLoadingPanels((prev) => new Set(prev).add(panelNumber));
+  };
+
+  const handlePanelLoadSuccess = (panelNumber: number) => {
+    setLoadingPanels((prev) => {
+      const next = new Set(prev);
+      next.delete(panelNumber);
+      return next;
+    });
+    setLoadedPanels((prev) => new Set(prev).add(panelNumber));
+    setFailedPanels((prev) => {
+      const next = new Set(prev);
+      next.delete(panelNumber);
+      return next;
+    });
+  };
+
+  const handlePanelLoadError = (panelNumber: number) => {
+    setLoadingPanels((prev) => {
+      const next = new Set(prev);
+      next.delete(panelNumber);
+      return next;
+    });
+    setFailedPanels((prev) => new Set(prev).add(panelNumber));
+  };
+
+  const retryPanelLoad = (panelNumber: number) => {
+    setFailedPanels((prev) => {
+      const next = new Set(prev);
+      next.delete(panelNumber);
+      return next;
+    });
+    handlePanelLoadStart(panelNumber);
+  };
+
   // Handle panel query parameter on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -107,13 +148,12 @@ export function MangaReader({
     }
   }, []);
 
+  // Viewport-based panel observer
   useEffect(() => {
     if (isLockedChapter || displayedPanels.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the entry with the highest intersection ratio
-        // This ensures we track the panel that's MOST visible
         let mostVisibleEntry = null;
         let highestRatio = 0;
 
@@ -124,24 +164,18 @@ export function MangaReader({
           }
         });
 
-        // Only update if we found a visible entry
         if (mostVisibleEntry) {
           const panelNumber = Number(
             mostVisibleEntry.target.getAttribute("data-panel")
           );
           if (panelNumber && panelNumber !== currentVisiblePanel) {
-            console.log(
-              `Tracking panel: ${panelNumber} (ratio: ${highestRatio.toFixed(
-                2
-              )})`
-            );
             setCurrentVisiblePanel(panelNumber);
           }
         }
       },
       {
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], // Multiple thresholds for accuracy
-        rootMargin: "-10% 0px -10% 0px", // Reduced margin for better accuracy
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        rootMargin: "-10% 0px -10% 0px",
       }
     );
 
@@ -207,34 +241,48 @@ export function MangaReader({
 
   // Unified scroll to panel effect
   useEffect(() => {
-    if (
-      shouldScrollToPanel &&
-      panelRefs.current[shouldScrollToPanel] &&
-      !isFetchingChapterInfo &&
-      !isDetecting &&
-      displayedPanels.includes(shouldScrollToPanel)
-    ) {
-      const panelElement = panelRefs.current[shouldScrollToPanel];
-      if (panelElement) {
-        setTimeout(() => {
-          panelElement.scrollIntoView({
+    if (!shouldScrollToPanel) return;
+
+    const targetPanelElement = panelRefs.current[shouldScrollToPanel];
+
+    if (isFetchingChapterInfo || isDetecting) {
+      return;
+    }
+
+    if (!displayedPanels.includes(shouldScrollToPanel)) {
+      return;
+    }
+
+    if (!targetPanelElement) {
+      const retryTimeout = setTimeout(() => {
+        const retryElement = panelRefs.current[shouldScrollToPanel];
+        if (retryElement) {
+          retryElement.scrollIntoView({
             behavior: "smooth",
             block: "center",
           });
           setShouldScrollToPanel(null);
-        }, 1000);
-      }
+        }
+      }, 1500);
+
+      return () => clearTimeout(retryTimeout);
     }
+
+    const scrollTimeout = setTimeout(() => {
+      targetPanelElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      setShouldScrollToPanel(null);
+    }, 1000);
+
+    return () => clearTimeout(scrollTimeout);
   }, [
     shouldScrollToPanel,
     displayedPanels,
     isFetchingChapterInfo,
     isDetecting,
   ]);
-
-  // Fetch chapter info from API
-  // Updated fetchChapterInfo function with better error handling
-  // Replace the existing fetchChapterInfo in your MangaReader component
 
   const fetchChapterInfo = useCallback(async () => {
     if (isLockedChapter || !mangaSlug) return;
@@ -251,25 +299,14 @@ export function MangaReader({
 
       const data = await response.json();
 
-      // Handle 404 - Chapter not in database
       if (!response.ok) {
-        console.error("API Error:", data);
-
         if (response.status === 404) {
-          // Chapter doesn't exist in database - use fallback mechanism
-          console.log(
-            "Chapter not found in DB, using fallback panel detection"
-          );
-
-          // Try to load panels anyway by attempting to fetch images
-          // Start with a reasonable default (e.g., 100 panels for fallback)
           const fallbackPanelCount = 100;
           setDetectedTotalPanels(fallbackPanelCount);
 
-          // CRITICAL: If user wants to jump to a specific panel, load UP TO that panel
           const targetPanel = shouldScrollToPanel || 10;
           const panelsToLoad = Math.min(
-            Math.max(15, targetPanel + 10), // Load target + buffer
+            Math.max(15, targetPanel + 10),
             fallbackPanelCount
           );
 
@@ -279,7 +316,6 @@ export function MangaReader({
           );
           setDisplayedPanels(initialPanels);
 
-          // Show a warning but allow reading
           setFetchError(
             `Chapter ${chapter} metadata not found in database. Attempting to load panels...`
           );
@@ -290,14 +326,12 @@ export function MangaReader({
           throw new Error(data.error || "Failed to fetch chapter information");
         }
       } else {
-        // Success - use data from database
         if (data.totalPanels && data.totalPanels > 0) {
           setDetectedTotalPanels(data.totalPanels);
 
-          // CRITICAL: Ensure we load enough panels to include the target
           const targetPanel = shouldScrollToPanel || 10;
           const panelsToLoad = Math.min(
-            Math.max(15, targetPanel + 10), // Load target + buffer
+            Math.max(15, targetPanel + 10),
             data.totalPanels
           );
 
@@ -307,7 +341,6 @@ export function MangaReader({
           );
           setDisplayedPanels(initialPanels);
 
-          // Clear any previous errors
           setFetchError(null);
           setDetectionError(null);
         } else {
@@ -317,11 +350,6 @@ export function MangaReader({
         }
       }
     } catch (error) {
-      console.error("Error fetching chapter info:", error);
-
-      // Network error or other unexpected error - try fallback
-      console.log("Unexpected error, attempting fallback panel loading");
-
       const fallbackPanelCount = 100;
       setDetectedTotalPanels(fallbackPanelCount);
 
@@ -350,10 +378,9 @@ export function MangaReader({
     if (!providedTotalPanels && !isLockedChapter && mangaSlug) {
       fetchChapterInfo();
     } else if (providedTotalPanels) {
-      // Load panels up to the target panel if specified
       const targetPanel = shouldScrollToPanel || 15;
       const panelsToLoad = Math.min(
-        Math.max(15, targetPanel + 10), // Ensure target panel is loaded
+        Math.max(15, targetPanel + 10),
         providedTotalPanels
       );
 
@@ -412,59 +439,6 @@ export function MangaReader({
       setIsLoading(false);
     }, 200);
   }, [displayedPanels.length, totalPanelsToUse, isLoading, isLockedChapter]);
-
-  // IMPROVED: Unified scroll to panel effect with retry mechanism
-  useEffect(() => {
-    if (!shouldScrollToPanel) return;
-
-    const targetPanelElement = panelRefs.current[shouldScrollToPanel];
-
-    // Check if we're still loading or if panel isn't loaded yet
-    if (isFetchingChapterInfo || isDetecting) {
-      return; // Wait for chapter info to load
-    }
-
-    // If panel is not in displayed panels, it hasn't been loaded yet
-    if (!displayedPanels.includes(shouldScrollToPanel)) {
-      console.log(`Panel ${shouldScrollToPanel} not yet loaded, waiting...`);
-      return;
-    }
-
-    // If element doesn't exist in DOM yet, wait a bit
-    if (!targetPanelElement) {
-      console.log(
-        `Panel ${shouldScrollToPanel} element not in DOM yet, retrying...`
-      );
-      const retryTimeout = setTimeout(() => {
-        const retryElement = panelRefs.current[shouldScrollToPanel];
-        if (retryElement) {
-          retryElement.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-          setShouldScrollToPanel(null);
-        }
-      }, 1500);
-
-      return () => clearTimeout(retryTimeout);
-    }
-
-    // Panel is loaded and in DOM, scroll to it
-    const scrollTimeout = setTimeout(() => {
-      targetPanelElement.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-      setShouldScrollToPanel(null);
-    }, 1000);
-
-    return () => clearTimeout(scrollTimeout);
-  }, [
-    shouldScrollToPanel,
-    displayedPanels,
-    isFetchingChapterInfo,
-    isDetecting,
-  ]);
 
   useEffect(() => {
     if (isLockedChapter || isFetchingChapterInfo || isDetecting) return;
@@ -615,7 +589,6 @@ export function MangaReader({
     <div className="h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden">
       <Header />
 
-      {/* Bookmark Saved Notification */}
       {bookmarkSaved && (
         <div className="fixed top-20 right-4 z-[100] animate-in slide-in-from-right duration-300">
           <div className="bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 backdrop-blur-xl border border-cyan-400/30 rounded-lg px-4 py-3 shadow-lg shadow-cyan-500/20 flex items-center gap-3">
