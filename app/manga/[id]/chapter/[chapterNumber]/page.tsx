@@ -44,8 +44,9 @@ export default function ChapterPage({ params }: ChapterPageProps) {
     );
   }
 
-  // Error or not found
-  if (error || !manga || chapterNum < 1 || chapterNum > manga.chapters) {
+  // FIXED: Only validate manga exists and chapter is positive
+  // Remove the upper limit check to allow reading chapters beyond manga.chapters
+  if (error || !manga || chapterNum < 1 || isNaN(chapterNum)) {
     notFound();
   }
 
@@ -58,7 +59,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   }));
 
   const previousChapter = chapterNum > 1 ? chapterNum - 1 : null;
-  const nextChapter = chapterNum < manga.chapters ? chapterNum + 1 : null;
+  const nextChapter = chapterNum + 1; // Always allow next chapter
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">

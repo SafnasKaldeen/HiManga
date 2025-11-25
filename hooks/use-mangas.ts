@@ -14,7 +14,7 @@ interface UseMangasResult {
 
 // Simple in-memory cache with 1-day expiration
 const mangaCache = new Map<string, { data: Manga[], timestamp: number }>()
-const CACHE_DURATION = 24 * 60 * 60 * 1000 // 1 day in milliseconds
+const CACHE_DURATION = 1 * 60 * 60 * 1000 // 1 day in milliseconds
 
 function getCacheKey(mangaIds: string[]): string {
   return mangaIds.sort().join(',')
@@ -46,7 +46,7 @@ function setCachedMangas(mangaIds: string[], data: Manga[]): void {
     data,
     timestamp: Date.now()
   })
-  console.log("Cached mangas for 1 day:", mangaIds)
+  console.log("Cached mangas for 1 hour:", mangaIds)
 }
 
 async function fetchMangasFromDB(mangaIds: string[]): Promise<Manga[]> {
