@@ -54,6 +54,7 @@ export function ChaptersSidebar({
   const [usingFallback, setUsingFallback] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingReadStatus, setIsLoadingReadStatus] = useState(false);
+  const [maxAvailableChapter, setMaxAvailableChapter] = useState(0);
 
   const sanitizeTitle = (title: string | null) => {
     if (!title) return "";
@@ -77,6 +78,13 @@ export function ChaptersSidebar({
               : a.chapter_number - b.chapter_number
           );
           setChaptersData(sortedData);
+
+          // Calculate the actual maximum available chapter from the data
+          const maxChapter = Math.max(
+            ...data.chapters.map((ch: Chapter) => ch.chapter_number)
+          );
+          setMaxAvailableChapter(maxChapter);
+
           setUsingFallback(false);
         } else {
           generateFallbackChapters();
@@ -166,6 +174,7 @@ export function ChaptersSidebar({
       };
     });
     setChaptersData(fallbackChapters);
+    setMaxAvailableChapter(totalChapters);
     setUsingFallback(true);
   };
 
@@ -258,8 +267,22 @@ export function ChaptersSidebar({
     setIsSearchFocused(false);
   };
 
-  const isChapterLocked = (chapterNumber: number) =>
-    chapterNumber > totalChapters;
+  // FIX: Check if chapter exists in the actual chapters data, not against totalChapters prop
+  const isChapterLocked = (chapterNumber: number) => {
+    // A chapter is locked if it doesn't exist in our chaptersData
+    // This handles the case where chaptersData might have more chapters than totalChapters prop
+    if (usingFallback) {
+      // When using fallback, trust the totalChapters prop
+      return chapterNumber > totalChapters;
+    }
+
+    // When using real data, check if chapter exists AND has panels
+    const chapterExists = chaptersData.some(
+      (ch) => ch.chapter_number === chapterNumber && ch.total_panels > 0
+    );
+
+    return !chapterExists;
+  };
 
   const isChapterRead = (chapterNumber: number) =>
     readChapters.includes(chapterNumber);
@@ -280,7 +303,8 @@ export function ChaptersSidebar({
       <div className="flex-shrink-0 z-20 p-4 border-b border-cyan-500/20 bg-gradient-to-r from-slate-900/95 to-slate-900/90 backdrop-blur-md">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-            {totalChapters} Chapters
+            {maxAvailableChapter > 0 ? maxAvailableChapter : totalChapters}{" "}
+            Chapters
           </h2>
           {readChapters.length > 0 && (
             <div className="flex items-center gap-1.5 text-xs text-emerald-400/80">
