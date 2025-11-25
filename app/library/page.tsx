@@ -27,25 +27,26 @@ import { useRouter } from "next/navigation";
 export default function LibraryPage() {
   const router = useRouter();
   const { user } = useAuth();
+
+  // Always default to empty arrays to prevent SSR crashes
   const {
-    favorites,
+    favorites = [],
     removeFavorite,
     isLoaded: favLoaded,
   } = useFavorites(user?.id || null);
+
   const {
-    bookmarks,
+    bookmarks = [],
     removeBookmark,
     isLoaded: bookLoaded,
   } = useBookmarks(user?.id || null);
 
-  // Extract manga IDs from favorites and bookmarks
   const favoriteMangaIds = favorites.map((f) => f.manga_id);
   const bookmarkMangaIds = bookmarks.map((b) => b.manga_id);
 
-  // Fetch mangas from Supabase
   const {
-    favoriteMangas,
-    bookmarkedMangas,
+    favoriteMangas = [],
+    bookmarkedMangas = [],
     isLoading: mangasLoading,
     error: mangasError,
   } = useMangas(user?.id || null, favoriteMangaIds, bookmarkMangaIds);
@@ -62,13 +63,13 @@ export default function LibraryPage() {
     setIsClient(true);
   }, []);
 
-  // Filter by search query
+  // Filter with SSR-safe arrays
   const filteredFavorites = useMemo(() => {
     if (!searchQuery) return favoriteMangas;
     return favoriteMangas.filter(
       (m) =>
-        m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.author.toLowerCase().includes(searchQuery.toLowerCase())
+        m.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.author?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, favoriteMangas]);
 
@@ -76,13 +77,14 @@ export default function LibraryPage() {
     if (!searchQuery) return bookmarkedMangas;
     return bookmarkedMangas.filter(
       (m) =>
-        m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.author.toLowerCase().includes(searchQuery.toLowerCase())
+        m.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.author?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, bookmarkedMangas]);
 
   const currentMangas =
     activeTab === "favorites" ? filteredFavorites : filteredBookmarks;
+
   const displayedMangas = currentMangas.slice(0, displayedItems);
   const hasMore = displayedItems < currentMangas.length;
 
@@ -106,7 +108,7 @@ export default function LibraryPage() {
     );
   };
 
-  // Loading state - improved
+  // Loading screen
   if (!isClient || !favLoaded || !bookLoaded || mangasLoading) {
     return (
       <div className="flex flex-col min-h-screen bg-background">
@@ -160,7 +162,7 @@ export default function LibraryPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-12">
-        {/* Header */}
+        {/* Title */}
         <div className="mb-12">
           <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             My Library
@@ -170,9 +172,8 @@ export default function LibraryPage() {
           </p>
         </div>
 
-        {/* Tabs and Search */}
+        {/* Tabs + Search */}
         <div className="mb-8 space-y-6">
-          {/* Tab Buttons */}
           <div className="flex gap-2 overflow-x-auto pb-2">
             <button
               onClick={() => handleTabChange("favorites")}
@@ -184,6 +185,7 @@ export default function LibraryPage() {
             >
               Favorites ({favorites.length})
             </button>
+
             <button
               onClick={() => handleTabChange("bookmarks")}
               className={`px-6 py-3 rounded-full font-medium text-sm whitespace-nowrap transition-all cursor-pointer ${
@@ -196,7 +198,6 @@ export default function LibraryPage() {
             </button>
           </div>
 
-          {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
@@ -217,7 +218,7 @@ export default function LibraryPage() {
           </div>
         )}
 
-        {/* Content */}
+        {/* FAVORITES */}
         {activeTab === "favorites" ? (
           displayedMangas.length > 0 ? (
             <>
@@ -239,9 +240,7 @@ export default function LibraryPage() {
                     onClick={handleLoadMore}
                     className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500/50 text-pink-500 rounded-full font-bold px-8"
                   >
-                    <span className="hidden sm:inline">Load More Manga</span>
-                    <span className="sm:hidden">Load More</span>
-                    <ArrowRight className="w-4 h-4" />
+                    Load More <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
               )}
@@ -269,12 +268,13 @@ export default function LibraryPage() {
               )}
             </Card>
           )
-        ) : displayedMangas.length > 0 ? (
+        ) : /* BOOKMARKS */
+        displayedMangas.length > 0 ? (
           <>
-            {/* 2-column grid on large screens for bookmarks */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-12">
               {displayedMangas.map((manga) => {
                 const bookmark = bookmarks.find((b) => b.manga_id === manga.id);
+
                 return (
                   <Card
                     key={manga.id}
@@ -291,20 +291,24 @@ export default function LibraryPage() {
                           className="w-24 h-32 object-cover rounded"
                         />
                       </Link>
+
                       <div className="flex-1 min-w-0">
                         <Link href={`/manga/${manga.id}`}>
                           <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors truncate">
                             {manga.title}
                           </h3>
                         </Link>
+
                         <p className="text-sm text-muted-foreground mb-2 truncate">
                           {manga.author}
                         </p>
+
                         <div className="flex items-center gap-4 mb-4 flex-wrap">
                           <div className="flex items-center gap-1">
                             <Star className="w-4 h-4 fill-primary text-primary" />
                             <span className="text-sm">{manga.rating}</span>
                           </div>
+
                           <Badge
                             variant="outline"
                             className="bg-white/5 border-white/10"
@@ -313,9 +317,11 @@ export default function LibraryPage() {
                             {bookmark?.page_number}
                           </Badge>
                         </div>
+
                         <div className="mb-3 pb-3 border-b border-white/10">
                           <RatingComponent mangaId={manga.id} />
                         </div>
+
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -330,11 +336,12 @@ export default function LibraryPage() {
                           >
                             Continue Reading
                           </Button>
+
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => removeBookmark(manga.id)}
-                            className="gap-2 bg-transparent border-white/10 hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive transition-colors"
+                            className="gap-2 bg-transparent border-white/10 hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -354,9 +361,7 @@ export default function LibraryPage() {
                   onClick={handleLoadMore}
                   className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500/50 text-pink-500 rounded-full font-bold px-8"
                 >
-                  <span className="hidden sm:inline">Load More Bookmarks</span>
-                  <span className="sm:hidden">Load More</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Load More <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
             )}
@@ -368,6 +373,7 @@ export default function LibraryPage() {
                 ? "No bookmarks found matching your search"
                 : "No bookmarks yet"}
             </p>
+
             {searchQuery ? (
               <Button
                 onClick={() => setSearchQuery("")}
