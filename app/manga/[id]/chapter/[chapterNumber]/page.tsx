@@ -78,7 +78,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
           pages={pages}
           previousChapter={previousChapter}
           nextChapter={nextChapter}
-          totalChapters={manga.chapters + 1}
+          totalChapters={1166}
         />
       </div>
     </div>
