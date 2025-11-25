@@ -10,32 +10,7 @@ import Image from "next/image";
 
 export default function NotificationsPanel() {
   // Mock data - replace with useNotifications hook
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: "new_chapter",
-      title: "NEW QUEST AVAILABLE",
-      message: "Chapter 157 of 'Shadow Monarch' has been released",
-      timestamp: new Date().toISOString(),
-      read: false,
-    },
-    {
-      id: 2,
-      type: "favorite",
-      title: "ACHIEVEMENT UNLOCKED",
-      message: "Your favorite manga reached 1M views",
-      timestamp: new Date(Date.now() - 3600000).toISOString(),
-      read: false,
-    },
-    {
-      id: 3,
-      type: "donation",
-      title: "REWARD RECEIVED",
-      message: "You received 500 coins from a supporter",
-      timestamp: new Date(Date.now() - 7200000).toISOString(),
-      read: true,
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
 
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
