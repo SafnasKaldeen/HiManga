@@ -17,7 +17,6 @@ import {
   RotateCcw,
   AlertCircle,
   BookmarkCheck,
-  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { ChaptersSidebar } from "@/components/chapters-sidebar";
@@ -72,7 +71,6 @@ export function MangaReader({
   const [bookmarkSaved, setBookmarkSaved] = useState(false);
   const [loadingPanels, setLoadingPanels] = useState<Set<number>>(new Set());
   const [loadedPanels, setLoadedPanels] = useState<Set<number>>(new Set());
-  const [failedPanels, setFailedPanels] = useState<Set<number>>(new Set());
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [brightness, setBrightness] = useState(100);
@@ -86,6 +84,7 @@ export function MangaReader({
   const bookmarkTimerRef = useRef<NodeJS.Timeout | null>(null);
   const panelUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
   const panelRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const imageObserverRef = useRef<IntersectionObserver | null>(null);
 
   const isLockedChapter = chapter > totalChapters;
 
@@ -95,64 +94,34 @@ export function MangaReader({
     return `/api/manga/image?manga=${mangaSlug}&chapter=${paddedChapter}&panel=${paddedPanel}`;
   };
 
-  // Handle panel loading states
-  const handlePanelLoadStart = (panelNumber: number) => {
+  // Handle panel loading state
+  const handleImageLoadStart = (panelNumber: number) => {
     setLoadingPanels((prev) => new Set(prev).add(panelNumber));
   };
 
-  const handlePanelLoadSuccess = (panelNumber: number) => {
+  const handleImageLoadComplete = (panelNumber: number) => {
     setLoadingPanels((prev) => {
-      const next = new Set(prev);
-      next.delete(panelNumber);
-      return next;
+      const newSet = new Set(prev);
+      newSet.delete(panelNumber);
+      return newSet;
     });
     setLoadedPanels((prev) => new Set(prev).add(panelNumber));
-    setFailedPanels((prev) => {
-      const next = new Set(prev);
-      next.delete(panelNumber);
-      return next;
-    });
   };
 
-  const handlePanelLoadError = (panelNumber: number) => {
+  const handleImageLoadError = (panelNumber: number) => {
     setLoadingPanels((prev) => {
-      const next = new Set(prev);
-      next.delete(panelNumber);
-      return next;
+      const newSet = new Set(prev);
+      newSet.delete(panelNumber);
+      return newSet;
     });
-    setFailedPanels((prev) => new Set(prev).add(panelNumber));
   };
 
-  const retryPanelLoad = (panelNumber: number) => {
-    setFailedPanels((prev) => {
-      const next = new Set(prev);
-      next.delete(panelNumber);
-      return next;
-    });
-    handlePanelLoadStart(panelNumber);
-  };
-
-  // Handle panel query parameter on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const panelParam = urlParams.get("panel");
-
-      if (panelParam) {
-        const panelNumber = parseInt(panelParam, 10);
-        if (!isNaN(panelNumber) && panelNumber > 0) {
-          setShouldScrollToPanel(panelNumber);
-          setCurrentVisiblePanel(panelNumber);
-        }
-      }
-    }
-  }, []);
-
-  // Viewport-based panel observer
+  // Enhanced intersection observer for viewport prioritization
   useEffect(() => {
     if (isLockedChapter || displayedPanels.length === 0) return;
 
-    const observer = new IntersectionObserver(
+    // Observer for panel visibility tracking
+    const visibilityObserver = new IntersectionObserver(
       (entries) => {
         let mostVisibleEntry = null;
         let highestRatio = 0;
@@ -179,12 +148,58 @@ export function MangaReader({
       }
     );
 
+    // Observer for image loading prioritization
+    const imageObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            if (!img.src && img.dataset.src) {
+              img.src = img.dataset.src;
+            }
+          }
+        });
+      },
+      {
+        rootMargin: "50% 0px", // Load images when they're 50% away from viewport
+        threshold: 0.1,
+      }
+    );
+
+    imageObserverRef.current = imageObserver;
+
+    // Observe all panels and images
     Object.values(panelRefs.current).forEach((ref) => {
-      if (ref) observer.observe(ref);
+      if (ref) {
+        visibilityObserver.observe(ref);
+        const img = ref.querySelector("img[data-src]");
+        if (img) {
+          imageObserver.observe(img);
+        }
+      }
     });
 
-    return () => observer.disconnect();
+    return () => {
+      visibilityObserver.disconnect();
+      imageObserver.disconnect();
+    };
   }, [displayedPanels, isLockedChapter, currentVisiblePanel]);
+
+  // Handle panel query parameter on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const panelParam = urlParams.get("panel");
+
+      if (panelParam) {
+        const panelNumber = parseInt(panelParam, 10);
+        if (!isNaN(panelNumber) && panelNumber > 0) {
+          setShouldScrollToPanel(panelNumber);
+          setCurrentVisiblePanel(panelNumber);
+        }
+      }
+    }
+  }, []);
 
   // Initial bookmark save after 20 seconds (with notification)
   useEffect(() => {
@@ -239,7 +254,7 @@ export function MangaReader({
     isLockedChapter,
   ]);
 
-  // Unified scroll to panel effect
+  // Unified scroll to panel effect with retry mechanism
   useEffect(() => {
     if (!shouldScrollToPanel) return;
 
@@ -250,10 +265,14 @@ export function MangaReader({
     }
 
     if (!displayedPanels.includes(shouldScrollToPanel)) {
+      console.log(`Panel ${shouldScrollToPanel} not yet loaded, waiting...`);
       return;
     }
 
     if (!targetPanelElement) {
+      console.log(
+        `Panel ${shouldScrollToPanel} element not in DOM yet, retrying...`
+      );
       const retryTimeout = setTimeout(() => {
         const retryElement = panelRefs.current[shouldScrollToPanel];
         if (retryElement) {
@@ -284,6 +303,7 @@ export function MangaReader({
     isDetecting,
   ]);
 
+  // Fetch chapter info from API
   const fetchChapterInfo = useCallback(async () => {
     if (isLockedChapter || !mangaSlug) return;
 
@@ -300,6 +320,8 @@ export function MangaReader({
       const data = await response.json();
 
       if (!response.ok) {
+        console.error("API Error:", data);
+
         if (response.status === 404) {
           const fallbackPanelCount = 100;
           setDetectedTotalPanels(fallbackPanelCount);
@@ -350,6 +372,8 @@ export function MangaReader({
         }
       }
     } catch (error) {
+      console.error("Error fetching chapter info:", error);
+
       const fallbackPanelCount = 100;
       setDetectedTotalPanels(fallbackPanelCount);
 
@@ -585,10 +609,35 @@ export function MangaReader({
     panelWidth !== 80 ||
     scrollSpeed !== 50;
 
+  // Loading UI component for panels
+  const PanelLoadingPlaceholder = ({
+    panelNumber,
+  }: {
+    panelNumber: number;
+  }) => (
+    <div className="relative group overflow-hidden shadow-2xl border border-cyan-500/20 bg-slate-800/50 animate-pulse">
+      <div className="w-full aspect-[3/4] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+          <div className="text-center">
+            <p className="text-sm text-slate-300 font-medium">
+              Loading Panel {panelNumber}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Please wait...</p>
+          </div>
+        </div>
+      </div>
+      <div className="absolute bottom-2 right-2 bg-slate-900/80 backdrop-blur px-2 py-1 rounded text-xs text-slate-300">
+        Loading...
+      </div>
+    </div>
+  );
+
   return (
     <div className="h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden">
       <Header />
 
+      {/* Bookmark Saved Notification */}
       {bookmarkSaved && (
         <div className="fixed top-20 right-4 z-[100] animate-in slide-in-from-right duration-300">
           <div className="bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 backdrop-blur-xl border border-cyan-400/30 rounded-lg px-4 py-3 shadow-lg shadow-cyan-500/20 flex items-center gap-3">
@@ -1235,17 +1284,23 @@ export function MangaReader({
                       data-panel={panelNumber}
                       className="relative group overflow-hidden shadow-2xl border border-cyan-500/20 hover:border-cyan-400 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
                     >
-                      <img
-                        src={getOptimizedPanelUrl(panelNumber)}
-                        alt={`Panel ${panelNumber}`}
-                        className="w-full h-auto"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.src = "/placeholder.svg";
-                        }}
-                      />
+                      {loadingPanels.has(panelNumber) ? (
+                        <PanelLoadingPlaceholder panelNumber={panelNumber} />
+                      ) : (
+                        <img
+                          src={getOptimizedPanelUrl(panelNumber)}
+                          alt={`Panel ${panelNumber}`}
+                          className="w-full h-auto"
+                          loading="lazy"
+                          data-src={getOptimizedPanelUrl(panelNumber)}
+                          onLoadStart={() => handleImageLoadStart(panelNumber)}
+                          onLoad={() => handleImageLoadComplete(panelNumber)}
+                          onError={() => handleImageLoadError(panelNumber)}
+                        />
+                      )}
                       <div className="absolute bottom-2 right-2 bg-slate-900/80 backdrop-blur px-2 py-1 rounded text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">
                         Panel {panelNumber} / {totalPanelsToUse}
+                        {loadingPanels.has(panelNumber) && " (Loading...)"}
                       </div>
                     </div>
                   ))}
