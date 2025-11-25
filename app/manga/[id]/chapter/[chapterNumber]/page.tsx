@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, use } from "react";
-import { useManga } from "@/hooks/use-mangas";
+import { useMangas } from "@/hooks/use-mangas";
 import { MangaReader } from "@/components/manga-reader";
 import { Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -20,7 +20,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   const chapterNum = Number.parseFloat(chapterNumber);
 
   // Fetch manga and highest chapter from database
-  const { manga, highestChapter, isLoading, error } = useManga(id);
+  const { manga, highestChapter, isLoading, error } = useMangas(id);
 
   // Loading state
   if (isLoading) {

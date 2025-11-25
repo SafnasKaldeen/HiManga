@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import type { Manga } from "@/lib/mock-data"
 
-interface UseManga {
+interface UseMangas {
   manga: Manga | null
   highestChapter: number | null
   isLoading: boolean
@@ -17,9 +17,9 @@ const singleMangaCache = new Map<string, {
   highestChapter: number
   timestamp: number 
 }>()
-const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes
+const CACHE_DURATION = 60 * 60 * 1000 // 1 hour
 
-export function useManga(mangaId: string): UseManga {
+export function useMangas(mangaId: string): UseMangas {
   const [manga, setManga] = useState<Manga | null>(null)
   const [highestChapter, setHighestChapter] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
