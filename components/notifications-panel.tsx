@@ -32,33 +32,33 @@ const generateNotifications = () => {
     {
       id: "1",
       type: "new_chapter",
-      title: "⚔️ NEW QUEST AVAILABLE",
-      message: `Chapter 179 of '${manga[0]}' has been released. The Shadow Army awaits!`,
+      title: "📚 NEW CHAPTER RELEASED",
+      message: `Chapter 179 of '${manga[0]}' has been released!`,
       timestamp: new Date(now - 5 * 60000).toISOString(),
       read: false,
     },
     {
       id: "2",
       type: "new_chapter",
-      title: "⚔️ THE JOURNEY CONTINUES",
-      message: `Chapter 1095 of '${manga[10]}' is now available. Set sail with the crew!`,
+      title: "📚 NEW CHAPTER AVAILABLE",
+      message: `Chapter 1095 of '${manga[10]}' is now available to read!`,
       timestamp: new Date(now - 15 * 60000).toISOString(),
       read: false,
     },
     {
       id: "3",
       type: "new_chapter",
-      title: "⚔️ NEW DUNGEON DISCOVERED",
-      message: `Chapter 523 of '${manga[1]}' just dropped. Climb higher, Hunter!`,
+      title: "📚 LATEST CHAPTER",
+      message: `Chapter 523 of '${manga[1]}' just dropped!`,
       timestamp: new Date(now - 30 * 60000).toISOString(),
       read: false,
     },
     {
       id: "4",
       type: "rank_up",
-      title: "👑 RANK UP!",
+      title: "⭐ LEVEL UP!",
       message:
-        "You've ascended from E-Rank Hunter to D-Rank Hunter! New abilities unlocked.",
+        "You've leveled up to Reader Level 5! Keep up the great progress.",
       timestamp: new Date(now - 45 * 60000).toISOString(),
       read: false,
     },
@@ -66,23 +66,23 @@ const generateNotifications = () => {
       id: "5",
       type: "milestone",
       title: "🏆 ACHIEVEMENT UNLOCKED",
-      message: "You've read 1,000 panels! The System rewards you with 500 XP.",
+      message: "You've read 1,000 chapters! Here's 500 bonus points.",
       timestamp: new Date(now - 60 * 60000).toISOString(),
       read: false,
     },
     {
       id: "6",
       type: "continue_reading",
-      title: "📖 YOUR QUEST AWAITS",
-      message: `You left off at Chapter 45 of '${manga[4]}'. Continue your journey!`,
+      title: "📖 CONTINUE READING",
+      message: `You left off at Chapter 45 of '${manga[4]}'. Pick up where you left off!`,
       timestamp: new Date(now - 90 * 60000).toISOString(),
       read: false,
     },
     {
       id: "7",
       type: "daily_login",
-      title: "⭐ DAILY QUEST COMPLETED",
-      message: "Welcome back, Hunter! Daily login reward: 50 XP claimed!",
+      title: "⭐ DAILY LOGIN BONUS",
+      message: "Welcome back! Daily login reward: 50 points claimed!",
       timestamp: new Date(now - 120 * 60000).toISOString(),
       read: false,
     },
@@ -90,7 +90,8 @@ const generateNotifications = () => {
       id: "8",
       type: "reading_streak",
       title: "🔥 7-DAY STREAK!",
-      message: "The System rewards your dedication! Bonus 350 XP earned!",
+      message:
+        "Amazing dedication! Keep it up for bonus rewards. 350 points earned!",
       timestamp: new Date(now - 150 * 60000).toISOString(),
       read: false,
     },
@@ -98,14 +99,14 @@ const generateNotifications = () => {
       id: "9",
       type: "popular_chapter",
       title: "🔥 TRENDING NOW!",
-      message: `Chapter 180 of '${manga[0]}' - 50K+ hunters reading right now!`,
+      message: `Chapter 180 of '${manga[0]}' - 50K+ readers right now!`,
       timestamp: new Date(now - 2 * 3600000).toISOString(),
       read: false,
     },
     {
       id: "10",
       type: "catch_up",
-      title: "⚠️ YOU'RE FALLING BEHIND!",
+      title: "⚠️ NEW CHAPTERS AVAILABLE",
       message: `5 new chapters of '${manga[0]}' released! Time to catch up!`,
       timestamp: new Date(now - 3 * 3600000).toISOString(),
       read: false,
@@ -113,25 +114,24 @@ const generateNotifications = () => {
     {
       id: "11",
       type: "weekend_binge",
-      title: "🎯 WEEKEND RAID EVENT",
-      message:
-        "Double XP active for 48 hours! Time to marathon your favorites!",
+      title: "🎯 WEEKEND SPECIAL EVENT",
+      message: "Double points active for 48 hours! Perfect time to binge read!",
       timestamp: new Date(now - 4 * 3600000).toISOString(),
       read: false,
     },
     {
       id: "12",
       type: "power_hour",
-      title: "⚡ POWER HOUR ACTIVE",
-      message: "Triple XP for the next 60 minutes! The System is generous!",
+      title: "⚡ BONUS HOUR ACTIVE",
+      message: "Triple points for the next 60 minutes! Happy reading!",
       timestamp: new Date(now - 5 * 3600000).toISOString(),
       read: false,
     },
     {
       id: "13",
       type: "new_chapter",
-      title: "⚔️ QUEST UPDATE",
-      message: `Chapter 145 of '${manga[2]}' is here. Your power grows!`,
+      title: "📚 NEW CHAPTER",
+      message: `Chapter 145 of '${manga[2]}' is here!`,
       timestamp: new Date(now - 6 * 3600000).toISOString(),
       read: true,
     },
@@ -139,7 +139,7 @@ const generateNotifications = () => {
       id: "14",
       type: "milestone",
       title: "🏆 MILESTONE REACHED",
-      message: "10 manga completed! You're a true Hunter. +1000 XP!",
+      message: "10 manga completed! Amazing progress. +1000 points!",
       timestamp: new Date(now - 7 * 3600000).toISOString(),
       read: true,
     },
@@ -147,80 +147,79 @@ const generateNotifications = () => {
       id: "15",
       type: "challenge",
       title: "🎯 WEEKLY CHALLENGE",
-      message: "Read 25 chapters this week to unlock 500 bonus XP!",
+      message: "Read 25 chapters this week to unlock 500 bonus points!",
       timestamp: new Date(now - 8 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "16",
       type: "recommendation",
-      title: "💎 NEW MANGA DETECTED",
-      message: `Based on your S-Rank taste, try '${manga[9]}'!`,
+      title: "💎 RECOMMENDED FOR YOU",
+      message: `Based on your reading history, you might enjoy '${manga[9]}'!`,
       timestamp: new Date(now - 10 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "17",
       type: "social_proof",
-      title: "👥 JOIN THE RAID",
-      message: `999+ hunters reading '${manga[16]}' now. Don't miss out!`,
+      title: "👥 POPULAR NOW",
+      message: `999+ readers enjoying '${manga[16]}' right now!`,
       timestamp: new Date(now - 12 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "18",
       type: "new_chapter",
-      title: "⚔️ THE STORY UNFOLDS",
-      message: `Chapter 167 of '${manga[3]}' awaits. Kim Dokja's scenario continues!`,
+      title: "📚 NEW CHAPTER",
+      message: `Chapter 167 of '${manga[3]}' is available now!`,
       timestamp: new Date(now - 14 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "19",
       type: "rank_up",
-      title: "👑 POWER SURGE!",
-      message:
-        "D-Rank Hunter → C-Rank Hunter! The System acknowledges your growth.",
+      title: "⭐ LEVEL UP!",
+      message: "Reader Level 5 → Level 6! You're making great progress!",
       timestamp: new Date(now - 16 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "20",
       type: "new_chapter",
-      title: "⚔️ POWER SURGE DETECTED",
-      message: `Chapter 238 of '${manga[16]}' is live. Domain Expansion incoming!`,
+      title: "📚 NEW CHAPTER",
+      message: `Chapter 238 of '${manga[16]}' is live now!`,
       timestamp: new Date(now - 18 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "21",
       type: "milestone",
-      title: "🏆 LEGENDARY FEAT",
-      message: "5,000 panels conquered! Your dedication is S-Rank level.",
+      title: "🏆 AMAZING ACHIEVEMENT",
+      message: "5,000 chapters read! Your dedication is impressive!",
       timestamp: new Date(now - 20 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "22",
       type: "continue_reading",
-      title: "📖 UNFINISHED ADVENTURE",
-      message: `'${manga[5]}' Chapter 78 waiting. Don't lose progress!`,
+      title: "📖 BOOKMARK REMINDER",
+      message: `'${manga[5]}' Chapter 78 is waiting. Continue reading!`,
       timestamp: new Date(now - 22 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "23",
       type: "daily_login",
-      title: "⭐ TREASURE CHEST",
-      message: "Grand Line daily chest opened! 50 Gold coins + 50 XP!",
+      title: "⭐ DAILY REWARD",
+      message: "Daily bonus collected! 50 coins + 50 points!",
       timestamp: new Date(now - 24 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "24",
       type: "new_chapter",
-      title: "⚔️ NEW MISSION UNLOCKED",
-      message: `Chapter 156 of '${manga[17]}' released. Chainsaw Devil revs up!`,
+      title: "📚 NEW CHAPTER",
+      message: `Chapter 156 of '${manga[17]}' has been released!`,
       timestamp: new Date(now - 26 * 3600000).toISOString(),
       read: true,
     },
@@ -228,15 +227,15 @@ const generateNotifications = () => {
       id: "25",
       type: "catch_up",
       title: "⚠️ MULTIPLE UPDATES",
-      message: `'${manga[1]}' has 3 new chapters. Don't lose your tower spot!`,
+      message: `'${manga[1]}' has 3 new chapters available!`,
       timestamp: new Date(now - 28 * 3600000).toISOString(),
       read: true,
     },
     {
       id: "26",
       type: "new_chapter",
-      title: "⚔️ ADVENTURE AWAITS",
-      message: `Chapter 89 of '${manga[18]}' ready. Operation Strix continues!`,
+      title: "📚 NEW CHAPTER",
+      message: `Chapter 89 of '${manga[18]}' is ready to read!`,
       timestamp: new Date(now - 30 * 3600000).toISOString(),
       read: true,
     },
@@ -244,7 +243,7 @@ const generateNotifications = () => {
       id: "27",
       type: "reading_streak",
       title: "🔥 30-DAY STREAK!",
-      message: "One month dedication! Legendary 2000 XP reward unlocked!",
+      message: "One month of reading! Legendary reward: 2000 points!",
       timestamp: new Date(now - 2 * 86400000).toISOString(),
       read: true,
     },
@@ -252,63 +251,64 @@ const generateNotifications = () => {
       id: "28",
       type: "milestone",
       title: "🏆 READING MASTER",
-      message: "50 different manga explored! True adventurer status.",
+      message: "50 different manga series explored! True fan status!",
       timestamp: new Date(now - 3 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "29",
       type: "rank_up",
-      title: "👑 BREAKTHROUGH!",
-      message: "C-Rank → B-Rank Hunter! Elite status achieved!",
+      title: "⭐ LEVEL UP!",
+      message: "Level 6 → Level 7! Elite reader status achieved!",
       timestamp: new Date(now - 4 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "30",
       type: "challenge",
-      title: "🎯 BOUNTY CHALLENGE",
-      message: "Complete 3 manga series this month! Reward: 2000 XP + Badge!",
+      title: "🎯 MONTHLY CHALLENGE",
+      message:
+        "Complete 3 manga series this month! Reward: 2000 points + Badge!",
       timestamp: new Date(now - 5 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "31",
       type: "community",
-      title: "🎉 PLATFORM MILESTONE",
-      message: "100,000 hunters joined! Everyone gets 1000 bonus XP!",
+      title: "🎉 COMMUNITY MILESTONE",
+      message: "100,000 readers joined! Everyone gets 1000 bonus points!",
       timestamp: new Date(now - 6 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "32",
       type: "new_chapter",
-      title: "⚔️ BOSS BATTLE READY",
-      message: `Chapter 412 of '${manga[8]}' arrived. Grid's legend grows!`,
+      title: "📚 NEW CHAPTER",
+      message: `Chapter 412 of '${manga[8]}' is now available!`,
       timestamp: new Date(now - 7 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "33",
       type: "recommendation",
-      title: "💎 PERFECT MATCH",
-      message: `Hunters like you rated '${manga[15]}' 5 stars. Worth exploring!`,
+      title: "💎 HIGHLY RATED",
+      message: `Readers like you rated '${manga[15]}' 5 stars. Check it out!`,
       timestamp: new Date(now - 8 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "34",
       type: "continue_reading",
-      title: "📖 BOOKMARK REMINDER",
-      message: `You're at Chapter 112 of '${manga[14]}'. Titans waiting!`,
+      title: "📖 RESUME READING",
+      message: `You're at Chapter 112 of '${manga[14]}'. Continue your story!`,
       timestamp: new Date(now - 9 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "35",
       type: "new_chapter",
-      title: "⚔️ LEVEL UP AVAILABLE",
-      message: `Chapter 305 of '${manga[6]}' out. Gaming experience improves!`,
+      title: "📚 NEW CHAPTER",
+      message: `Chapter 305 of '${manga[6]}' is available now!`,
       timestamp: new Date(now - 10 * 86400000).toISOString(),
       read: true,
     },
@@ -316,31 +316,31 @@ const generateNotifications = () => {
       id: "36",
       type: "milestone",
       title: "🏆 SPEED READER",
-      message: "100 chapters in one week! Your reading speed is incredible!",
+      message: "100 chapters in one week! Impressive reading speed!",
       timestamp: new Date(now - 11 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "37",
       type: "rank_up",
-      title: "👑 LEGENDARY ASCENSION",
-      message: "B-Rank → A-Rank Hunter! You're among the elite now!",
+      title: "⭐ LEVEL UP!",
+      message: "Level 7 → Level 8! You're among the top readers!",
       timestamp: new Date(now - 12 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "38",
       type: "popular_chapter",
-      title: "🔥 COMMUNITY FAVORITE",
-      message: `Chapter 523 of '${manga[1]}' breaking records! 100K+ views!`,
+      title: "🔥 BREAKING RECORDS",
+      message: `Chapter 523 of '${manga[1]}' has 100K+ views!`,
       timestamp: new Date(now - 13 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "39",
       type: "social_proof",
-      title: "👥 MASSIVE TURNOUT",
-      message: "5000+ readers joined today! Community grows stronger!",
+      title: "👥 GROWING COMMUNITY",
+      message: "5000+ new readers joined today! Welcome everyone!",
       timestamp: new Date(now - 14 * 86400000).toISOString(),
       read: true,
     },
@@ -348,15 +348,15 @@ const generateNotifications = () => {
       id: "40",
       type: "anniversary",
       title: "🎂 ONE YEAR ANNIVERSARY",
-      message: `One year since you started '${manga[0]}'! Relive your journey!`,
+      message: `One year since you started reading '${manga[0]}'!`,
       timestamp: new Date(now - 15 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "41",
       type: "catch_up",
-      title: "⚠️ BACKLOG ALERT",
-      message: `8 chapters behind on '${manga[10]}'! Straw Hats sailing ahead!`,
+      title: "⚠️ CATCH UP REMINDER",
+      message: `8 chapters behind on '${manga[10]}'! New content available!`,
       timestamp: new Date(now - 16 * 86400000).toISOString(),
       read: true,
     },
@@ -364,7 +364,7 @@ const generateNotifications = () => {
       id: "42",
       type: "reading_streak",
       title: "🔥 14-DAY STREAK!",
-      message: "Two weeks strong! Your nakama are proud. 750 XP bonus!",
+      message: "Two weeks of consistent reading! 750 points bonus!",
       timestamp: new Date(now - 17 * 86400000).toISOString(),
       read: true,
     },
@@ -372,63 +372,63 @@ const generateNotifications = () => {
       id: "43",
       type: "milestone",
       title: "🏆 NIGHT OWL READER",
-      message: "10 consecutive midnight sessions! Dedication +100",
+      message: "10 consecutive late night sessions! Dedication +100",
       timestamp: new Date(now - 18 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "44",
       type: "rank_up",
-      title: "👑 S-RANK ACHIEVED",
-      message: "A-Rank → S-Rank! Only a handful reach this level!",
+      title: "⭐ LEVEL UP!",
+      message: "Level 8 → Level 9! Elite status achieved!",
       timestamp: new Date(now - 19 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "45",
       type: "continue_reading",
-      title: "📖 RESUME YOUR JOURNEY",
-      message: `Chapter 203 of '${manga[19]}' awaits. Thorfinn's saga!`,
+      title: "📖 CONTINUE YOUR STORY",
+      message: `Chapter 203 of '${manga[19]}' is waiting for you!`,
       timestamp: new Date(now - 20 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "46",
       type: "milestone",
-      title: "🏆 BINGE MASTER",
-      message: "Completed 3 manga series in one day! Legendary stamina!",
+      title: "🏆 BINGE READER",
+      message: "Completed 3 manga series in one day! Amazing stamina!",
       timestamp: new Date(now - 21 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "47",
       type: "recommendation",
-      title: "💎 HIDDEN GEM",
-      message: `'${manga[13]}' matches your history. Plus Ultra awaits!`,
+      title: "💎 PERFECT MATCH",
+      message: `'${manga[13]}' matches your reading preferences!`,
       timestamp: new Date(now - 22 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "48",
       type: "rank_up",
-      title: "👑 MONARCH STATUS",
-      message: "S-Rank → National Level! The pinnacle of power!",
+      title: "⭐ LEVEL UP!",
+      message: "Level 9 → Level 10! Maximum level reached!",
       timestamp: new Date(now - 23 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "49",
       type: "continue_reading",
-      title: "📖 DON'T FORGET",
-      message: `'${manga[7]}' Chapter 156 bookmarked. Hardcore journey continues!`,
+      title: "📖 BOOKMARK FOUND",
+      message: `'${manga[7]}' Chapter 156 is bookmarked. Continue reading!`,
       timestamp: new Date(now - 24 * 86400000).toISOString(),
       read: true,
     },
     {
       id: "50",
       type: "milestone",
-      title: "🏆 PANEL PERFECTIONIST",
-      message: "10,000 panels read! Approaching National Level status.",
+      title: "🏆 MASTER READER",
+      message: "10,000 chapters read! You're a reading legend!",
       timestamp: new Date(now - 25 * 86400000).toISOString(),
       read: true,
     },
@@ -465,8 +465,8 @@ export default function NotificationsPanel() {
 
   const getNotificationIcon = (type) => {
     const icons = {
-      new_chapter: "⚔️",
-      rank_up: "👑",
+      new_chapter: "📚",
+      rank_up: "⭐",
       milestone: "🏆",
       continue_reading: "📖",
       daily_login: "⭐",
@@ -564,7 +564,7 @@ export default function NotificationsPanel() {
                               Notifications
                             </h2>
                             <p className="text-blue-300 text-sm font-bold tracking-wide">
-                              [ {unreadCount} UNREAD MESSAGES ]
+                              {unreadCount} Unread
                             </p>
                           </div>
                         </div>
@@ -616,17 +616,7 @@ export default function NotificationsPanel() {
                                     : "from-slate-800/40 to-slate-900/40 border-2 border-slate-700/40"
                                 } p-4 transition-all duration-300 hover:border-blue-400/60 group-hover:shadow-lg group-hover:shadow-blue-500/20`}
                               >
-                                <div className="absolute -left-2 -top-2 w-8 h-8">
-                                  <div
-                                    className={`w-full h-full bg-gradient-to-br ${getRankColor(
-                                      notification.type
-                                    )} rounded-full flex items-center justify-center text-lg shadow-lg animate-pulse`}
-                                  >
-                                    {getNotificationIcon(notification.type)}
-                                  </div>
-                                </div>
-
-                                <div className="flex gap-4 ml-4">
+                                <div className="flex gap-4">
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-start justify-between gap-2">
                                       <div className="flex-1">
@@ -680,7 +670,7 @@ export default function NotificationsPanel() {
                             <Bell className="w-12 h-12 text-slate-600" />
                           </div>
                           <p className="text-xl font-black text-slate-500 uppercase tracking-wider system-font">
-                            No Active Quests
+                            No Notifications
                           </p>
                           <p className="text-sm text-slate-600 mt-2 font-medium">
                             All notifications have been cleared
@@ -691,10 +681,10 @@ export default function NotificationsPanel() {
 
                     <div className="border-t-2 border-blue-500/30 bg-gradient-to-r from-slate-900/60 via-blue-900/20 to-slate-900/60 p-4">
                       <div className="flex items-center justify-between text-xs text-blue-400 font-bold tracking-wider uppercase">
-                        <span>System Active</span>
+                        <span>Notification Center</span>
                         <span className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                          Online
+                          Active
                         </span>
                       </div>
                     </div>
