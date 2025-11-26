@@ -71,6 +71,9 @@ export function Header() {
       text = "Check out the latest manga news on HiManga!";
     }
 
+    // Combine text and URL for sharing
+    const shareText = `${text} ${currentUrl}`;
+
     if (navigator.share) {
       try {
         // Try to fetch and share the image
@@ -85,8 +88,7 @@ export function Header() {
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: title,
-              text: text,
-              url: currentUrl,
+              text: shareText,
               files: [file],
             });
             return;
@@ -98,8 +100,7 @@ export function Header() {
         // Fallback to sharing without image
         await navigator.share({
           title: title,
-          text: text,
-          url: currentUrl,
+          text: shareText,
         });
       } catch (err) {
         // User cancelled share or error occurred
