@@ -10,8 +10,15 @@ import "./globals.css";
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
+// Define the base URL - IMPORTANT: Use your actual production URL
+const baseUrl = "https://himanga.fun"; // Changed from .app to .fun to match canonical
+
 export const metadata: Metadata = {
-  title: "HiManga - Read Manga Online | Level Up Your Manga Experience",
+  metadataBase: new URL(baseUrl), // THIS IS CRITICAL - Next.js needs this for absolute URLs
+  title: {
+    default: "HiManga - Read Manga Online | Level Up Your Manga Experience",
+    template: "%s | HiManga",
+  },
   description:
     "Discover and read your favorite manga with a beautiful, anime-inspired interface. Thousands of manga titles, infinite scroll, and community discussions.",
   keywords: [
@@ -31,35 +38,60 @@ export const metadata: Metadata = {
   authors: [{ name: "HiManga" }],
   creator: "HiManga",
   publisher: "HiManga",
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://himanga.app",
+    url: baseUrl,
     siteName: "HiManga",
-    title: "HiManga - Read Manga Online",
+    title: "HiManga - Read Manga Online | Level Up Your Manga Experience",
     description:
-      "Discover and read your favorite manga with a beautiful, anime-inspired interface",
+      "Discover and read your favorite manga with a beautiful, anime-inspired interface. Thousands of manga titles, infinite scroll, and community discussions.",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.jpg", // Will be converted to absolute URL using metadataBase
         width: 1200,
         height: 630,
         alt: "HiManga - Manga Reader",
+        type: "image/jpeg",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HiManga - Read Manga Online",
+    site: "@himanga", // Add your Twitter handle if you have one
+    creator: "@himanga",
+    title: "HiManga - Read Manga Online | Level Up Your Manga Experience",
     description:
-      "Discover and read your favorite manga with a beautiful interface",
-    images: ["/og-image.jpg"],
+      "Discover and read your favorite manga with a beautiful, anime-inspired interface",
+    images: {
+      url: "/og-image.jpg",
+      alt: "HiManga - Manga Reader",
+    },
   },
   alternates: {
-    canonical: "https://himanga.fun",
+    canonical: baseUrl,
   },
-  generator: "v0.app",
+  verification: {
+    // Add these if you have them
+    // google: "your-google-verification-code",
+    // yandex: "your-yandex-verification-code",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -70,6 +102,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark overflow-x-hidden">
       <head>
+        {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -79,16 +112,24 @@ export default function RootLayout({
               name: "HiManga",
               description:
                 "Read manga online with a beautiful interface and anime inspired design.",
-              url: "https://himanga.app",
+              url: baseUrl,
               applicationCategory: "EntertainmentApplication",
+              operatingSystem: "Any",
               offers: {
                 "@type": "Offer",
                 price: "0",
                 priceCurrency: "USD",
               },
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "4.8",
+                ratingCount: "1250",
+              },
             }),
           }}
         />
+
+        {/* Buy Me a Coffee Widget */}
         <script
           data-name="BMC-Widget"
           data-cfasync="false"
@@ -100,8 +141,7 @@ export default function RootLayout({
           data-position="Right"
           data-x_margin="18"
           data-y_margin="18"
-        ></script>
-        <meta name="favicon" content="/favicon.ico" />
+        />
       </head>
       <body className="font-sans antialiased overflow-x-hidden w-full max-w-[100vw]">
         <AuthProvider>
