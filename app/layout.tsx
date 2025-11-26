@@ -103,6 +103,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark overflow-x-hidden">
       <head>
+        {/* Explicit meta tags for WhatsApp */}
+        <meta property="og:image" content={`${baseUrl}/Og-image.jpg`} />
+        <meta
+          property="og:image:secure_url"
+          content={`${baseUrl}/Og-image.jpg`}
+        />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="HiManga - Manga Reader" />
+
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
