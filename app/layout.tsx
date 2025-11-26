@@ -60,7 +60,7 @@ export const metadata: Metadata = {
       "Discover and read your favorite manga with a beautiful, anime-inspired interface. Thousands of manga titles, infinite scroll, and community discussions.",
     images: [
       {
-        url: "/og-image.jpg", // Will be converted to absolute URL using metadataBase
+        url: "/Og-image.jpg", // Will be converted to absolute URL using metadataBase
         width: 1200,
         height: 630,
         alt: "HiManga - Manga Reader",
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     description:
       "Discover and read your favorite manga with a beautiful, anime-inspired interface",
     images: {
-      url: "/og-image.jpg",
+      url: "/Og-image.jpg",
       alt: "HiManga - Manga Reader",
     },
   },
