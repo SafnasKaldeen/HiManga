@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     "Bleach",
     "Attack on Titan",
     "Demon Slayer",
+    "Hentai manga",
   ],
   authors: [{ name: "HiManga" }],
   creator: "HiManga",
