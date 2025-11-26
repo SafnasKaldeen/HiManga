@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "	https://himanga.fun/summary_large_image",
+    card: "summary_large_image",
     site: "@himanga", // Add your Twitter handle if you have one
     creator: "@himanga",
     title: "HiManga - Read Manga Online | Level Up Your Manga Experience",
