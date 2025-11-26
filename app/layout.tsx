@@ -60,7 +60,7 @@ export const metadata: Metadata = {
       "Discover and read your favorite manga with a beautiful, anime-inspired interface. Thousands of manga titles, infinite scroll, and community discussions.",
     images: [
       {
-        url: "https://himanga.fun/Og-image.jpg", // Will be converted to absolute URL using metadataBase
+        url: "https://himanga.fun/og-image.jpg", // Will be converted to absolute URL using metadataBase
         width: 1200,
         height: 630,
         alt: "HiManga - Manga Reader",
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     description:
       "Discover and read your favorite manga with a beautiful, anime-inspired interface",
     images: {
-      url: "https://himanga.fun/Og-image.jpg",
+      url: "https://himanga.fun/og-image.jpg",
       alt: "HiManga - Manga Reader",
     },
   },
@@ -106,11 +106,11 @@ export default function RootLayout({
         {/* Explicit meta tags for WhatsApp */}
         <meta
           property="og:image"
-          content={`${baseUrl}https://himanga.fun/Og-image.jpg`}
+          content={`${baseUrl}https://himanga.fun/og-image.jpg`}
         />
         <meta
           property="og:image:secure_url"
-          content={`${baseUrl}https://himanga.fun/Og-image.jpg`}
+          content={`${baseUrl}https://himanga.fun/og-image.jpg`}
         />
         <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:width" content="1200" />
