@@ -193,7 +193,7 @@ export default function ProfilePage() {
               variant="outline"
               size="sm"
               onClick={refreshStats}
-              className="gap-2 bg-transparent border-pink-500/40 hover:bg-pink-500/10 text-pink-500"
+              className="gap-2 bg-transparent border-pink-500/40 hover:text-pink-500/70 text-pink-500"
             >
               <RefreshCw className="w-4 h-4" />
               Refresh Stats
