@@ -42,7 +42,7 @@ export const metadata: Metadata = {
       "Discover and read your favorite manga with a beautiful, anime-inspired interface",
     images: [
       {
-        url: "/Og-image.jpg",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "HiManga - Manga Reader",
