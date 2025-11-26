@@ -104,13 +104,10 @@ export default function RootLayout({
     <html lang="en" className="dark overflow-x-hidden">
       <head>
         {/* Explicit meta tags for WhatsApp */}
-        <meta
-          property="og:image"
-          content={`${baseUrl}https://himanga.fun/Og-image.jpg`}
-        />
+        <meta property="og:image" content="https://himanga.fun/Og-image.jpg" />
         <meta
           property="og:image:secure_url"
-          content={`${baseUrl}https://himanga.fun/Og-image.jpg`}
+          content="https://himanga.fun/Og-image.jpg"
         />
         <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:width" content="1200" />
