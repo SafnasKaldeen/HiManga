@@ -38,6 +38,7 @@ export function Header() {
 
   const handleShare = async () => {
     const currentUrl = window.location.href;
+    const imageUrl = "https://himanga.fun/Og-image.jpg";
 
     // Generate a better title and description based on the current page
     let title = "HiManga";
@@ -72,6 +73,29 @@ export function Header() {
 
     if (navigator.share) {
       try {
+        // Try to fetch and share the image
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], "himanga-share.jpg", {
+            type: "image/jpeg",
+          });
+
+          // Check if the browser supports sharing files
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: title,
+              text: text,
+              url: currentUrl,
+              files: [file],
+            });
+            return;
+          }
+        } catch (imageError) {
+          console.log("Could not share image, sharing without it:", imageError);
+        }
+
+        // Fallback to sharing without image
         await navigator.share({
           title: title,
           text: text,
