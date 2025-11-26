@@ -38,7 +38,6 @@ export function Header() {
 
   const handleShare = async () => {
     const currentUrl = window.location.href;
-    const imageUrl = "https://himanga.fun/Og-image.jpg";
 
     // Generate a better title and description based on the current page
     let title = "HiManga";
@@ -73,65 +72,29 @@ export function Header() {
 
     if (navigator.share) {
       try {
-        // Try to fetch and share the image WITH text and URL
-        try {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          const file = new File([blob], "himanga-share.jpg", {
-            type: "image/jpeg",
-          });
-
-          // Combine text and URL in the text field so they appear together
-          const combinedText = `${text}\n\n${currentUrl}`;
-
-          // Create share data with combined text and files
-          const shareDataWithImage = {
-            title: title,
-            text: combinedText,
-            files: [file],
-          };
-
-          // Check if the browser supports sharing this combination
-          if (navigator.canShare && navigator.canShare(shareDataWithImage)) {
-            await navigator.share(shareDataWithImage);
-            return;
-          }
-        } catch (imageErr) {
-          console.log("Could not share with image, sharing without:", imageErr);
-        }
-
-        // Fallback to sharing without image if image sharing fails
-        // Include URL in the text for better sharing
-        const combinedText = `${text}\n\n${currentUrl}`;
         await navigator.share({
           title: title,
-          text: combinedText,
+          text: text,
+          url: currentUrl,
         });
       } catch (err) {
         // User cancelled share or error occurred
         if (err instanceof Error && err.name !== "AbortError") {
-          // Fallback to clipboard with full text
-          fallbackCopyToClipboard(currentUrl, title, text);
+          // Fallback to clipboard if share fails
+          fallbackCopyToClipboard(currentUrl);
         }
       }
     } else {
       // Fallback for browsers that don't support Web Share API
-      fallbackCopyToClipboard(currentUrl, title, text);
+      fallbackCopyToClipboard(currentUrl);
     }
   };
 
-  const fallbackCopyToClipboard = async (
-    url: string,
-    title?: string,
-    text?: string
-  ) => {
+  const fallbackCopyToClipboard = async (url: string) => {
     try {
-      // Create a more complete message for clipboard
-      const fullMessage = title && text ? `${title}\n${text}\n${url}` : url;
-
-      await navigator.clipboard.writeText(fullMessage);
+      await navigator.clipboard.writeText(url);
       // You could add a toast notification here
-      alert("Link and details copied to clipboard!");
+      alert("Link copied to clipboard!");
     } catch (err) {
       console.error("Failed to copy link:", err);
       alert(
