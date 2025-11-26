@@ -1,282 +1,225 @@
 // hooks/use-notifications.ts
-"use client"
-
-import { useState, useEffect, useCallback } from "react"
-import { supabase } from "@/lib/supabase"
+"use client";
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/lib/supabase";
 
 export interface Notification {
-  id: string
-  user_id: string
-  type: string
-  title: string
-  message: string
-  manga_id: string | null
-  chapter_id: string | null
-  data: any | null
-  read: boolean
-  created_at: string
-  expires_at: string
+  id: string;
+  user_id: string;
+  type: string;
+  title: string;
+  message: string;
+  manga_id: string | null;
+  chapter_id: string | null;
+  data: any | null;
+  read: boolean;
+  created_at: string;
+  expires_at: string | null;
 }
 
-const CACHE_KEY = "notifications_cache"
-const CACHE_DURATION = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
-
-interface CachedData {
-  notifications: Notification[]
-  timestamp: number
-  unreadCount: number
-}
+const CACHE_KEY = "notifications_cache";
+const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours
 
 export function useNotifications(userId: string | null) {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [unreadCount, setUnreadCount] = useState(0)
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Invalidate cache helper
-  const invalidateCache = useCallback(() => {
-    localStorage.removeItem(CACHE_KEY)
-  }, [])
+  const getCacheKey = (uid: string) => `${CACHE_KEY}_${uid}`;
 
-  // Update cache helper
-  const updateCache = useCallback((newNotifications: Notification[]) => {
-    const unread = newNotifications.filter((n) => !n.read).length
-    const cacheData: CachedData = {
-      notifications: newNotifications,
-      timestamp: Date.now(),
-      unreadCount: unread,
+  const loadFromCache = useCallback((uid: string) => {
+    try {
+      const cached = localStorage.getItem(getCacheKey(uid));
+      if (!cached) return null;
+
+      const parsed = JSON.parse(cached);
+      const age = Date.now() - parsed.timestamp;
+      
+      if (age < CACHE_DURATION) {
+        return parsed;
+      } else {
+        localStorage.removeItem(getCacheKey(uid));
+        return null;
+      }
+    } catch (e) {
+      console.error("Error reading notifications cache:", e);
+      return null;
     }
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData))
-  }, [])
+  }, []);
 
-  // Load from cache or fetch fresh data
-  const loadNotifications = useCallback(async (forceRefresh = false) => {
+  const saveToCache = useCallback((uid: string, data: Notification[]) => {
+    try {
+      const unread = data.filter((n) => !n.read).length;
+      localStorage.setItem(
+        getCacheKey(uid),
+        JSON.stringify({
+          notifications: data,
+          unreadCount: unread,
+          timestamp: Date.now(),
+        })
+      );
+    } catch (e) {
+      console.error("Error saving notifications cache:", e);
+    }
+  }, []);
+
+  const invalidateCache = useCallback((uid: string) => {
+    localStorage.removeItem(getCacheKey(uid));
+  }, []);
+
+  const loadNotifications = useCallback(async (force = false) => {
     if (!userId) {
-      setIsLoaded(true)
-      return
+      setIsLoaded(true);
+      return;
+    }
+
+    // Try cache first unless force refresh
+    if (!force) {
+      const cached = loadFromCache(userId);
+      if (cached) {
+        setNotifications(cached.notifications);
+        setUnreadCount(cached.unreadCount);
+        setIsLoaded(true);
+        return;
+      }
     }
 
     try {
-      // Check cache first
-      if (!forceRefresh) {
-        const cached = localStorage.getItem(CACHE_KEY)
-        if (cached) {
-          const cachedData: CachedData = JSON.parse(cached)
-          const now = Date.now()
-          
-          // Use cache if it's less than 2 hours old
-          if (now - cachedData.timestamp < CACHE_DURATION) {
-            setNotifications(cachedData.notifications)
-            setUnreadCount(cachedData.unreadCount)
-            setIsLoaded(true)
-            return
-          }
-        }
-      }
-
-      // Fetch fresh data from Supabase
-      const { data, error } = await supabase
+      const currentTime = new Date().toISOString();
+      
+      const { data, error: supaError } = await supabase
         .from("notifications")
         .select("*")
         .eq("user_id", userId)
-        .gt("expires_at", new Date().toISOString())
-        .order("created_at", { ascending: false })
+        .or(`expires_at.is.null,expires_at.gt.${currentTime}`)
+        .order("created_at", { ascending: false });
 
-      if (error) throw error
+      if (supaError) throw supaError;
 
-      const notificationData = data || []
-      const unread = notificationData.filter((n) => !n.read).length
+      const rows = data || [];
+      const unread = rows.filter((n) => !n.read).length;
 
-      // Update state
-      setNotifications(notificationData)
-      setUnreadCount(unread)
-      setError(null)
-
-      // Update cache
-      updateCache(notificationData)
-    } catch (err) {
-      console.error("Failed to load notifications:", err)
-      setError(err instanceof Error ? err.message : "Failed to load notifications")
+      setNotifications(rows);
+      setUnreadCount(unread);
+      setError(null);
+      
+      // Save to cache
+      saveToCache(userId, rows);
+    } catch (e: any) {
+      console.error("Failed to load notifications:", e.message);
+      setError(e.message);
     } finally {
-      setIsLoaded(true)
+      setIsLoaded(true);
     }
-  }, [userId, updateCache])
+  }, [userId, loadFromCache, saveToCache]);
 
-  // Initial load and setup auto-refresh
   useEffect(() => {
-    loadNotifications()
+    loadNotifications(false);
+  }, [loadNotifications]);
 
-    // Set up interval to check cache expiry every minute
-    const interval = setInterval(() => {
-      const cached = localStorage.getItem(CACHE_KEY)
-      if (cached) {
-        const cachedData: CachedData = JSON.parse(cached)
-        const now = Date.now()
-        
-        // Refresh if cache expired
-        if (now - cachedData.timestamp >= CACHE_DURATION) {
-          loadNotifications(true)
+  const markAsRead = async (id: string) => {
+    if (!userId) return;
+
+    await supabase.from("notifications").update({ read: true }).eq("id", id);
+
+    const updated = notifications.map((n) =>
+      n.id === id ? { ...n, read: true } : n
+    );
+    setNotifications(updated);
+    setUnreadCount((c) => Math.max(0, c - 1));
+    
+    // Update cache immediately
+    saveToCache(userId, updated);
+  };
+
+  const markAllAsRead = async () => {
+    if (!userId) return;
+
+    await supabase
+      .from("notifications")
+      .update({ read: true })
+      .eq("user_id", userId)
+      .eq("read", false);
+
+    const updated = notifications.map((n) => ({ ...n, read: true }));
+    setNotifications(updated);
+    setUnreadCount(0);
+    
+    // Update cache immediately
+    saveToCache(userId, updated);
+  };
+
+  const removeNotification = async (id: string) => {
+    if (!userId) return;
+
+    await supabase.from("notifications").delete().eq("id", id);
+
+    const updated = notifications.filter((n) => n.id !== id);
+    const unread = updated.filter((n) => !n.read).length;
+    setNotifications(updated);
+    setUnreadCount(unread);
+    
+    // Update cache immediately
+    saveToCache(userId, updated);
+  };
+
+  const clearAll = async () => {
+    if (!userId) return;
+
+    await supabase.from("notifications").delete().eq("user_id", userId);
+
+    setNotifications([]);
+    setUnreadCount(0);
+    
+    // Clear cache completely
+    if (userId) invalidateCache(userId);
+  };
+
+  // Listen for changes from other tabs/windows
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (userId && e.key === getCacheKey(userId) && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          setNotifications(parsed.notifications);
+          setUnreadCount(parsed.unreadCount);
+        } catch (err) {
+          console.error("Error syncing notifications from storage:", err);
         }
       }
-    }, 60000) // Check every minute
+    };
 
-    return () => clearInterval(interval)
-  }, [loadNotifications])
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [userId]);
 
-  // Mark notification as read (only updates cache, no refetch)
-  const markAsRead = async (id: string) => {
-    if (!userId) {
-      setError("User must be logged in")
-      return false
-    }
+  // Set up real-time subscription for database changes
+  useEffect(() => {
+    if (!userId) return;
 
-    try {
-      const { error } = await supabase
-        .from("notifications")
-        .update({ read: true })
-        .eq("id", id)
-        .eq("user_id", userId)
-
-      if (error) throw error
-
-      // Update local state
-      const updatedNotifications = notifications.map((n) =>
-        n.id === id ? { ...n, read: true } : n
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          console.log('Notification change detected:', payload.eventType);
+          // Revalidate by fetching fresh data
+          loadNotifications(true);
+        }
       )
-      setNotifications(updatedNotifications)
-      setUnreadCount((prev) => Math.max(0, prev - 1))
+      .subscribe();
 
-      // Update cache
-      updateCache(updatedNotifications)
-
-      return true
-    } catch (err) {
-      console.error("Failed to mark as read:", err)
-      setError(err instanceof Error ? err.message : "Failed to mark as read")
-      return false
-    }
-  }
-
-  // Mark all notifications as read (only updates cache, no refetch)
-  const markAllAsRead = async () => {
-    if (!userId) {
-      setError("User must be logged in")
-      return false
-    }
-
-    try {
-      const { error } = await supabase
-        .from("notifications")
-        .update({ read: true })
-        .eq("user_id", userId)
-        .eq("read", false)
-
-      if (error) throw error
-
-      // Update local state
-      const updatedNotifications = notifications.map((n) => ({ ...n, read: true }))
-      setNotifications(updatedNotifications)
-      setUnreadCount(0)
-
-      // Update cache
-      updateCache(updatedNotifications)
-
-      return true
-    } catch (err) {
-      console.error("Failed to mark all as read:", err)
-      setError(err instanceof Error ? err.message : "Failed to mark all as read")
-      return false
-    }
-  }
-
-  // Remove notification (invalidates cache and refetches)
-  const removeNotification = async (id: string) => {
-    if (!userId) {
-      setError("User must be logged in")
-      return false
-    }
-
-    try {
-      const { error } = await supabase
-        .from("notifications")
-        .delete()
-        .eq("id", id)
-        .eq("user_id", userId)
-
-      if (error) throw error
-
-      // Invalidate cache and refetch
-      invalidateCache()
-      await loadNotifications(true)
-
-      return true
-    } catch (err) {
-      console.error("Failed to remove notification:", err)
-      setError(err instanceof Error ? err.message : "Failed to remove notification")
-      return false
-    }
-  }
-
-  // Clear all notifications (invalidates cache and refetches)
-  const clearAll = async () => {
-    if (!userId) {
-      setError("User must be logged in")
-      return false
-    }
-
-    try {
-      const { error } = await supabase
-        .from("notifications")
-        .delete()
-        .eq("user_id", userId)
-
-      if (error) throw error
-
-      // Invalidate cache and refetch
-      invalidateCache()
-      await loadNotifications(true)
-
-      return true
-    } catch (err) {
-      console.error("Failed to clear all notifications:", err)
-      setError(err instanceof Error ? err.message : "Failed to clear all")
-      return false
-    }
-  }
-
-  // Update notification (invalidates cache and refetches)
-  const updateNotification = async (id: string, updates: Partial<Notification>) => {
-    if (!userId) {
-      setError("User must be logged in")
-      return false
-    }
-
-    try {
-      const { error } = await supabase
-        .from("notifications")
-        .update(updates)
-        .eq("id", id)
-        .eq("user_id", userId)
-
-      if (error) throw error
-
-      // Invalidate cache and refetch
-      invalidateCache()
-      await loadNotifications(true)
-
-      return true
-    } catch (err) {
-      console.error("Failed to update notification:", err)
-      setError(err instanceof Error ? err.message : "Failed to update notification")
-      return false
-    }
-  }
-
-  // Force refresh notifications (invalidates cache)
-  const refresh = useCallback(() => {
-    invalidateCache()
-    loadNotifications(true)
-  }, [invalidateCache, loadNotifications])
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, loadNotifications]);
 
   return {
     notifications,
@@ -287,7 +230,6 @@ export function useNotifications(userId: string | null) {
     markAllAsRead,
     removeNotification,
     clearAll,
-    updateNotification,
-    refresh,
-  }
+    refresh: () => loadNotifications(true),
+  };
 }

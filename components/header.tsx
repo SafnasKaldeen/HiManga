@@ -178,7 +178,7 @@ export function Header() {
             </button>
 
             {/* Notifications */}
-            {user && <NotificationsPanel />}
+            {user && <NotificationsPanel userId={user.id} />}
 
             {/* Desktop Auth Section - Only on extra large screens */}
             <div className="hidden xl:flex items-center gap-3">
