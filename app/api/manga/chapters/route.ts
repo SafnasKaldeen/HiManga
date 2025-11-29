@@ -199,7 +199,8 @@ export async function GET(req: NextRequest) {
 
       if (data.length < chunkSize) break;
 
-      start += chunkSize;
+      // ✅ FIX: increment by actual number of rows returned
+      start += data.length;
     }
 
     console.log(`[Chapters List] Success: Fetched ${allChapters.length} chapters for manga=${mangaId}`);

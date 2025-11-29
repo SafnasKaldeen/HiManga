@@ -22,6 +22,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   // Fetch manga using the cached hook
   const {
     favoriteMangas: mangas,
+    chapters,
     isLoading,
     error,
   } = useMangas(
@@ -31,6 +32,9 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   );
 
   const manga = mangas.find((m) => m.id === id);
+
+  // Get the actual chapter count from fetched chapters
+  const actualChapterCount = chapters[id]?.length || 0;
 
   // Loading state
   if (isLoading) {
@@ -44,11 +48,18 @@ export default function ChapterPage({ params }: ChapterPageProps) {
     );
   }
 
-  // FIXED: Only validate manga exists and chapter is positive
-  // Remove the upper limit check to allow reading chapters beyond manga.chapters
+  // Validate manga exists and chapter is positive
   if (error || !manga || chapterNum < 1 || isNaN(chapterNum)) {
     notFound();
   }
+
+  // Use the actual chapter count from fetched data, fallback to manga.chapters
+  const totalChapters =
+    actualChapterCount > 0 ? actualChapterCount : manga.chapters;
+
+  console.log(
+    `Manga: ${manga.title}, Total Chapters: ${totalChapters}, Current: ${chapterNum}`
+  );
 
   // Generate mock pages for the chapter (20 pages per chapter)
   const pages = Array.from({ length: 20 }, (_, i) => ({
@@ -59,7 +70,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   }));
 
   const previousChapter = chapterNum > 1 ? chapterNum - 1 : null;
-  const nextChapter = chapterNum + 1; // Always allow next chapter
+  const nextChapter = chapterNum + 1;
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
@@ -78,7 +89,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
           pages={pages}
           previousChapter={previousChapter}
           nextChapter={nextChapter}
-          totalChapters={manga.chapters + 1}
+          totalChapters={totalChapters + 1}
         />
       </div>
     </div>
