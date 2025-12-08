@@ -1,206 +1,103 @@
 // ==============================================
 // FILE: app/api/manga/image/route.ts
+// Server-side API route - caching handled on client
 // ==============================================
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// Initialize Supabase client
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPESUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPESUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const CACHE_KEY_PREFIX = "manga_image_cache_";
-const CACHE_URL_PREFIX = "manga_image_url_cache_";
-const CACHE_EXPIRY_DAYS = 7;
+// In-memory cache for the server (resets on restart)
+// For production, use Redis or similar
+const serverCache = new Map<string, {
+  buffer: Buffer;
+  contentType: string;
+  timestamp: number;
+}>();
 
-// Helper to get cache key for image data
-function getImageCacheKey(mangaSlug: string, chapter: number, panel: number): string {
-  return `${CACHE_KEY_PREFIX}${mangaSlug}_${chapter}_${panel}`;
+const urlCache = new Map<string, {
+  url: string;
+  timestamp: number;
+}>();
+
+const CACHE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+function getCacheKey(mangaSlug: string, chapter: number, panel: number): string {
+  return `${mangaSlug}_${chapter}_${panel}`;
 }
 
-// Helper to get cache key for image URL
-function getUrlCacheKey(mangaSlug: string, chapter: number, panel: number): string {
-  return `${CACHE_URL_PREFIX}${mangaSlug}_${chapter}_${panel}`;
-}
-
-// Helper to check if cache is expired
 function isCacheExpired(timestamp: number): boolean {
-  const expiryMs = CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000; // 7 days in ms
-  return Date.now() - timestamp > expiryMs;
+  return Date.now() - timestamp > CACHE_EXPIRY_MS;
 }
 
-// Helper to get cached image
-function getCachedImage(mangaSlug: string, chapter: number, panel: number): any {
-  if (typeof window === 'undefined') return null;
-  
-  try {
-    const cacheKey = getImageCacheKey(mangaSlug, chapter, panel);
-    const cached = localStorage.getItem(cacheKey);
+async function fetchImageWithRetry(imageUrl: string, retries = 3): Promise<Response> {
+  const methods = [
+    // Method 1: Direct fetch with realistic browser headers
+    async () => {
+      return fetch(imageUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Referer": "https://mangaread.org/",
+          "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9",
+          "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120"',
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": '"Windows"',
+          "Sec-Fetch-Dest": "image",
+          "Sec-Fetch-Mode": "no-cors",
+          "Sec-Fetch-Site": "same-origin",
+        },
+        cache: "no-store",
+      });
+    },
     
-    if (cached) {
-      const { data, contentType, timestamp } = JSON.parse(cached);
-      
-      // Check if cache is expired
-      if (isCacheExpired(timestamp)) {
-        localStorage.removeItem(cacheKey);
-        // Also remove the URL cache
-        const urlCacheKey = getUrlCacheKey(mangaSlug, chapter, panel);
-        localStorage.removeItem(urlCacheKey);
-        return null;
-      }
-      
-      return { data, contentType };
-    }
-  } catch (error) {
-    console.error("Error reading manga image from cache:", error);
-  }
-  
-  return null;
-}
+    // Method 2: Use CORS proxy
+    async () => {
+      const proxiedUrl = "https://corsproxy.io/?" + encodeURIComponent(imageUrl);
+      return fetch(proxiedUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        },
+      });
+    },
+    
+    // Method 3: Alternative with delay
+    async () => {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return fetch(imageUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+          "Referer": "https://mangaread.org/",
+          "Accept": "image/*",
+        },
+      });
+    },
+  ];
 
-// Helper to get cached image URL (to skip Supabase query)
-function getCachedImageUrl(mangaSlug: string, chapter: number, panel: number): string | null {
-  if (typeof window === 'undefined') return null;
+  let lastError: Error | null = null;
   
-  try {
-    const urlCacheKey = getUrlCacheKey(mangaSlug, chapter, panel);
-    const cached = localStorage.getItem(urlCacheKey);
-    
-    if (cached) {
-      const { url, timestamp } = JSON.parse(cached);
-      
-      // Check if cache is expired
-      if (isCacheExpired(timestamp)) {
-        localStorage.removeItem(urlCacheKey);
-        return null;
-      }
-      
-      return url;
-    }
-  } catch (error) {
-    console.error("Error reading image URL from cache:", error);
-  }
-  
-  return null;
-}
-
-// Helper to cache image
-function cacheImage(mangaSlug: string, chapter: number, panel: number, data: string, contentType: string): void {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    const cacheKey = getImageCacheKey(mangaSlug, chapter, panel);
-    const cacheData = {
-      data,
-      contentType,
-      timestamp: Date.now()
-    };
-    
-    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-  } catch (error) {
-    console.error("Error caching manga image:", error);
-    // If localStorage is full, try to clear old entries
-    if (error.name === 'QuotaExceededError') {
-      clearOldMangaImageCache();
-      // Try one more time
+  for (let i = 0; i < retries; i++) {
+    for (const method of methods) {
       try {
-        const cacheKey = getImageCacheKey(mangaSlug, chapter, panel);
-        const cacheData = {
-          data,
-          contentType,
-          timestamp: Date.now()
-        };
-        localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-      } catch (retryError) {
-        console.error("Failed to cache manga image after cleanup:", retryError);
-      }
-    }
-  }
-}
-
-// Helper to cache image URL
-function cacheImageUrl(mangaSlug: string, chapter: number, panel: number, url: string): void {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    const urlCacheKey = getUrlCacheKey(mangaSlug, chapter, panel);
-    const cacheData = {
-      url,
-      timestamp: Date.now()
-    };
-    
-    localStorage.setItem(urlCacheKey, JSON.stringify(cacheData));
-  } catch (error) {
-    console.error("Error caching image URL:", error);
-  }
-}
-
-// Helper to clear old cache entries
-function clearOldMangaImageCache(): void {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    const keysToRemove: string[] = [];
-    
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.startsWith(CACHE_KEY_PREFIX) || key.startsWith(CACHE_URL_PREFIX))) {
-        try {
-          const cached = JSON.parse(localStorage.getItem(key)!);
-          if (isCacheExpired(cached.timestamp)) {
-            keysToRemove.push(key);
-          }
-        } catch (e) {
-          // Invalid cache entry, remove it
-          keysToRemove.push(key);
+        const response = await method();
+        if (response.ok) {
+          return response;
         }
+      } catch (error) {
+        lastError = error as Error;
+        console.error(`Fetch attempt failed:`, error);
       }
     }
     
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-    console.log(`[Manga Image Cache] Cleared ${keysToRemove.length} expired entries`);
-  } catch (error) {
-    console.error("Error clearing old manga image cache:", error);
-  }
-}
-
-// Helper to invalidate specific image cache
-export function invalidateMangaImageCache(mangaSlug: string, chapter: number, panel: number): void {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    const cacheKey = getImageCacheKey(mangaSlug, chapter, panel);
-    const urlCacheKey = getUrlCacheKey(mangaSlug, chapter, panel);
-    localStorage.removeItem(cacheKey);
-    localStorage.removeItem(urlCacheKey);
-    console.log(`[Manga Image Cache] Invalidated cache for ${mangaSlug} ch${chapter} p${panel}`);
-  } catch (error) {
-    console.error("Error invalidating manga image cache:", error);
-  }
-}
-
-// Helper to invalidate all images for a chapter
-export function invalidateMangaChapterImagesCache(mangaSlug: string, chapter: number): void {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    const keysToRemove: string[] = [];
-    const imagePrefix = `${CACHE_KEY_PREFIX}${mangaSlug}_${chapter}_`;
-    const urlPrefix = `${CACHE_URL_PREFIX}${mangaSlug}_${chapter}_`;
-    
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.startsWith(imagePrefix) || key.startsWith(urlPrefix))) {
-        keysToRemove.push(key);
-      }
+    if (i < retries - 1) {
+      await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
     }
-    
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-    console.log(`[Manga Image Cache] Invalidated ${keysToRemove.length} images for ${mangaSlug} ch${chapter}`);
-  } catch (error) {
-    console.error("Error invalidating manga chapter images cache:", error);
   }
+  
+  throw lastError || new Error("All fetch attempts failed");
 }
 
 export async function GET(request: NextRequest) {
@@ -210,7 +107,6 @@ export async function GET(request: NextRequest) {
   const panel = searchParams.get("panel");
   const skipCache = searchParams.get("skipCache") === "true";
 
-  // Validate input
   if (!mangaSlug || !chapter || !panel) {
     return NextResponse.json(
       { error: "Missing required parameters" },
@@ -228,16 +124,17 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Check cache first if not skipping
+  const cacheKey = getCacheKey(mangaSlug, chapterNum, panelNum);
+
+  // Check server cache
   if (!skipCache) {
-    const cached = getCachedImage(mangaSlug, chapterNum, panelNum);
-    if (cached) {
-      console.log(`[Manga Image] Cache HIT: ${mangaSlug} ch${chapterNum} p${panelNum}`);
-      const buffer = Buffer.from(cached.data, 'base64');
-      return new NextResponse(buffer, {
+    const cached = serverCache.get(cacheKey);
+    if (cached && !isCacheExpired(cached.timestamp)) {
+      console.log(`[Manga Image] Server Cache HIT: ${mangaSlug} ch${chapterNum} p${panelNum}`);
+      return new NextResponse(cached.buffer, {
         headers: {
           "Content-Type": cached.contentType,
-          "Cache-Control": "public, max-age=604800, s-maxage=604800, immutable", // 7 days
+          "Cache-Control": "public, max-age=604800, immutable",
           "X-Content-Type-Options": "nosniff",
           "X-Cache": "HIT",
         },
@@ -248,11 +145,14 @@ export async function GET(request: NextRequest) {
   console.log(`[Manga Image] Cache MISS: Fetching ${mangaSlug} ch${chapterNum} p${panelNum}`);
 
   try {
-    // Check if we have the URL cached (skip Supabase query)
-    let imageUrl = getCachedImageUrl(mangaSlug, chapterNum, panelNum);
+    // Check URL cache
+    let imageUrl: string | undefined;
+    const cachedUrl = urlCache.get(cacheKey);
     
-    if (!imageUrl) {
-      // Query Supabase to get the image URL
+    if (cachedUrl && !isCacheExpired(cachedUrl.timestamp)) {
+      imageUrl = cachedUrl.url;
+    } else {
+      // Query Supabase
       const { data, error } = await supabase
         .from("panels")
         .select(
@@ -280,47 +180,52 @@ export async function GET(request: NextRequest) {
       }
 
       imageUrl = data.image_url;
-      
-      // Cache the URL for future requests
-      cacheImageUrl(mangaSlug, chapterNum, panelNum, imageUrl);
+      urlCache.set(cacheKey, { url: imageUrl, timestamp: Date.now() });
     }
 
-    // Fetch the image from the URL
-    const imageResponse = await fetch(imageUrl, {
-      headers: {
-        "User-Agent": "HiManga-Server/1.0",
-      },
-    });
+    // Fetch image with retry
+    console.log(`Fetching image: ${imageUrl}`);
+    const imageResponse = await fetchImageWithRetry(imageUrl);
 
-    if (!imageResponse.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch image from source" },
-        { status: 404 }
-      );
-    }
-
-    // Stream the image to client
     const imageBuffer = await imageResponse.arrayBuffer();
     const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+    const buffer = Buffer.from(imageBuffer);
 
-    // Convert to base64 for localStorage
-    const base64Data = Buffer.from(imageBuffer).toString('base64');
-    
-    // Cache the image (async, don't wait)
-    cacheImage(mangaSlug, chapterNum, panelNum, base64Data, contentType);
+    // Cache in memory
+    serverCache.set(cacheKey, {
+      buffer,
+      contentType,
+      timestamp: Date.now(),
+    });
 
-    return new NextResponse(imageBuffer, {
+    // Clean old cache entries periodically (1% chance per request)
+    if (Math.random() < 0.01) {
+      const now = Date.now();
+      for (const [key, value] of serverCache.entries()) {
+        if (isCacheExpired(value.timestamp)) {
+          serverCache.delete(key);
+        }
+      }
+      for (const [key, value] of urlCache.entries()) {
+        if (isCacheExpired(value.timestamp)) {
+          urlCache.delete(key);
+        }
+      }
+    }
+
+    return new NextResponse(buffer, {
       headers: {
         "Content-Type": contentType,
-        "Cache-Control": "public, max-age=604800, s-maxage=604800, immutable", // 7 days
+        "Cache-Control": "public, max-age=604800, immutable",
         "X-Content-Type-Options": "nosniff",
         "X-Cache": "MISS",
+        "Access-Control-Allow-Origin": "*",
       },
     });
   } catch (error) {
     console.error("Error fetching image:", error);
     return NextResponse.json(
-      { error: "Failed to fetch image" },
+      { error: "Failed to fetch image: " + (error as Error).message },
       { status: 500 }
     );
   }
